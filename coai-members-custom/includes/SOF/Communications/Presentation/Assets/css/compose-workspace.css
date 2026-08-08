@@ -1,0 +1,367 @@
+/**
+ * ============================================================
+ * SOF Compose Workspace
+ * ============================================================
+ *
+ * Framework:
+ *     Communications
+ *
+ * Layer:
+ *     Experience
+ *
+ * Purpose:
+ *     Present the communication composition experience.
+ *
+ * ============================================================
+ */
+
+
+/* ------------------------------------------------------------
+ * Workspace
+ * ------------------------------------------------------------ */
+
+.sof-compose-workspace {
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 1100px;
+    padding: 10px 30px 50px;
+    width: 100%;
+}
+
+.sof-compose-workspace *,
+.sof-compose-workspace *::before,
+.sof-compose-workspace *::after {
+    box-sizing: border-box;
+}
+
+
+/* ------------------------------------------------------------
+ * Workspace Header
+ * ------------------------------------------------------------ */
+
+.sof-compose-workspace > .sof-workspace-header {
+    margin-bottom: 30px;
+}
+
+.sof-compose-workspace .sof-workspace-context {
+    color: #7a3d20;
+    font-size: 14px;
+    font-weight: 700;
+    letter-spacing: 0.05em;
+    margin: 0 0 8px;
+    text-transform: uppercase;
+}
+
+.sof-compose-workspace > .sof-workspace-header h1 {
+    font-size: clamp(32px, 4vw, 46px);
+    line-height: 1.15;
+    margin: 0 0 12px;
+}
+
+.sof-compose-workspace > .sof-workspace-header > p:last-child {
+    font-size: 17px;
+    line-height: 1.65;
+    margin: 0;
+    max-width: 720px;
+}
+
+
+/* ------------------------------------------------------------
+ * Compose Card
+ * ------------------------------------------------------------ */
+
+.sof-compose-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    padding: 30px;
+}
+
+.sof-compose-card > .sof-card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    margin-bottom: 28px;
+    padding-bottom: 22px;
+}
+
+.sof-compose-card .sof-card-title {
+    font-size: 30px;
+    line-height: 1.2;
+    margin: 0 0 10px;
+}
+
+.sof-compose-card .sof-card-summary {
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* ------------------------------------------------------------
+ * Form
+ * ------------------------------------------------------------ */
+
+.sof-compose-form {
+    display: grid;
+    gap: 24px;
+}
+
+.sof-compose-form .sof-form-field {
+    display: grid;
+    gap: 8px;
+}
+
+.sof-compose-form label {
+    color: #333333;
+    font-size: 15px;
+    font-weight: 700;
+}
+
+.sof-compose-form input:not([type="checkbox"]),
+.sof-compose-form textarea {
+    background: #ffffff;
+    border: 1px solid #c9c9c9;
+    border-radius: 8px;
+    color: #222222;
+    font: inherit;
+    line-height: 1.5;
+    padding: 12px 14px;
+    transition:
+        border-color 0.2s ease,
+        box-shadow 0.2s ease;
+    width: 100%;
+}
+
+.sof-compose-form input:not([type="checkbox"]) {
+    min-height: 48px;
+}
+
+.sof-compose-form textarea {
+    min-height: 260px;
+    resize: vertical;
+}
+
+.sof-compose-form input:not([type="checkbox"]):focus,
+.sof-compose-form textarea:focus {
+    border-color: #7a3d20;
+    box-shadow: 0 0 0 4px rgba(122, 61, 32, 0.12);
+    outline: none;
+}
+
+.sof-compose-form input[readonly] {
+    background: #f3f1ee;
+    color: #555555;
+    cursor: default;
+}
+
+.sof-compose-form .sof-form-help {
+    color: #666666;
+    font-size: 14px;
+    line-height: 1.5;
+    margin: 0;
+}
+
+/* -------------------------------------------------
+ * Membership Status Options
+ * ------------------------------------------------- */
+
+.sof-membership-status-options {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 24px;
+    margin-top: 10px;
+}
+
+.sof-membership-status-options label {
+    display: inline-flex !important;
+    flex-direction: row !important;
+    align-items: center !important;
+    width: auto !important;
+    gap: 7px;
+    margin: 0 !important;
+    padding: 0 !important;
+    cursor: pointer;
+}
+
+.sof-membership-status-options input[type="checkbox"] {
+    appearance: none !important;
+    -webkit-appearance: none !important;
+
+    display: inline-block !important;
+    width: 16px !important;
+    height: 16px !important;
+    min-width: 16px !important;
+    max-width: 16px !important;
+    min-height: 16px !important;
+    max-height: 16px !important;
+
+    margin: 0 !important;
+    padding: 0 !important;
+
+    border: 1px solid #777 !important;
+    border-radius: 3px !important;
+    background: #fff !important;
+
+    box-shadow: none !important;
+    flex: 0 0 16px !important;
+}
+
+.sof-membership-status-options input[type="checkbox"]:checked {
+    position: relative;
+}
+
+.sof-membership-status-options input[type="checkbox"]:checked::after {
+    content: "✓";
+    position: absolute;
+    left: 2px;
+    top: -3px;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 16px;
+}
+
+.sof-membership-status-options label {
+    font-weight: 600;
+}
+
+
+/* ------------------------------------------------------------
+ * Actions
+ * ------------------------------------------------------------ */
+
+.sof-compose-actions {
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 4px;
+    padding-top: 24px;
+}
+
+.sof-compose-actions .sof-button {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    display: inline-flex;
+    font-size: 15px;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    text-decoration: none;
+}
+
+.sof-compose-actions .sof-button-primary {
+    background: #7a3d20;
+    color: #ffffff;
+}
+
+.sof-compose-actions .sof-button-primary:hover {
+    background: #643119;
+    color: #ffffff;
+}
+
+.sof-compose-actions .sof-button-secondary {
+    background: #ffffff;
+    border-color: #bdbdbd;
+    color: #444444;
+}
+
+.sof-compose-actions .sof-button-secondary:hover {
+    background: #f5f5f5;
+    color: #222222;
+}
+
+.sof-compose-actions button:disabled {
+    background: #d5d5d5;
+    border-color: #d5d5d5;
+    color: #777777;
+    cursor: not-allowed;
+    opacity: 1;
+}
+
+.sof-compose-form .sof-action-note {
+    background: #f7f4ef;
+    border-left: 4px solid #7a3d20;
+    border-radius: 6px;
+    color: #555555;
+    font-size: 14px;
+    line-height: 1.55;
+    margin: 0;
+    padding: 14px 16px;
+}
+
+/* -------------------------------------------------
+ * Audience Update Action
+ * ------------------------------------------------- */
+
+.sof-update-audience-action {
+    display: flex;
+    justify-content: flex-start;
+    width: 100%;
+}
+
+.sof-update-audience-action .sof-update-audience {
+    display: inline-flex !important;
+    align-items: center;
+    justify-content: center;
+
+    width: auto !important;
+    min-width: 0 !important;
+    min-height: 40px !important;
+
+    margin: 0 !important;
+    padding: 8px 16px !important;
+
+    border: 1px solid #bdbdbd;
+    border-radius: 8px;
+
+    background: #ffffff;
+    color: #444444;
+
+    font-size: 14px;
+    font-weight: 700;
+    line-height: 1.4;
+
+    cursor: pointer;
+}
+
+.sof-update-audience-action .sof-update-audience:hover {
+    background: #f5f5f5;
+    color: #222222;
+}
+
+/* ------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------ */
+
+@media screen and (max-width: 640px) {
+
+    .sof-compose-workspace {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .sof-compose-card {
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .sof-compose-card .sof-card-title {
+        font-size: 25px;
+    }
+
+    .sof-compose-form textarea {
+        min-height: 220px;
+    }
+
+    .sof-compose-actions {
+        align-items: stretch;
+        flex-direction: column;
+    }
+
+    .sof-compose-actions .sof-button {
+        width: 100%;
+    }
+}

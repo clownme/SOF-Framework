@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COAI Members Custom — File Matrix</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#6b7280;
+      --line:#d1d5db; --head:#f3f4f6; --chip:#eef2ff;
+      --ok:#065f46; --warn:#92400e; --bad:#991b1b;
+    }
+    body{
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      margin: 24px;
+      line-height: 1.45;
+      color: var(--text);
+      background: var(--bg);
+    }
+    h1{ margin:0 0 6px; font-size: 22px; }
+    .sub{ color:var(--muted); margin:0 0 18px; }
+    .meta{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin: 10px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .meta span{ padding:4px 10px; border:1px solid var(--line); border-radius:999px; }
+    .note{
+      border:1px solid var(--line);
+      background:#fafafa;
+      padding:12px 14px;
+      border-radius:12px;
+      margin: 14px 0 18px;
+    }
+    .note b{ color:#111; }
+    table{
+      border-collapse: collapse;
+      width: 100%;
+      margin: 14px 0 24px;
+      font-size: 13px;
+    }
+    th, td{
+      border:1px solid var(--line);
+      padding: 10px 10px;
+      vertical-align: top;
+      text-align: left;
+    }
+    th{
+      background: var(--head);
+      font-weight: 700;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+    }
+    code{
+      background: #f3f4f6;
+      padding: 2px 5px;
+      border-radius: 6px;
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size: 12px;
+      word-break: break-word;
+    }
+    .chips{ display:flex; flex-wrap:wrap; gap:6px; }
+    .chip{
+      display:inline-block;
+      padding: 2px 8px;
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      background: var(--chip);
+      font-size: 12px;
+      color:#1f2937;
+      white-space: nowrap;
+    }
+    .chip.ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--ok); }
+    .chip.warn{ background:#fffbeb; border-color:#fcd34d; color:var(--warn); }
+    .chip.bad{ background:#fef2f2; border-color:#fecaca; color:var(--bad); }
+    .small{ color:var(--muted); font-size: 12px; }
+    .section-title{
+      margin-top: 26px;
+      font-size: 16px;
+    }
+    ul{ margin: 8px 0 0 18px; }
+    li{ margin: 4px 0; }
+    .footer{
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>COAI Members Custom — File Matrix</h1>
+  <p class="sub">
+    Folder: <code>/wp-content/plugins/coai-members-custom/</code> (plus related MU-plugins shown below)
+  </p>
+
+  <div class="meta">
+    <span>Doc Type: File Matrix</span>
+    <span>Scope: Auth + Roles + Staff Tools + Member Directory</span>
+    <span>Generated: 2026-01-12</span>
+  </div>
+
+  <div class="note">
+    <b>How to use this doc:</b>
+    This matrix is a “what lives where” map. It does not judge correctness.
+    The “NEEDS CORRECTION” document will call out conflicts and duplication later.
+    <div class="small" style="margin-top:8px;">
+      Legend: <span class="chip ok">Primary</span> <span class="chip warn">Legacy / Duplicate</span> <span class="chip bad">Risk Area</span>
+    </div>
+  </div>
+
+  <h2 class="section-title">A) Plugin folders present (confirmed)</h2>
+  <ul>
+    <li><code>/_archive</code> <span class="small">older versions / backups</span></li>
+    <li><code>/assets</code> <span class="small">front-end assets (css/js/images)</span></li>
+    <li><code>/docs</code> <span class="small">documentation (this file belongs here)</span></li>
+    <li><code>/exports</code> <span class="small">export outputs (CSV, etc.)</span></li>
+    <li><code>/includes</code> <span class="small">shortcodes + helpers</span></li>
+    <li><code>coai-role-toggle.js</code> <span class="small">JS helper for role/edit UI behavior</span></li>
+  </ul>
+
+  <h2 class="section-title">B) File Matrix (Core files provided)</h2>
+
+  <table>
+    <thead>
+      <tr>
+        <th style="width: 18%;">File</th>
+        <th style="width: 10%;">Type</th>
+        <th style="width: 24%;">Purpose</th>
+        <th style="width: 18%;">Entry Points</th>
+        <th style="width: 15%;">Depends On</th>
+        <th style="width: 15%;">Provides / Exposes</th>
+      </tr>
+    </thead>
+    <tbody>
+
+      <!-- helpers -->
+      <tr>
+        <td>
+          <code>/includes/helpers/staff-permissions.php</code><br/>
+          <div class="chips" style="margin-top:6px;">
+            <span class="chip ok">Primary</span>
+          </div>
+        </td>
+        <td>Helper</td>
+        <td>Authoritative staff permission helper for staff gating by capability.</td>
+        <td>
+          <div class="chips">
+            <span class="chip">function</span>
+          </div>
+          <div style="margin-top:8px;">
+            <code>coai_staff_can($cap)</code>
+          </div>
+        </td>
+        <td>
+          <code>is_user_logged_in()</code><br/>
+          <code>current_user_can()</code><br/>
+          <code>wp_get_current_user()</code>
+        </td>
+        <td>
+          <code>coai_staff_can('manage'|'view')</code><br/>
+          <span class="small">Manage: manager/admin</span><br/>
+          <span class="small">View: manager/finance/newsletter_manager</span>
+        </td>
+      </tr>
+
+      <!-- coai-role-toggle.js -->
+      <tr>
+        <td>
+          <code>/coai-role-toggle.js</code>
+        </td>
+        <td>JS</td>
+        <td>Front-end UI toggles for role manager section and AJAX save behavior.</td>
+        <td>
+          <div class="chips">
+            <span class="chip">jQuery</span>
+            <span class="chip">AJAX</span>
+          </div>
+          <div style="margin-top:8px;">
+            <code>$.post(coai_ajax_url,...)</code>
+          </div>
+        </td>
+        <td>
+          <code>coai_ajax_url</code> (localized)<br/>
+          AJAX action <code>coai_save_member</code>
+        </td>
+        <td>
+          Role manager UI toggle<br/>
+          Save-member click handler (AJAX)
+        </td>
+      </tr>
+
+      <!-- admin-portal legacy -->
+      <tr>
+        <td>
+          <code>/includes/shortcodes/admin-portal.php</code><br/>
+          <div class="chips" style="margin-top:6px;">
+            <span class="chip warn">Legacy / Duplicate</span>
+            <span class="chip bad">Risk Area</span>
+          </div>
+        </td>
+        <td>Shortcode</td>
+        <td>
+          Legacy member directory admin view + edit + CSV export.
+          Uses <code>wp_members.usergroup</code> for permission check.
+        </td>
+        <td>
+          <div class="chips">
+            <span class="chip">shortcode</span>
+            <span class="chip">GET export</span>
+          </div>
+          <div style="margin-top:8px;">
+            <code>[coai_members_admin_legacy]</code>
+          </div>
+        </td>
+        <td>
+          <code>$wpdb</code><br/>
+          <code>COAI_MEMBERS_TABLE</code><br/>
+          <code>coai_current_usergroup()</code>
+        </td>
+        <td>
+          <code>coai_current_usergroup()</code><br/>
+          Filters/search UI<br/>
+          CSV export via <code>?coai_export=1</code>
+        </td>
+      </tr>
+
+      <!-- admin-members (new directory) -->
+      <tr>
+        <td>
+          <code>/includes/shortcodes/admin-members.php</code><br/>
+          <div class="chips" style="margin-top:6px;">
+            <span class="chip ok">Primary</span>
+            <span class="chip bad">Risk Area</span>
+          </div>
+        </td>
+        <td>Shortcode</td>
+        <td>
+          Member Directory + Admin/Manager edit view + Finance view + CSV export.
+          “New Members only” uses <code>wp_members.is_new_member = 1</code>.
+        </td>
+        <td>
+          <div class="chips">
+            <span class="chip">shortcode</span>
+            <span class="chip">template_redirect</span>
+          </div>
+          <div style="margin-top:8px;">
+            <code>[coai_members_admin]</code><br/>
+            <code>[coai_members_finance]</code>
+          </div>
+        </td>
+        <td>
+          Preferred: <code>coai_staff_can()</code><br/>
+          Fallback defines local <code>coai_staff_can()</code><br/>
+          <code>coai_get_levels_table()</code>, <code>coai_get_levels_pk()</code><br/>
+          <code>coai_members_table_name()</code> (if present)
+        </td>
+        <td>
+          Filter builder: <code>coai_md_build_filters()</code><br/>
+          Directory renderer: <code>coai_md_render_directory()</code><br/>
+          Edit view: <code>coai_md_render_edit_view()</code><br/>
+          CSV export: <code>?coai_export=1</code> + nonce
+        </td>
+      </tr>
+
+      <!-- staff-newsletters -->
+      <tr>
+        <td>
+          <code>/includes/shortcodes/staff-newsletters.php</code><br/>
+          <div class="chips" style="margin-top:6px;">
+            <span class="chip ok">Primary</span>
+          </div>
+        </td>
+        <td>Shortcode</td>
+        <td>
+          Front-end Newsletter Center. Routes staff to FluentCRM (campaigns/broadcasts).
+          Differentiates Admin / Manager / Newsletter Manager for UI + behavior.
+        </td>
+        <td>
+          <div class="chips">
+            <span class="chip">shortcode</span>
+            <span class="chip">init</span>
+          </div>
+          <div style="margin-top:8px;">
+            <code>[coai_staff_newsletters]</code>
+          </div>
+        </td>
+        <td>
+          <code>FLUENTCRM</code> constant<br/>
+          <code>coai_current_usergroup()</code> (optional fallback)<br/>
+          <code>coai_is_newsletter_user()</code> (preferred if exists)
+        </td>
+        <td>
+          Newsletter Center UI<br/>
+          FluentCRM routes using <code>admin_url(...&coai_route=...)</code><br/>
+          Manager “step-up” behavior (reauth/2FA expectation)
+        </td>
+      </tr>
+
+      <!-- staff-campaigns -->
+      <tr>
+        <td><code>/includes/shortcodes/staff-campagins.php</code></td>
+        <td>Shortcode</td>
+        <td>Front-end shortcut page to open FluentCRM Campaigns (Admin/Manager only).</td>
+        <td>
+          <div class="chips"><span class="chip">shortcode</span><span class="chip">init</span></div>
+          <div style="margin-top:8px;"><code>[coai_staff_campaigns]</code></div>
+        </td>
+        <td>
+          <code>coai_staff_can('manage')</code> (preferred)<br/>
+          else: role check for <code>manager</code> / <code>manage_options</code>
+        </td>
+        <td>
+          Link to <code>admin.php?page=fluentcrm-admin#/email/campaigns</code>
+        </td>
+      </tr>
+
+      <!-- staff-broadcasts -->
+      <tr>
+        <td><code>/includes/shortcodes/staff-broadcasts.php</code></td>
+        <td>Shortcode</td>
+        <td>Front-end shortcut page to open FluentCRM Broadcasts (Admin/Manager only).</td>
+        <td>
+          <div class="chips"><span class="chip">shortcode</span><span class="chip">init</span></div>
+          <div style="margin-top:8px;"><code>[coai_staff_broadcasts]</code></div>
+        </td>
+        <td>
+          <code>coai_staff_can('manage')</code> (preferred)<br/>
+          FLUENTCRM constant
+        </td>
+        <td>
+          Link to <code>admin.php?page=fluentcrm-admin#/email/broadcasts</code>
+        </td>
+      </tr>
+
+      <!-- MU plugin: kiosk -->
+      <tr>
+        <td>
+          <code>/wp-content/mu-plugins/coai-manager-fluentcrm-kiosk.php</code><br/>
+          <div class="chips" style="margin-top:6px;">
+            <span class="chip ok">Primary</span>
+            <span class="chip bad">Risk Area</span>
+          </div>
+        </td>
+        <td>MU-plugin</td>
+        <td>
+          Enforces kiosk behavior for Manager / Newsletter Manager in wp-admin:
+          blocks access outside FluentCRM/profile/logout, enforces 2FA configured before FluentCRM,
+          hides wp-admin chrome, provides safe return buttons, and supports <code>coai_route</code>.
+        </td>
+        <td>
+          <div class="chips">
+            <span class="chip">admin_init</span>
+            <span class="chip">admin_head</span>
+            <span class="chip">admin_enqueue_scripts</span>
+            <span class="chip">admin_footer</span>
+          </div>
+        </td>
+        <td>
+          WP roles: <code>manager</code>, <code>newsletter_manager</code>, <code>administrator</code><br/>
+          WP 2FA user meta keys<br/>
+          FluentCRM admin pages (<code>page=fluentcrm-*</code>)
+        </td>
+        <td>
+          <code>coai_is_newsletter_user()</code><br/>
+          <code>coai_is_manager_user()</code><br/>
+          <code>coai_wp2fa_is_configured()</code><br/>
+          Kiosk redirects + chrome hiding + top-right nav
+        </td>
+      </tr>
+
+      <!-- MU plugin: login redirect guard -->
+      <tr>
+        <td>
+          <code>/wp-content/mu-plugins/coai-login-redirect-guard.php</code>
+        </td>
+        <td>MU-plugin</td>
+        <td>Protects wp-admin login redirects: if login is intended for wp-admin, honor it; admins go to dashboard.</td>
+        <td>
+          <div class="chips">
+            <span class="chip">login_redirect</span>
+            <span class="chip">template_redirect</span>
+          </div>
+        </td>
+        <td>
+          <code>login_redirect</code> filter<br/>
+          <code>user_can(manage_options)</code>
+        </td>
+        <td>
+          Redirect normalization for wp-admin targets<br/>
+          Safe hatch for FluentCRM admin pages (admin_init)
+        </td>
+      </tr>
+
+      <!-- MU plugin: auth bridge -->
+      <tr>
+        <td>
+          <code>/wp-content/mu-plugins/coai-auth-bridge.php</code><br/>
+          <div class="chips" style="margin-top:6px;">
+            <span class="chip ok">Primary</span>
+            <span class="chip bad">Risk Area</span>
+          </div>
+        </td>
+        <td>MU-plugin</td>
+        <td>
+          Authenticates against <code>wp_members</code>, creates/links shadow WP user, maps <code>usergroup</code> → WP role.
+          Explicitly blocks “WP-only/system” accounts from falling back into member auth.
+        </td>
+        <td>
+          <div class="chips">
+            <span class="chip">authenticate</span>
+          </div>
+        </td>
+        <td>
+          <code>$wpdb</code>, <code>wp_members</code><br/>
+          Password hash checks (bcrypt/phpass/md5/plaintext)<br/>
+          User meta: <code>coai_member_id</code>
+        </td>
+        <td>
+          <code>coai_is_wp_only_account()</code><br/>
+          Shadow WP user creation/linking<br/>
+          Role mapping: ADMIN→administrator, MANAGER→manager, FINANCE→finance, else member
+        </td>
+      </tr>
+
+      <!-- MU plugin: newsletter manager role -->
+      <tr>
+        <td>
+          <code>/wp-content/mu-plugins/coai-newsletter-manager.php</code>
+        </td>
+        <td>MU-plugin</td>
+        <td>Creates WP role <code>newsletter_manager</code> (read-only) used for step-up access into FluentCRM.</td>
+        <td>
+          <div class="chips"><span class="chip">init</span></div>
+        </td>
+        <td>
+          <code>add_role()</code><br/>
+          Role persistence in WP DB
+        </td>
+        <td>
+          Role: <code>newsletter_manager</code>
+        </td>
+      </tr>
+
+      <!-- plugin shortcode: login form -->
+      <tr>
+        <td>
+          <code>/includes/shortcodes/login-form.php</code>
+        </td>
+        <td>Shortcode</td>
+        <td>
+          Front-end login form. Uses WP auth first (which triggers auth bridge if needed),
+          then redirects to portal or <code>redirect_to</code>. Supports forced password change check.
+        </td>
+        <td>
+          <div class="chips">
+            <span class="chip">shortcode</span>
+            <span class="chip">POST handler</span>
+          </div>
+          <div style="margin-top:8px;">
+            <code>[coai_login_box]</code><br/>
+            <code>[member_login_form]</code> (alias)
+          </div>
+        </td>
+        <td>
+          <code>wp_signon()</code><br/>
+          <code>wp_nonce_field()</code><br/>
+          Optional: <code>coai_get_members_table()</code> + <code>force_password_change</code> in <code>wp_members</code>
+        </td>
+        <td>
+          Login UI<br/>
+          Redirect behavior: portal vs redirect_to<br/>
+          Password visibility toggle JS (inline)
+        </td>
+      </tr>
+
+    </tbody>
+  </table>
+
+  <h2 class="section-title">C) Immediate “attention flags” (not fixes, just flags)</h2>
+  <ul>
+    <li>
+      <span class="chip warn">Legacy / Duplicate</span>
+      <code>admin-portal.php</code> and <code>admin-members.php</code> overlap in member directory functionality.
+      Expect permission logic + filters to differ.
+    </li>
+    <li>
+      <span class="chip bad">Risk Area</span>
+      <code>admin-members.php</code> contains a “fallback” <code>coai_staff_can()</code> definition. That can drift from
+      <code>/includes/helpers/staff-permissions.php</code> and create inconsistent access rules.
+    </li>
+    <li>
+      <span class="chip bad">Risk Area</span>
+      Authentication + role mapping spans MU plugins (<code>coai-auth-bridge.php</code>) and staff gating spans plugin helpers
+      (<code>coai_staff_can</code>) — this is correct architecturally, but it means “identity” can be interpreted differently
+      in different places if not kept consistent.
+    </li>
+  </ul>
+
+  <div class="footer">
+    Saved location recommendation: <code>/wp-content/plugins/coai-members-custom/docs/coai-file-matrix.html</code><br/>
+    Next document: <b>File Relation Matrix</b> (HTML) — shows which files call/assume which helpers, roles, DB tables, and routes.
+  </div>
+
+</body>
+</html>

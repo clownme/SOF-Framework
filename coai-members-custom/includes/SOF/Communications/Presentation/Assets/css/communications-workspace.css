@@ -1,0 +1,142 @@
+/**
+ * ============================================================
+ * SOF Communications Workspace
+ * ============================================================
+ */
+
+
+/* ------------------------------------------------------------
+ * Workspace
+ * ------------------------------------------------------------ */
+
+.sof-communications-workspace {
+    box-sizing: border-box;
+    margin: 0 auto;
+    max-width: 1500px;
+    padding: 0 30px 40px;
+    width: 100%;
+}
+
+
+/* ------------------------------------------------------------
+ * Workspace Header
+ * ------------------------------------------------------------ */
+
+.sof-communications-workspace > .sof-workspace-header {
+    margin-bottom: 30px;
+}
+
+.sof-communications-workspace > .sof-workspace-header h1 {
+    margin: 0 0 12px;
+}
+
+.sof-communications-workspace > .sof-workspace-header p {
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* ------------------------------------------------------------
+ * Workspace Content
+ * ------------------------------------------------------------ */
+
+.sof-communications-workspace > .sof-workspace-content {
+    width: 100%;
+}
+
+
+/* ------------------------------------------------------------
+ * Communication Action Card
+ * ------------------------------------------------------------ */
+
+.sof-communication-action-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    margin-top: 30px;
+    padding: 28px;
+}
+
+.sof-communication-action-card .sof-card-header {
+    margin-bottom: 20px;
+}
+
+.sof-communication-action-card .sof-card-title {
+    margin: 0;
+}
+
+.sof-communication-action-card .sof-card-content h3 {
+    margin: 0 0 12px;
+}
+
+.sof-communication-action-card .sof-card-content p {
+    line-height: 1.6;
+}
+
+.sof-communication-action-card .sof-button {
+    margin-top: 10px;
+}
+
+.sof-communication-action-card .sof-action-note {
+    font-size: 14px;
+    margin: 12px 0 0;
+}
+
+
+/* ------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------ */
+
+@media screen and (max-width: 640px) {
+
+    .sof-communications-workspace {
+        padding-left: 18px;
+        padding-right: 18px;
+    }
+
+    .sof-communication-action-card {
+        border-radius: 10px;
+        padding: 20px;
+    }
+}
+
+/* ------------------------------------------------------------
+ * Test Workspace Actions
+ * ------------------------------------------------------------ */
+
+.sof-test-actions {
+    align-items: center;
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 24px;
+}
+
+.sof-test-actions .sof-button {
+    align-items: center;
+    border: 1px solid transparent;
+    border-radius: 8px;
+    cursor: pointer;
+    display: inline-flex;
+    font-size: 15px;
+    font-weight: 700;
+    justify-content: center;
+    min-height: 44px;
+    padding: 10px 18px;
+    text-decoration: none;
+}
+
+.sof-test-actions .sof-button-primary {
+    background: #7a3d20;
+    border-color: #7a3d20;
+    color: #ffffff;
+}
+
+.sof-test-actions .sof-button-primary:hover {
+    background: #643119;
+    border-color: #643119;
+    color: #ffffff;
+}

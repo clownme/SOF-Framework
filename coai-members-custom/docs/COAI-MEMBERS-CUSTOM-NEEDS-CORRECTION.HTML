@@ -1,0 +1,338 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COAI Members Custom — NEEDS CORRECTION</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#6b7280;
+      --line:#d1d5db; --head:#f3f4f6;
+      --ok:#065f46; --warn:#92400e; --bad:#991b1b; --info:#1d4ed8;
+    }
+    body{
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      margin: 24px;
+      color: var(--text);
+      background: var(--bg);
+      line-height: 1.45;
+    }
+    h1{ margin:0 0 6px; font-size: 22px; }
+    .sub{ margin:0 0 16px; color:var(--muted); max-width: 1100px; }
+    .meta{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin: 10px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .meta span{ padding:4px 10px; border:1px solid var(--line); border-radius:999px; }
+
+    .legend{ display:flex; gap:8px; flex-wrap:wrap; margin: 10px 0 16px; }
+    .pill{
+      display:inline-block; padding:3px 10px;
+      border-radius:999px; border:1px solid var(--line);
+      font-size:12px; background:#f9fafb; color:#1f2937;
+      white-space:nowrap;
+    }
+    .pill.bad{ background:#fef2f2; border-color:#fecaca; color:var(--bad); }
+    .pill.warn{ background:#fffbeb; border-color:#fcd34d; color:var(--warn); }
+    .pill.info{ background:#eff6ff; border-color:#bfdbfe; color:var(--info); }
+    .pill.ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--ok); }
+
+    .note{
+      border:1px solid var(--line);
+      background:#fafafa;
+      padding:12px 14px;
+      border-radius:12px;
+      margin: 14px 0 18px;
+      max-width: 1100px;
+    }
+
+    code{
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    table{
+      width: 100%;
+      border-collapse: collapse;
+      max-width: 1400px;
+      background: #fff;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      overflow: hidden;
+    }
+    thead th{
+      background: var(--head);
+      text-align: left;
+      font-size: 12px;
+      letter-spacing: .2px;
+      padding: 10px 10px;
+      border-bottom: 1px solid var(--line);
+    }
+    tbody td{
+      vertical-align: top;
+      padding: 10px 10px;
+      border-bottom: 1px solid #eef2f7;
+      font-size: 13px;
+    }
+    tbody tr:last-child td{ border-bottom:none; }
+
+    .sev{
+      font-weight: 800;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      display:inline-block;
+      white-space:nowrap;
+    }
+    .sev.bad{ background:#fef2f2; border-color:#fecaca; color:var(--bad); }
+    .sev.warn{ background:#fffbeb; border-color:#fcd34d; color:var(--warn); }
+    .sev.info{ background:#eff6ff; border-color:#bfdbfe; color:var(--info); }
+    .sev.ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--ok); }
+
+    .wrap{ max-width: 1400px; overflow-x:auto; }
+
+    .footer{
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 1100px;
+    }
+
+    ul{ margin:6px 0 0 18px; }
+    li{ margin:4px 0; }
+  </style>
+</head>
+<body>
+
+  <h1>COAI Members Custom — NEEDS CORRECTION</h1>
+  <p class="sub">
+    Punch-list of issues and “gotchas” found from the current code set you pasted:
+    <code>admin-members.php</code>, <code>staff-newsletters.php</code>,
+    <code>staff-campagins.php</code>, <code>staff-broadcasts.php</code>,
+    <code>coai-manager-fluentcrm-kiosk.php</code>, <code>coai-login-redirect-guard.php</code>,
+    <code>coai-auth-bridge.php</code>, <code>coai-newsletter-manager.php</code>, <code>login-form.php</code>.
+  </p>
+
+  <div class="meta">
+    <span>Doc Type: NEEDS CORRECTION</span>
+    <span>Generated: 2026-01-12</span>
+    <span>Format: HTML (actionable table)</span>
+  </div>
+
+  <div class="legend">
+    <span class="pill bad">High</span>
+    <span class="pill warn">Medium</span>
+    <span class="pill info">Low</span>
+    <span class="pill ok">Nice-to-have</span>
+  </div>
+
+  <div class="note">
+    <b>Goal:</b> reduce “magic code” surprises by removing duplicate routing rules, aligning link building with kiosk logic,
+    and fixing a couple of “typo / inconsistency” items that can cause weird behavior in PROD vs DEV.
+  </div>
+
+  <div class="wrap">
+    <table>
+      <thead>
+        <tr>
+          <th style="width:90px;">Severity</th>
+          <th style="width:260px;">Area</th>
+          <th>Problem</th>
+          <th>Why it matters</th>
+          <th style="width:360px;">Recommended correction</th>
+        </tr>
+      </thead>
+      <tbody>
+
+        <tr>
+          <td><span class="sev bad">HIGH</span></td>
+          <td><b>staff-newsletters.php</b> — manager flow</td>
+          <td>
+            Manager branch sets <code>$campaigns_gateway = $campaigns_url</code> (no <code>reauth=1</code>),
+            while the later section builds <code>wp_login_url(... ) . '&amp;reauth=1'</code> but then does not use it.
+          </td>
+          <td>
+            This creates inconsistent 2FA behavior and makes it hard to reason about where 2FA is triggered.
+            It also makes “step-up” behavior differ between manager vs newsletter_manager/admin.
+          </td>
+          <td>
+            Make a single rule:
+            <ul>
+              <li>If you want “step-up reauth” for managers only, ALWAYS link managers through <code>wp_login_url($campaigns_url) . '&amp;reauth=1'</code>.</li>
+              <li>If you do NOT want that, then remove the unused gateway variables and let kiosk/2FA enforcement be the only gate.</li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev bad">HIGH</span></td>
+          <td><b>coai-manager-fluentcrm-kiosk.php</b> — kiosk step 2</td>
+          <td>
+            Comment says “redirect them into FluentCRM”, but code redirects to <code>/member-portal/</code> when they hit any non-FluentCRM admin page.
+          </td>
+          <td>
+            This is a classic “why did it bounce me?” source. After reauth/2FA, WP can land on <code>/wp-admin/</code> or <code>index.php</code>;
+            your kiosk will immediately bounce to the portal, which can look like the login “failed” or that FluentCRM won’t open.
+          </td>
+          <td>
+            Decide the intended behavior and align comment + redirect:
+            <ul>
+              <li>If intent is “never show wp-admin, go to portal”: update comment to match.</li>
+              <li>If intent is “go to FluentCRM after reauth”: redirect to <code>admin_url('admin.php?page=fluentcrm-admin')</code> (optionally keep <code>coai_route</code> if present).</li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev warn">MED</span></td>
+          <td><b>staff-campagins.php</b> filename + route</td>
+          <td>
+            Filename appears misspelled: <code>staff-campagins.php</code>.
+            Also it links to <code>admin.php?page=fluentcrm-admin#/email/campaigns</code> which conflicts with your kiosk mapping that uses <code>coai_route</code> → <code>#/campaigns</code>.
+          </td>
+          <td>
+            Typos cause loading/require issues. Route mismatch can land users in an unexpected FluentCRM subpage or break kiosk expectations.
+          </td>
+          <td>
+            Rename file to <code>staff-campaigns.php</code> and standardize links:
+            use <code>admin_url('admin.php?page=fluentcrm-admin&coai_route=campaigns')</code>
+            and let kiosk step 6 set the hash.
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev warn">MED</span></td>
+          <td><b>staff-broadcasts.php</b> login URL</td>
+          <td>
+            Login fallback points to <code>/mike2025/</code> while other pages use <code>/member-login/</code>.
+          </td>
+          <td>
+            Different login entry points can trigger different redirects/guards and create “it works on one page, not the other” behavior.
+          </td>
+          <td>
+            Standardize to the same front-end login slug everywhere:
+            <code>$login = home_url('/member-login/');</code>
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev warn">MED</span></td>
+          <td><b>admin-members.php</b> — coai_staff_can fallback</td>
+          <td>
+            The file defines a fallback <code>coai_staff_can()</code> if not loaded. This can silently diverge from your “real” permission logic in core/mu-plugins.
+          </td>
+          <td>
+            If a load order changes (or a file is renamed/off), permissions might still “work” but not match your intended security model.
+          </td>
+          <td>
+            Move the fallback to a single MU helper file (e.g., <code>01-coai-core.php</code>) and remove per-file fallbacks.
+            At minimum, make the fallback log include a unique marker so you instantly know it’s running.
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev warn">MED</span></td>
+          <td><b>coai-auth-bridge.php</b> — role assignment</td>
+          <td>
+            Auth bridge always <code>set_role()</code> based on <code>wp_members.usergroup</code>.
+            That will overwrite any manually assigned WP-only roles unless blocked.
+          </td>
+          <td>
+            If a user exists in WP and is given extra WP roles (or multiple roles), they can lose them on next login via bridge.
+          </td>
+          <td>
+            If you want multi-role, consider:
+            <ul>
+              <li>Only set role on first-time shadow user creation.</li>
+              <li>Or only set role if current role is <code>subscriber</code>/<code>member</code>.</li>
+              <li>Or use <code>add_role</code>-style capability grants instead of overwriting.</li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev info">LOW</span></td>
+          <td><b>staff-newsletters.php</b> — identity precedence</td>
+          <td>
+            Precedence is Admin → Manager → Newsletter Manager, so a user who has both manager + newsletter_manager will be labeled “manager” and get the manager branch.
+          </td>
+          <td>
+            You already log a warning for dual-role users. But behavior could surprise you if you expected newsletter_manager branch.
+          </td>
+          <td>
+            Pick a policy and enforce it:
+            <ul>
+              <li>Disallow dual-role (best), or</li>
+              <li>Prefer newsletter_manager over manager for newsletter center, or</li>
+              <li>Prefer manager (current) but document it.</li>
+            </ul>
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev info">LOW</span></td>
+          <td><b>admin-members.php</b> — COAI column casing</td>
+          <td>
+            You carefully map DB columns to exact casing (<code>$col_map</code>), then use <code>$_POST['COAI_number']</code> as input.
+          </td>
+          <td>
+            Works, but is fragile if you ever rename form field or change DB column casing.
+          </td>
+          <td>
+            Standardize on one internal key:
+            keep form field as <code>COAI_number</code>, but define <code>$form_key = 'COAI_number'</code> once and reuse.
+          </td>
+        </tr>
+
+        <tr>
+          <td><span class="sev ok">NICE</span></td>
+          <td><b>Docs & Debug</b></td>
+          <td>
+            Several files use different log markers and some do not include enough context (member_id, user_login, page).
+          </td>
+          <td>
+            When something “sometimes” happens, missing context makes logs less useful.
+          </td>
+          <td>
+            Standardize logs:
+            <ul>
+              <li>Prefix with file marker</li>
+              <li>Include <code>user_login</code>, <code>roles</code>, and key GET params (<code>page</code>, <code>coai_route</code>)</li>
+              <li>Use consistent tags: <code>[COAI][KIOSK]</code>, <code>[COAI][AUTH]</code>, etc.</li>
+            </ul>
+          </td>
+        </tr>
+
+      </tbody>
+    </table>
+  </div>
+
+  <div class="note" style="margin-top:18px;">
+    <b>Fast “stability wins” order (recommended):</b>
+    <ol style="margin:8px 0 0 18px;">
+      <li>Fix <code>staff-newsletters.php</code> gateways so the “manager step-up” logic is consistent (HIGH).</li>
+      <li>Decide kiosk step 2 redirect target and align comment + behavior (HIGH).</li>
+      <li>Normalize FluentCRM routes across staff pages to use <code>coai_route</code> (MED).</li>
+      <li>Standardize login URL slugs across staff pages (MED).</li>
+      <li>Centralize permission fallbacks + document role overwrite policy in auth-bridge (MED/LOW).</li>
+    </ol>
+  </div>
+
+  <div class="footer">
+    Saved location recommendation:
+    <code>/wp-content/plugins/coai-members-custom/docs/coai-needs-correction.html</code><br/>
+    If you want, next we can generate the final doc: a <b>“File Relation Matrix”</b> HTML (file → calls → hooks → redirects → dependencies),
+    which is the quickest way to hunt the “magic redirect”.
+  </div>
+
+</body>
+</html>

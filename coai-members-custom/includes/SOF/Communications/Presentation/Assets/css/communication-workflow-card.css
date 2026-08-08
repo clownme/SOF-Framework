@@ -1,0 +1,325 @@
+/**
+ * ============================================================
+ * SOF Communication Workflow Card
+ * ============================================================
+ *
+ * Framework:
+ *     Communications
+ *
+ * Layer:
+ *     Experience
+ *
+ * Purpose:
+ *     Present the communication lifecycle as a clear,
+ *     user-friendly workflow.
+ *
+ * ============================================================
+ */
+
+
+/* ------------------------------------------------------------
+ * Card
+ * ------------------------------------------------------------ */
+
+.sof-communication-workflow-card {
+    background: #ffffff;
+    border: 1px solid rgba(0, 0, 0, 0.08);
+    border-radius: 14px;
+    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
+    margin: 24px 0;
+    padding: 28px;
+}
+
+
+/* ------------------------------------------------------------
+ * Card Header
+ * ------------------------------------------------------------ */
+
+.sof-communication-workflow-card .sof-card-header {
+    margin-bottom: 28px;
+}
+
+.sof-communication-workflow-card .sof-card-title {
+    margin: 0 0 10px;
+}
+
+.sof-communication-workflow-card .sof-card-summary {
+    line-height: 1.6;
+    margin: 0;
+}
+
+
+/* ------------------------------------------------------------
+ * Workflow
+ * ------------------------------------------------------------ */
+
+.sof-communication-workflow {
+    align-items: flex-start;
+    display: grid;
+    grid-template-columns:
+        minmax(80px, 1fr)
+        32px
+        minmax(80px, 1fr)
+        32px
+        minmax(80px, 1fr)
+        32px
+        minmax(80px, 1fr)
+        32px
+        minmax(80px, 1fr)
+        32px
+        minmax(80px, 1fr)
+        32px
+        minmax(80px, 1fr);
+    margin: 28px 0 0;
+    padding: 0;
+    width: 100%;
+}
+
+.sof-workflow-step {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+    text-align: center;
+}
+
+
+/* ------------------------------------------------------------
+ * Workflow Marker
+ * ------------------------------------------------------------ */
+
+.sof-workflow-step-symbol {
+    align-items: center;
+    background: #ffffff;
+    border: 2px solid #b8b8b8;
+    border-radius: 50%;
+    display: flex;
+    flex: 0 0 auto;
+    font-size: 14px;
+    font-weight: 700;
+    height: 32px;
+    justify-content: center;
+    width: 32px;
+}
+
+.sof-workflow-step-completed .sof-workflow-step-symbol {
+    background: #567b52;
+    border-color: #567b52;
+    color: #ffffff;
+}
+
+.sof-workflow-step-current .sof-workflow-step-symbol {
+    background: #7a3d20;
+    border-color: #7a3d20;
+    box-shadow: 0 0 0 5px rgba(122, 61, 32, 0.14);
+    color: #ffffff;
+}
+
+.sof-workflow-step-failed .sof-workflow-step-symbol {
+    background: #a83232;
+    border-color: #a83232;
+    box-shadow: 0 0 0 5px rgba(168, 50, 50, 0.14);
+    color: #ffffff;
+}
+
+.sof-workflow-step-upcoming .sof-workflow-step-symbol {
+    color: #8a8a8a;
+}
+
+
+/* ------------------------------------------------------------
+ * Workflow Label
+ * ------------------------------------------------------------ */
+
+.sof-workflow-step-label {
+    display: block;
+    font-size: 15px;
+    font-weight: 700;
+    line-height: 1.3;
+    margin-top: 10px;
+    overflow-wrap: anywhere;
+}
+
+.sof-workflow-step-upcoming .sof-workflow-step-label {
+    color: #777777;
+}
+
+
+/* ------------------------------------------------------------
+ * Workflow Connector
+ * ------------------------------------------------------------ */
+
+.sof-workflow-connector {
+    align-self: start;
+    background: #d9d9d9;
+    display: block;
+    font-size: 0;
+    height: 2px;
+    margin-top: 15px;
+    width: 100%;
+}
+
+.sof-workflow-step-completed + .sof-workflow-connector {
+    background: #567b52;
+}
+
+
+/* ------------------------------------------------------------
+ * Current Status
+ * ------------------------------------------------------------ */
+
+.sof-communication-workflow-status {
+    background: #f7f4ef;
+    border-left: 4px solid #7a3d20;
+    border-radius: 8px;
+    margin-top: 28px;
+    padding: 20px;
+}
+
+.sof-communication-workflow-status h3 {
+    margin: 0 0 8px;
+}
+
+.sof-communication-workflow-status p {
+    line-height: 1.65;
+    margin: 0;
+}
+
+.sof-communication-workflow-status .sof-workflow-next-action {
+    margin-top: 16px;
+}
+
+.sof-communication-workflow-status-attention {
+    background: #fff4f4;
+    border-left-color: #a83232;
+}
+
+
+/* ------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------ */
+
+@media screen and (max-width: 900px) {
+
+    .sof-communication-workflow {
+        column-gap: 12px;
+        display: flex;
+        overflow-x: auto;
+        padding: 8px 4px 16px;
+        scroll-behavior: smooth;
+    }
+
+    .sof-workflow-step {
+        flex: 0 0 88px;
+    }
+
+    .sof-workflow-connector {
+        flex: 0 0 28px;
+        margin-top: 15px;
+    }
+}
+
+@media screen and (max-width: 640px) {
+
+    .sof-communication-workflow-card {
+        border-radius: 10px;
+        padding: 20px;
+    }
+
+    .sof-workflow-step {
+        flex-basis: 78px;
+    }
+
+    .sof-workflow-step-symbol {
+        height: 28px;
+        width: 28px;
+    }
+
+    .sof-workflow-step-label {
+        font-size: 14px;
+        margin-top: 8px;
+    }
+
+    .sof-workflow-connector {
+        margin-top: 13px;
+    }
+}
+
+/* ------------------------------------------------------------
+ * Horizontal Workflow Layout Override
+ * ------------------------------------------------------------ */
+
+.sof-communication-workflow-card .sof-communication-workflow {
+    align-items: start;
+    display: grid;
+    grid-template-columns:
+        minmax(72px, 1fr) 1fr
+        minmax(72px, 1fr) 1fr
+        minmax(72px, 1fr) 1fr
+        minmax(72px, 1fr) 1fr
+        minmax(72px, 1fr) 1fr
+        minmax(72px, 1fr) 1fr
+        minmax(72px, 1fr);
+    margin: 30px 0 0;
+    padding: 0;
+    width: 100%;
+}
+
+.sof-communication-workflow-card .sof-workflow-step {
+    align-items: center;
+    display: flex;
+    flex-direction: column;
+    min-height: 0;
+    min-width: 0;
+    text-align: center;
+}
+
+.sof-communication-workflow-card .sof-workflow-step-symbol {
+    flex: 0 0 auto;
+}
+
+.sof-communication-workflow-card .sof-workflow-step-label {
+    display: block;
+    margin-top: 10px;
+    padding-left: 0;
+    text-align: center;
+}
+
+.sof-communication-workflow-card .sof-workflow-connector {
+    align-self: start;
+    background: #d9d9d9;
+    display: block;
+    font-size: 0;
+    height: 2px;
+    margin: 15px 0 0;
+    width: 100%;
+}
+
+.sof-communication-workflow-card
+.sof-workflow-step-completed
++ .sof-workflow-connector {
+    background: #567b52;
+}
+
+
+/* ------------------------------------------------------------
+ * Horizontal Workflow Responsive
+ * ------------------------------------------------------------ */
+
+@media screen and (max-width: 900px) {
+
+    .sof-communication-workflow-card .sof-communication-workflow {
+        column-gap: 12px;
+        display: flex;
+        overflow-x: auto;
+        padding: 8px 4px 18px;
+    }
+
+    .sof-communication-workflow-card .sof-workflow-step {
+        flex: 0 0 82px;
+    }
+
+    .sof-communication-workflow-card .sof-workflow-connector {
+        flex: 0 0 30px;
+    }
+}

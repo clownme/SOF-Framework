@@ -1,0 +1,2413 @@
+
+.coai-shell {
+  max-width: 100%;
+  margin: 0 auto;
+  padding: 2rem;
+}
+
+.coai-card {
+  background: #fff;
+  border: 1px solid #ccc;
+  padding: 1rem;
+  margin-top: 2rem;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+  width: 100%;
+  max-width: none;
+  overflow-x: visible;
+}
+
+.coai-table {
+  width: 100%;
+  table-layout: auto;
+  border-collapse: collapse;
+}
+
+.coai-table th {
+  background: #f9f9f9;
+  text-align: left;
+  padding: 6px;
+}
+.coai-table td {
+  padding: 6px;
+}
+.coai-dir-scroll {
+  overflow-x: visible;
+  width: 100%;
+}
+
+/* Highlight sortable headers */
+.coai-table th {
+  cursor: pointer;
+  transition: background 0.2s ease;
+}
+.coai-table th:hover {
+  background: #e0e0e0;
+}
+
+/* Zebra striping for rows */
+.coai-table tbody tr:nth-child(even) {
+  background-color: #f7f7f7;
+}
+
+/* Optional: highlight sorted column */
+.coai-table th.sorted-asc::after {
+  content: " ▲";
+  font-size: 0.8em;
+}
+.coai-table th.sorted-desc::after {
+  content: " ▼";
+  font-size: 0.8em;
+}
+
+.coai-table th.sorted-asc::after {
+  content: " ▲";
+  font-size: 0.8em;
+}
+.coai-table th.sorted-desc::after {
+  content: " ▼";
+  font-size: 0.8em;
+}
+
+.coai-table td {
+  max-width: 180px;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+
+.coai-table th:nth-child(1),
+.coai-table td:nth-child(1),
+.coai-table th:nth-child(2),
+.coai-table td:nth-child(2) {
+  width: 120px;
+}
+
+.coai-table th:nth-child(3),
+.coai-table td:nth-child(3) {
+  width: 140px;
+}
+
+.coai-table th:nth-child(9),
+.coai-table td:nth-child(9) {
+  width: 220px;
+}
+
+.coai-table td, .coai-table th {
+  border: 1px solid #ccc;
+}
+
+.coai-sort-hing {
+	font-size: 0.95rem;
+	color: #555;
+	margin-bottom: 1rem;
+	font-style: italic;
+}
+
+.profile-preview-card h3 {
+  font-size: 1rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+  font-weight: normal;
+  color: #444;
+}
+
+.profile-preview-card .coai-profile-preview table {
+  font-size: 0.85rem;
+}
+
+.profile-preview-card th {
+  text-align: left;
+  font-weight: 500;
+  color: #666;
+  padding-right: 1rem;
+}
+
+.profile-preview-card td {
+  color: #333;
+}
+
+.coai-card.profile-preview-card {
+  font-size: 0.85rem !important;
+  padding: 0.5rem 0.75rem !important;
+  box-shadow: none !important;
+  background-color: #f9f9f9 !important;
+  margin-top: 1rem !important;
+  border: 1px solid #ddd !important;
+  border-radius: 4px !important;
+}
+
+.coai-card.profile-preview-card h3 {
+  font-size: 1rem !important;
+  line-height: 1.4 !important;
+  font-family: inherit !important;
+  font-weight: 500 !important;
+  margin-top: 0.5rem !important;
+  margin-bottom: 0.5rem !important;
+  color: #444 !important;
+}
+
+.coai-card.profile-preview-card .coai-profile-preview table {
+  font-size: 0.85rem !important;
+}
+
+.coai-card.profile-preview-card .coai-profile-preview th,
+.coai-card.profile-preview-card .coai-profile-preview td {
+  padding: 6px 10px !important;
+  font-size: 0.85rem !important;
+  color: #333 !important;
+}
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid label {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: bold;
+}
+
+.coai-form-grid input {
+  width: 100%;
+  padding: 6px;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .coai-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.coai-login-links {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.coai-login-links__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.coai-login-links__list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.coai-login-links__list li {
+  margin-bottom: 0.5rem;
+}
+
+.coai-login-links__list a {
+  color: #0073aa;
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.coai-login-links__list a:hover {
+  text-decoration: underline;
+  color: #005177;
+}
+/* Container spacing */
+.coai-login {
+  padding: 1rem;
+  max-width: 480px;
+  margin: 0 auto;
+}
+
+/* Form fields */
+.coai-login-form label {
+  display: block;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.coai-login-form input[type="text"],
+.coai-login-form input[type="password"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+/* Submit button */
+.coai-login-form .button-primary {
+  width: 100%;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Account links block */
+.coai-login-links {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+}
+
+.coai-login-links__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.coai-login-links__list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.coai-login-links__list li {
+  margin-bottom: 0.75rem;
+}
+
+.coai-login-links__list a {
+  display: block;
+  color: #0073aa;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #eef6fc;
+}
+
+.coai-login-links__list a:hover {
+  background-color: #dbeeff;
+  text-decoration: underline;
+}
+
+/* Responsive tweaks */
+@media (max-width: 600px) {
+  .coai-login {
+    padding: 0.5rem;
+  }
+
+  .coai-login-form input[type="text"],
+  .coai-login-form input[type="password"],
+  .coai-login-form .button-primary {
+    font-size: 0.95rem;
+  }
+
+  .coai-login-links__list a {
+    font-size: 0.95rem;
+  }
+}
+.coai-login-wrapper {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 2rem 1rem;
+}
+
+.coai-login {
+  max-width: 480px;
+  width: 100%;
+  text-align: center;
+}
+
+.coai-login h2 {
+  margin-bottom: 1rem;
+  font-size: 1.5rem;
+}
+
+.coai-login-form label {
+  display: block;
+  text-align: left;
+  margin-top: 1rem;
+  font-weight: 600;
+}
+
+.coai-login-form input[type="text"],
+.coai-login-form input[type="password"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 1rem;
+  box-sizing: border-box;
+}
+
+.coai-actions {
+  margin-top: 1.5rem;
+}
+
+.coai-actions .button-primary {
+  width: 100%;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+.coai-login-links {
+  margin-top: 2rem;
+  padding: 1rem;
+  background-color: #f9f9f9;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  text-align: left;
+}
+
+.coai-login-links__title {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin-bottom: 0.5rem;
+}
+
+.coai-login-links__list {
+  list-style: none;
+  padding-left: 0;
+  margin: 0;
+}
+
+.coai-login-links__list li {
+  margin-bottom: 0.75rem;
+}
+
+.coai-login-links__list a {
+  display: block;
+  color: #0073aa;
+  font-weight: 500;
+  text-decoration: none;
+  padding: 0.5rem;
+  border-radius: 4px;
+  background-color: #eef6fc;
+}
+
+.coai-login-links__list a:hover {
+  background-color: #dbeeff;
+  text-decoration: underline;
+}
+@media (max-width: 600px) {
+  .coai-login-wrapper {
+    padding: 1rem;
+  }
+
+  .coai-login h2 {
+    font-size: 1.25rem;
+  }
+
+  .coai-login-form input,
+  .coai-actions .button-primary,
+  .coai-login-links__list a {
+    font-size: 0.95rem;
+  }
+}
+.coai-profile-card {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.coai-profile-form {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.coai-profile-form label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.coai-profile-form input[type="text"],
+.coai-profile-form input[type="email"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.coai-profile-form .button-primary {
+  grid-column: span 2;
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+}
+
+/* Responsive tweak for mobile */
+@media (max-width: 600px) {
+  .coai-profile-form {
+    grid-template-columns: 1fr;
+  }
+
+  .coai-profile-form .button-primary {
+    grid-column: span 1;
+  }
+}
+.coai-profile-form label {
+  font-weight: 700;
+  color: #222;
+}
+.coai-form-section h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-top: 1.5rem;
+  margin-bottom: 0.5rem;
+  color: #0073aa;
+}
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+  align-items: start; /* Ensures inputs align with labels */
+}
+
+.coai-profile-form label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.coai-profile-form input[type="text"],
+.coai-profile-form input[type="email"],
+.coai-profile-form input[type="password"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+.coai-profile-card {
+  max-width: 640px;
+  margin: 2rem auto;
+  padding: 1rem;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+}
+
+.coai-form-section {
+  margin-bottom: 2rem;
+}
+
+.coai-form-section h4 {
+  font-size: 1.1rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0073aa;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-profile-form label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.coai-profile-form input[type="text"],
+.coai-profile-form input[type="email"],
+.coai-profile-form input[type="password"] {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.coai-profile-form .button-primary {
+  margin-top: 1rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Mobile responsiveness */
+@media (max-width: 600px) {
+  .coai-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.coai-section-divider {
+  border: none;
+  border-top: 1px solid #ccc;
+  margin: 2rem 0;
+}
+.coai-form-section h4 {
+  margin-top: 0;
+  padding-top: 0.5rem;
+}
+.coai-section-break {
+  display: flex;
+  align-items: center;
+  text-align: center;
+  margin: 2rem 0;
+  position: relative;
+}
+
+.coai-section-break::before,
+.coai-section-break::after {
+  content: "";
+  flex: 1;
+  border-top: 1px solid #ccc;
+  margin: 0 1rem;
+}
+
+.coai-section-break span {
+  font-weight: 600;
+  color: #555;
+  font-size: 0.95rem;
+  white-space: nowrap;
+}
+.coai-form-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.coai-form-section {
+  flex: 1;
+  min-width: 280px;
+  padding: 0 1rem;
+}
+
+.coai-form-section:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.coai-form-section h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0073aa;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-profile-form label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.coai-profile-form input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+@media (max-width: 768px) {
+  .coai-form-row {
+    flex-direction: column;
+  }
+
+  .coai-form-section:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+.coai-form-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.coai-form-section {
+  flex: 1;
+  min-width: 280px;
+  padding: 0 1rem;
+}
+
+.coai-form-section:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.coai-form-section h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0073aa;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-profile-form label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.coai-profile-form input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.coai-profile-form .button-primary {
+  margin-top: 2rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Responsive fallback for mobile */
+@media (max-width: 768px) {
+  .coai-form-row {
+    flex-direction: column;
+  }
+
+  .coai-form-section:not(:last-child) {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+.coai-form-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.coai-form-section {
+  flex: 1;
+  min-width: 300px;
+  padding: 0 1rem;
+}
+
+.coai-form-section:not(:last-child) {
+  border-right: 1px solid #ccc;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+.coai-form-row {
+  display: flex;
+  gap: 2rem;
+  justify-content: space-between;
+  flex-wrap: wrap;
+}
+
+.coai-form-section {
+  flex: 1;
+  min-width: 300px;
+  padding: 0 1rem;
+}
+
+/* Apply divider only to the first section */
+.coai-form-section:first-child {
+  border-right: 1px solid #ccc;
+}
+
+.coai-form-section h4 {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin-bottom: 1rem;
+  color: #0073aa;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-profile-form label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.coai-profile-form input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+.coai-profile-form .button-primary {
+  margin-top: 2rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Mobile fallback */
+@media (max-width: 768px) {
+  .coai-form-row {
+    flex-direction: column;
+  }
+
+  .coai-form-section:first-child {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    padding-bottom: 1rem;
+    margin-bottom: 1rem;
+  }
+}
+.coai-profile-card {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.coai-form-row {
+  display: flex;
+  flex-direction: row;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 2rem;
+}
+
+.coai-form-section {
+  flex: 1;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/* Divider on left section */
+.coai-form-section:first-child {
+  border-right: 1px solid #ccc;
+}
+
+/* Ensure form fields stack inside each section */
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-profile-form label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+.coai-profile-form input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+/* Responsive fallback */
+@media (max-width: 768px) {
+  .coai-form-row {
+    flex-direction: column;
+  }
+
+  .coai-form-section:first-child {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+}
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* Two columns */
+  gap: 1rem;
+}
+.coai-profile-card {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.coai-form-row {
+  display: flex;
+  flex-direction: row;
+  gap: 2rem;
+}
+
+.coai-form-section {
+  flex: 1;
+  min-width: 300px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+.coai-form-section:first-child {
+  border-right: 1px solid #ccc;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+@media (max-width: 768px) {
+  .coai-form-row {
+    flex-direction: column;
+  }
+
+  .coai-form-section:first-child {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+  }
+
+  .coai-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+/* Ensure the outer container is wide enough */
+.coai-profile-card {
+  max-width: 960px;
+  margin: 2rem auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+
+/* Side-by-side layout for Contact Info and Address */
+.coai-form-row {
+  display: flex !important;
+  flex-direction: row;
+  gap: 2rem;
+  justify-content: space-between;
+  align-items: flex-start;
+  flex-wrap: nowrap;
+}
+
+/* Each section takes equal space */
+.coai-form-section {
+  flex: 1;
+  min-width: 300px;
+  padding: 0 1rem;
+  box-sizing: border-box;
+}
+
+/* Divider between sections */
+.coai-form-section:first-child {
+  border-right: 1px solid #ccc;
+}
+
+/* Two-column layout inside each section */
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+
+/* Stack label and input vertically */
+.coai-form-grid > div {
+  display: flex;
+  flex-direction: column;
+}
+
+/* Label styling */
+.coai-profile-form label {
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+  color: #222;
+}
+
+/* Input styling */
+.coai-profile-form input {
+  width: 100%;
+  padding: 0.5rem;
+  font-size: 0.95rem;
+  box-sizing: border-box;
+}
+
+/* Button styling */
+.coai-profile-form .button-primary {
+  margin-top: 2rem;
+  padding: 0.75rem;
+  font-size: 1rem;
+  width: 100%;
+}
+
+/* Responsive fallback for mobile */
+@media (max-width: 768px) {
+  .coai-form-row {
+    flex-direction: column;
+  }
+
+  .coai-form-section:first-child {
+    border-right: none;
+    border-bottom: 1px solid #ccc;
+    margin-bottom: 1rem;
+    padding-bottom: 1rem;
+  }
+
+  .coai-form-grid {
+    grid-template-columns: 1fr;
+  }
+}
+.coai-profile-card {
+  max-width: 800px; /* Try 800px or 720px */
+  margin: 2rem auto;
+  padding: 1rem;
+  box-sizing: border-box;
+}
+.coai-profile-card {
+  padding: 2rem 1rem;
+}
+
+@media (min-width: 768px) {
+  .coai-profile-card {
+    padding: 2rem;
+  }
+}
+.coai-admin-table tr:hover {
+  background-color: #e6f7ff;
+}
+.coai-admin-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f5f5f5;
+  z-index: 1;
+}
+.coai-admin-table {
+  border-radius: 4px;
+  overflow: hidden;
+}
+.coai-change-password-wrapper {
+  max-width: 400px;
+  margin: 2rem auto;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  background-color: #f9f9f9;
+  border-radius: 6px;
+}
+.coai-feedback {
+  margin-bottom: 1rem;
+  padding: 0.75rem;
+  border-radius: 4px;
+  font-weight: bold;
+}
+.coai-feedback p {
+  margin: 0;
+}
+.coai-feedback p[color="red"] {
+  color: #b00020;
+}
+.coai-feedback p[color="green"] {
+  color: #007e33;
+}
+.coai-dashboard-header {
+  margin-bottom: 1.5rem;
+  font-size: 1.75rem;
+  font-weight: 600;
+}
+
+.coai-role-section {
+  margin-bottom: 2rem;
+  padding: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.coai-feedback {
+  margin: 1rem 0;
+  padding: 0.75rem;
+  background-color: #ffe6e6;
+  border-left: 4px solid #cc0000;
+}
+
+.coai-profile-section {
+  margin-top: 2rem;
+}
+.coai-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+.coai-profile-grid div {
+  background: #f9f9f9;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+.coai-profile-grid strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+.coai-profile-info {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.coai-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.coai-profile-grid div {
+  background: #f9f9f9;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.coai-profile-grid strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+.coai-profile-info {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.coai-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.coai-profile-grid div {
+  background: #f9f9f9;
+  padding: 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+}
+
+.coai-profile-grid strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  color: #333;
+}
+
+.coai-dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  color: #222;
+}
+
+.coai-password-tools {
+  max-width: 800px;
+  margin: 0 auto 2rem;
+  padding: 1rem;
+}
+
+.coai-password-tools ul {
+  list-style: none;
+  padding: 0;
+}
+
+.coai-password-tools li {
+  margin-bottom: 0.5rem;
+}
+
+.coai-password-tools .button {
+  display: inline-block;
+  background: #0073aa;
+  color: #fff;
+  padding: 0.5rem 1rem;
+  border-radius: 4px;
+  text-decoration: none;
+  margin-top: 0.5rem;
+}
+
+.coai-password-tools .button:hover {
+  background: #005a8c;
+}
+.coai-profile-info {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.coai-profile-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.coai-profile-grid div {
+  background: #f9f9f9;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+.coai-profile-grid strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  color: #444;
+}
+
+.coai-dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  color: #222;
+}
+.coai-profile-info {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem 2rem;
+}
+
+.coai-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+  gap: 1rem 2rem;
+  margin-bottom: 2rem;
+}
+
+.coai-profile-grid div {
+  background: #f9f9f9;
+  padding: 0.75rem 1rem;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  box-sizing: border-box;
+  font-size: 0.95rem;
+}
+
+.coai-profile-grid strong {
+  display: block;
+  margin-bottom: 0.25rem;
+  font-weight: 600;
+  color: #333;
+}
+
+.coai-dashboard-header {
+  text-align: center;
+  margin-bottom: 2rem;
+  font-size: 1.75rem;
+  color: #222;
+}
+.coai-profile-info {
+  max-width: 700px;
+  margin: 0 auto;
+  padding: 0.5rem 1rem;
+}
+
+.coai-profile-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 0.75rem 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.coai-profile-grid div {
+  background: #fdfdfd;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+  font-size: 0.9rem;
+  line-height: 1.4;
+}
+
+.coai-profile-grid strong {
+  display: block;
+  margin-bottom: 0.2rem;
+  font-weight: 600;
+  color: #222;
+}
+.coai-profile-card {
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 1rem;
+}
+
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem 2rem;
+}
+
+.coai-form-grid div {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-form-grid label {
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.coai-form-grid input {
+  padding: 0.5rem;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.coai-profile-form button {
+  margin-top: 1rem;
+}
+.coai-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.coai-table th, .coai-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.coai-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coai-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.coai-table .expired {
+  background-color: #ffe6e6;
+}
+
+.coai-sort-hint {
+  font-size: 0.9em;
+  color: #666;
+  margin-bottom: 0.5rem;
+}
+.coai-table .expired {
+  background-color: #ffe6e6;
+}
+.coai-dir-scroll {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+.coai-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.coai-table th, .coai-table td {
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+  text-align: left;
+}
+
+.coai-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coai-table tr:hover {
+  background-color: #f9f9f9;
+}
+.coai-table thead th {
+  position: sticky;
+  top: 0;
+  background-color: #f4f4f4;
+  z-index: 1;
+}
+.coai-table th,
+.coai-table td {
+  white-space: nowrap;
+}
+.coai-dir-scroll {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+.coai-table th,
+.coai-table td {
+  white-space: nowrap;
+}
+.coai-table th:nth-child(1),  /* Last Name */
+.coai-table th:nth-child(2),  /* First Name */
+.coai-table th:nth-child(3) { /* Clown Name */
+  width: 120px;
+}
+
+.coai-table th:nth-child(9) { /* Email */
+  width: 220px;
+}
+
+.coai-table th:nth-child(10) { /* Member Status */
+  width: 140px;
+}
+.coai-table th,
+.coai-table td {
+  white-space: nowrap;
+  vertical-align: top;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.coai-table th:nth-child(1),  /* Last Name */
+.coai-table th:nth-child(2),  /* First Name */
+.coai-table th:nth-child(3),  /* Clown Name */
+.coai-table th:nth-child(4),  /* Phone */
+.coai-table th:nth-child(5),  /* Email */
+.coai-table th:nth-child(6),  /* Region */
+.coai-table th:nth-child(7),  /* Alley Affiliation */
+.coai-table th:nth-child(8)   /* COAI # */
+{
+  width: 140px;
+}
+.coai-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.coai-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.coai-table tr:hover {
+  background-color: #f9f9f9;
+}
+
+.coai-table .expired {
+  background-color: #ffe6e6;
+}
+.coai-table th:nth-child(1),  /* Last Name */
+.coai-table th:nth-child(2),  /* First Name */
+.coai-table th:nth-child(3),  /* Phone */
+.coai-table th:nth-child(4),  /* Address */
+.coai-table th:nth-child(5),  /* City */
+.coai-table th:nth-child(6),  /* Zip */
+.coai-table th:nth-child(7),  /* Region */
+.coai-table th:nth-child(8),  /* Email */
+.coai-table th:nth-child(9),  /* Member Since */
+.coai-table th:nth-child(10), /* COA # */
+.coai-table th:nth-child(11), /* Renewal Date */
+.coai-table th:nth-child(12), /* Alive */
+.coai-table th:nth-child(13)  /* Insurance */
+{
+  width: 140px;
+}
+.coai-table th:nth-child(7) { width: 200px; }  /* Region */
+.coai-table th:nth-child(8) { width: 240px; }  /* Email */
+}
+.coai-table th,
+.coai-table td {
+  white-space: nowrap;
+  vertical-align: top;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+.coai-dir-scroll {
+  overflow-x: auto;
+  margin-bottom: 2rem;
+}
+.coai-table .expired {
+  background-color: #ffe6e6;
+}
+.coai-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-family: 'Segoe UI', sans-serif;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.coai-report-table th,
+.coai-report-table td {
+  white-space: nowrap;
+  vertical-align: top;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.coai-report-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  text-align: left;
+}
+
+.coai-report-table tr:hover {
+  background-color: #f9f9f9;
+}
+.coai-scroll-wrapper {
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+}
+
+.coai-dir-scroll {
+  overflow-x: auto;
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  padding-bottom: 10px;
+}
+.coai-dir-scroll {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  scrollbar-width: thin; /* for Firefox */
+  -ms-overflow-style: auto; /* for IE 10+ */
+}
+.coai-dir-scroll::-webkit-scrollbar {
+  height: 8px;
+}
+.coai-scroll-anchor {
+  position: relative;
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 40px; /* prevents overlap with fixed scrollbar */
+}
+
+.coai-dir-scroll {
+  overflow-x: auto;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  background: #fff;
+  padding: 8px 0;
+  box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
+  z-index: 999;
+}
+.coai-scroll-anchor {
+  max-height: 80vh;
+  overflow: auto;
+  padding-bottom: 20px; /* space for horizontal scrollbar */
+}
+
+.coai-dir-scroll {
+  overflow-x: auto;
+  min-width: 100%;
+}
+
+.coai-report-table {
+  min-width: 1200px; /* triggers horizontal scroll */
+  border-collapse: collapse;
+}
+.coai-scroll-wrapper {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 20px; /* space for horizontal scrollbar */
+}
+
+.coai-dir-scroll {
+  overflow-x: auto;
+  min-width: 100%;
+}
+
+.coai-report-table {
+  min-width: 1200px;
+  border-collapse: collapse;
+  width: 100%;
+}
+.coai-scroll-wrapper {
+  max-height: 80vh;
+  overflow: auto;
+  padding-bottom: 20px;
+}
+
+.coai-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background-color: #fff;
+  box-shadow: 0 0 10px rgba(0,0,0,0.05);
+}
+
+.coai-report-table th,
+.coai-report-table td {
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.coai-report-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  text-align: left;
+}
+.coai-scroll-wrapper {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 20px;
+}
+
+.coai-scroll-inner {
+  min-width: 1200px;
+  overflow-x: auto;
+}
+
+.coai-report-table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.coai-report-table th,
+.coai-report-table td {
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.coai-report-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  text-align: left;
+}
+.coai-dir-scroll-wrapper {
+  max-height: 80vh;
+  overflow-y: auto;
+  padding-bottom: 20px; /* space for horizontal scrollbar */
+}
+
+.coai-dir-inner {
+  overflow-x: auto;
+  width: 100%;
+}
+
+.coai-report-table {
+  min-width: 1400px; /* force horizontal overflow */
+  width: max-content;
+  border-collapse: collapse;
+  font-size: 14px;
+  background-color: #fff;
+}
+
+.coai-report-table th,
+.coai-report-table td {
+  white-space: nowrap;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
+}
+
+.coai-report-table th {
+  background-color: #f4f4f4;
+  font-weight: 600;
+  text-align: left;
+}
+.coai-dir-scroll-wrapper {
+  max-height: 80vh;
+  overflow: auto; /* handles both vertical and horizontal */
+  padding-bottom: 20px;
+}
+
+.coai-dir-inner {
+  width: max-content; /* allows horizontal overflow */
+  min-width: 1400px;  /* force horizontal scroll */
+}
+.sortable th {
+  cursor: pointer;
+}
+.sortable th.sorted-asc::after {
+  content: " ▲";
+}
+.sortable th.sorted-desc::after {
+  content: " ▼";
+}
+.coai-preview-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+}
+.coai-preview-table th {
+  text-align: left;
+  background: #f0f0f0;
+  padding: 0.5rem;
+}
+.coai-preview-table td {
+  padding: 0.5rem;
+  border-bottom: 1px solid #ccc;
+}
+.coai-dashboard-wrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    padding: 1rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+.coai-dashboard-wrapper .coai-card,
+.coai-dashboard-wrapper .coai-password-tools,
+.coai-dashboard-wrapper .coai-profile-block {
+    background: #f9f9f9;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    padding: 1rem;
+    box-sizing: border-box;
+}
+
+.coai-dashboard-wrapper h3 {
+    margin-top: 0;
+    font-size: 1.2rem;
+}
+
+@media (max-width: 480px) {
+    .coai-dashboard-wrapper {
+        padding: 0.5rem;
+    }
+}
+.coai-back-button-wrapper {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.coai-back-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.coai-back-button:hover {
+  background-color: #e2e2e2;
+  color: #000;
+}
+.coai-back-button-wrapper {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.coai-back-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.coai-back-button:hover {
+  background-color: #e2e2e2;
+  color: #000;
+}
+.coai-back-button-wrapper {
+  margin-top: 1.5rem;
+  text-align: left;
+}
+
+.coai-back-button {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  background-color: #f3f3f3;
+  border: 1px solid #ccc;
+  color: #333;
+  text-decoration: none;
+  border-radius: 4px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.coai-back-button:hover {
+  background-color: #e2e2e2;
+  color: #000;
+}
+.coai-tool-columns {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.coai-tool-column {
+  flex: 1;
+  min-width: 250px;
+}
+.coai-tool-button {
+  background-color: #007bff;
+  color: #fff;
+  padding: 0.6rem 1.4rem;
+  font-size: 1rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+}
+
+.coai-tool-button:hover {
+  background-color: #0056b3;
+}
+.coai-admin-tools-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.coai-admin-tools-box h2 {
+  margin-top: 0;
+  font-size: 1.5rem;
+  font-weight: 600;
+  color: #333;
+}
+.coai-admin-tools-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+
+.coai-tool-columns {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.coai-tool-column {
+  flex: 1;
+  min-width: 250px;
+}
+.coai-admin-tools-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  max-width: 100%;
+}
+.coai-tool-columns {
+  display: flex;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+.coai-admin-tools-box {
+  background-color: #ffeeba; /* bright yellow */
+}
+.coai-admin-tools-box {
+  background-color: #ffeeba; /* temporary debug color */
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 100%;
+}
+.coai-tool-columns {
+  display: flex !important;
+  gap: 2rem;
+  flex-wrap: wrap;
+  margin-top: 1rem;
+}
+
+.coai-tool-column {
+  flex: 1;
+  min-width: 280px;
+}
+.coai-admin-tools-box {
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+  width: 100%;
+  max-width: 100%;
+}
+
+.coai-tool-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2rem;
+  margin-top: 1rem;
+}
+
+.coai-tool-column {
+  flex: 1;
+  min-width: 280px;
+}
+.coai-tool-column {
+  border: 1px dashed red;
+  background-color: #f9f9f9;
+  padding: 1rem;
+}
+.coai-admin-tools-wrapper {
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  padding: 0 2rem;
+}
+
+.coai-admin-tools-box {
+  max-width: 1200px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  padding: 1.5rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.coai-tool-column {
+  /* Remove these debug styles */
+  border: none;
+  background-color: transparent;
+}
+.coai-admin-tools-box {
+  background-color: #f5f9ff; /* soft blue-gray */
+  border: 1px solid #cdddee;
+  border-radius: 8px;
+  padding: 1.5rem;
+  margin-top: 2rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+.coai-tool-columns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.25rem; /* reduced from 2rem */
+  margin-top: 1rem;
+}
+
+.coai-tool-column {
+  flex: 1;
+  min-width: 240px; /* reduced from 280px */
+  padding: 0.5rem;
+}
+.coai-admin-tools-box {
+  padding: 1.25rem; /* was 1.5rem */
+}
+/* Wrap around both columns */
+.coai-admin-tools {
+  max-width: 820px;         /* narrows the whole area */
+  margin: 0 auto;           /* centers it */
+  padding: 16px 20px;       /* less padding = smaller box */
+}
+
+/* Put the two columns side-by-side and closer */
+.coai-tools-row {
+  display: flex;
+  justify-content: center;  /* prevents full-width stretch */
+  gap: 18px;                /* space between columns */
+}
+
+/* Size of each column/card */
+.coai-tool-card {
+  width: 360px;             /* tighten column width */
+  padding: 14px 16px;       /* smaller card */
+  border-radius: 10px;
+}
+
+/* Tighter UI controls */
+.coai-tool-card h3 { margin: 0 0 8px; font-size: 1.05rem; }
+.coai-tool-card p, .coai-tool-card a { font-size: 0.95rem; }
+.coai-tool-card input[type="file"] { max-width: 220px; }
+.coai-tool-card .coai-btn { padding: 8px 14px; font-size: 0.95rem; }
+
+.coai-admin-tools-box {
+  max-width: 960px;
+  margin: 0 auto;
+}
+.coai-tool-links-vertical {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-top: 1rem;
+}
+
+.coai-tool-link {
+  display: inline-block;
+  padding: 0.75rem 1rem;
+  background-color: #eaf6ff;
+  color: #2c3e50;
+  text-decoration: none;
+  border-radius: 6px;
+  font-weight: 500;
+  transition: background-color 0.2s ease;
+}
+
+.coai-tool-link:hover {
+  background-color: #d4e9fc;
+}
+.coai-admin-tools-box {
+  max-width: 480px; /* was 960px or 1200px */
+  margin: 2rem auto;
+  background-color: #f5f9ff;
+  border: 1px solid #cdddee;
+  border-radius: 8px;
+  padding: 1.25rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+}
+@media (max-width: 768px) {
+  .coai-admin-tools-box {
+    max-width: 90%;
+  }
+}
+.coai-edit-form {
+  max-width: 1200px;
+  margin: 0 auto;
+}
+
+.coai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+}
+
+.coai-grid label {
+  display: block;
+  font-weight: 600;
+  margin-bottom: 0.25rem;
+}
+
+.coai-grid input,
+.coai-grid select,
+.coai-grid textarea {
+  width: 100%;
+  padding: 6px 8px;
+  font-size: 14px;
+  box-sizing: border-box;
+}
+.coai-login-card {
+    max-width: 420px;
+    margin: 40px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.coai-login-card h2 {
+    text-align: center;
+    margin-bottom: 20px;
+}
+
+.coai-login-form .form-group {
+    margin-bottom: 15px;
+}
+
+.coai-login-form label {
+    display: block;
+    margin-bottom: 5px;
+    font-weight: bold;
+}
+
+.coai-login-form input[type="text"],
+.coai-login-form input[type="password"] {
+    width: 100%;
+    padding: 8px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+
+.coai-login-form .form-actions {
+    text-align: center;
+    margin-top: 20px;
+}
+
+.coai-login-form input[type="submit"] {
+    padding: 10px 20px;
+    background: #0073aa;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.coai-forgot-password {
+    text-align: center;
+    margin-top: 10px;
+}
+
+.coai-login-error {
+    max-width: 420px;
+    margin: 20px auto;
+    padding: 10px;
+    background: #ffecec;
+    border: 1px solid #f5c2c2;
+    color: #cc0000;
+    border-radius: 4px;
+}
+.coai-login-form input {
+    box-sizing: border-box;
+}
+
+body.page-id-1626 {
+    background: #f0f2f5;
+}
+
+.coai-account-options-card {
+    max-width: 420px;
+    margin: 20px auto;
+    padding: 20px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+.coai-account-options-card h3 {
+    text-align: center;
+    margin-bottom: 15px;
+    font-size: 1.2em;
+    color: #0073aa;
+}
+
+.coai-account-options-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.coai-account-options-card li {
+    margin: 10px 0;
+    text-align: center;
+}
+
+.coai-account-options-card a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 500;
+}
+
+.coai-account-options-card a:hover {
+    text-decoration: underline;
+}
+.coai-account-options-card {
+    max-width: 420px;
+    margin: 30px auto;
+    padding: 30px;
+    background: #fff;
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+    text-align: center;
+}
+
+.coai-account-options-card h3 {
+    margin-bottom: 20px;
+    font-size: 1.2em;
+    color: #0073aa;
+}
+
+.coai-account-options-card ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.coai-account-options-card li {
+    margin: 12px 0;
+}
+
+.coai-account-options-card a {
+    color: #0073aa;
+    text-decoration: none;
+    font-weight: 500;
+    font-size: 1em;
+}
+
+.coai-account-options-card a:hover {
+    text-decoration: underline;
+}
+.coai-temp-password-box {
+    max-width: 420px;
+    margin: 30px auto;
+    padding: 20px;
+    background: #fff8dc;
+    border: 1px solid #e0c97f;
+    border-radius: 8px;
+    text-align: center;
+    font-size: 1.1em;
+    color: #333;
+}
+.coai-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+  gap: 1rem;
+  margin-bottom: 1rem;
+}
+
+.coai-field {
+  display: flex;
+  flex-direction: column;
+}
+
+.coai-field label {
+  font-weight: bold;
+  margin-bottom: 4px;
+}
+
+.coai-edit-form input[type="text"],
+.coai-edit-form input[type="email"] {
+  padding: 6px;
+  font-size: 14px;
+  border: 1px solid #ccc;
+  border-radius: 4px;
+}
+
+.coai-edit-form input[type="submit"] {
+  margin-top: 1rem;
+  padding: 10px 20px;
+  background-color: #0073aa;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.coai-edit-form input[type="submit"]:hover {
+  background-color: #005f8d;
+}
+body::before {
+  content: "✅ style.css loaded";
+  display: block;
+  background: #0073aa;
+  color: white;
+  padding: 4px;
+  font-size: 12px;
+  text-align: center;
+}
+.coai-form-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+}
+.coai-input {
+  width: 100%;
+  padding: 6px;
+}
+/* Center the whole auth area */
+.coai-auth-wrap {
+  max-width: 640px;
+  margin: 48px auto;
+  padding: 0 16px;
+}
+
+/* Reusable card look */
+.coai-login-card,
+.coai-account-options-card,
+.coai-login-error {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0,0,0,.06);
+  padding: 18px 20px;
+  margin-bottom: 14px;
+}
+
+/* Error card tint */
+.coai-login-error {
+  border-color: #fca5a5;
+  background: #fee2e2;
+  color: #7f1d1d;
+}
+
+/* Headings */
+.coai-login-card h2,
+.coai-account-options-card h3 { margin: 0 0 12px; }
+
+/* Labels + soft blue inputs */
+.coai-login-form .form-group { margin-bottom: .85rem; }
+.coai-login-form label {
+  display: block;
+  font-weight: 600;
+  color: #4b5563;
+  margin-bottom: .25rem;
+}
+.coai-login-form input[type="text"],
+.coai-login-form input[type="password"] {
+  width: 100%;
+  padding: .65rem .75rem;
+  border: 1px solid #dbe6fb;
+  background: #eaf2ff;
+  border-radius: 4px;
+  font-size: 16px;
+  outline: none;
+}
+.coai-login-form input[type="text"]:focus,
+.coai-login-form input[type="password"]:focus {
+  border-color: #b9cffc;
+  box-shadow: 0 0 0 2px rgba(59,130,246,.15);
+}
+
+/* Actions + button */
+.coai-login-form .form-actions {
+  display: flex; align-items: center; gap: .75rem; margin-top: .5rem;
+}
+.coai-login-form .form-actions label {
+  display: inline-flex; align-items: center; gap: .4rem; font-weight: 400; color: #374151;
+}
+.coai-login-form input[type="submit"] {
+  padding: .55rem 1rem;
+  border: 1px solid #d0d0d0;
+  background: #f1f1f1;
+  color: #333;
+  border-radius: 4px;
+  cursor: pointer;
+}
+.coai-login-form input[type="submit"]:hover { background: #eaeaea; }
+
+/* Options list + pink links */
+.coai-account-options-card ul { margin: 0; padding-left: 1.2rem; list-style: disc; }
+.coai-account-options-card a { color: #e11d48; text-decoration: none; }
+.coai-account-options-card a:hover { text-decoration: underline; }
+
+.coai-auth-wrap { outline: 3px dashed magenta; }
+
+/* Auth wrapper centered */
+.coai-auth-wrap{max-width:640px;margin:48px auto;padding:0 16px;}
+
+/* Card look */
+.coai-login-card,
+.coai-account-options-card,
+.coai-login-error{
+  background:#fff;
+  border:1px solid #e5e7eb;
+  border-radius:12px;
+  box-shadow:0 6px 18px rgba(0,0,0,.06);
+  padding:18px 20px;
+  margin-bottom:14px;
+}
+
+/* Error tint */
+.coai-login-error{border-color:#fca5a5;background:#fee2e2;color:#7f1d1d;}
+
+.coai-login-card h2,
+.coai-account-options-card h3{margin:0 0 12px;}
+
+/* Inputs like your old look */
+.coai-login-form .form-group{margin-bottom:.85rem;}
+.coai-login-form label{display:block;font-weight:600;color:#4b5563;margin-bottom:.25rem;}
+.coai-login-form input[type="text"],
+.coai-login-form input[type="password"]{
+  width:100%;
+  padding:.65rem .75rem;
+  border:1px solid #dbe6fb;
+  background:#eaf2ff;
+  border-radius:4px;
+  font-size:16px;
+  outline:none;
+}
+.coai-login-form input[type="text"]:focus,
+.coai-login-form input[type="password"]:focus{
+  border-color:#b9cffc;
+  box-shadow:0 0 0 2px rgba(59,130,246,.15);
+}
+
+/* Actions + button */
+.coai-login-form .form-actions{display:flex;align-items:center;gap:.75rem;margin-top:.5rem;}
+.coai-login-form .form-actions label{display:inline-flex;align-items:center;gap:.4rem;font-weight:400;color:#374151;}
+.coai-login-form input[type="submit"]{
+  padding:.55rem 1rem;
+  border:1px solid #d0d0d0;
+  background:#f1f1f1;
+  color:#333;
+  border-radius:4px;
+  cursor:pointer;
+}
+.coai-login-form input[type="submit"]:hover{background:#eaeaea;}
+
+/* Pink option links */
+.coai-account-options-card ul{margin:0;padding-left:1.2rem;list-style:disc;}
+.coai-account-options-card a{color:#e11d48;text-decoration:none;}
+.coai-account-options-card a:hover{text-decoration:underline;}
+
+.coai-passwrap{
+  position:relative;
+  display:flex;
+  align-items:center;
+}
+
+.coai-passwrap input{
+  width:100%;
+  padding-right:44px; /* room for eye button */
+}
+
+.coai-toggle{
+  position:absolute;
+  right:10px;
+  top:50%;
+  transform:translateY(-50%);
+  border:0;
+  background:transparent;
+  padding:6px;
+  cursor:pointer;
+  color:#6b7280;
+}
+
+.coai-toggle:hover{
+  color:#111827;
+}

@@ -1,0 +1,426 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>COAI Members Custom — Overall Flow (Diagram)</title>
+  <style>
+    :root{
+      --bg:#ffffff; --text:#111827; --muted:#6b7280;
+      --line:#d1d5db; --head:#f3f4f6;
+      --ok:#065f46; --warn:#92400e; --bad:#991b1b; --info:#1d4ed8;
+      --card:#ffffff;
+    }
+    body{
+      font-family: system-ui,-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Arial,sans-serif;
+      margin: 24px;
+      line-height: 1.45;
+      color: var(--text);
+      background: var(--bg);
+    }
+    h1{ margin:0 0 6px; font-size: 22px; }
+    .sub{ color:var(--muted); margin:0 0 18px; max-width: 1100px; }
+    .meta{
+      display:flex; flex-wrap:wrap; gap:10px;
+      margin: 10px 0 18px;
+      color: var(--muted);
+      font-size: 13px;
+    }
+    .meta span{ padding:4px 10px; border:1px solid var(--line); border-radius:999px; }
+
+    .legend{
+      display:flex; gap:8px; flex-wrap:wrap;
+      margin: 10px 0 16px;
+    }
+    .pill{
+      display:inline-block; padding:3px 10px;
+      border-radius:999px; border:1px solid var(--line);
+      font-size:12px; background:#f9fafb; color:#1f2937;
+      white-space:nowrap;
+    }
+    .pill.ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--ok); }
+    .pill.info{ background:#eff6ff; border-color:#bfdbfe; color:var(--info); }
+    .pill.warn{ background:#fffbeb; border-color:#fcd34d; color:var(--warn); }
+    .pill.bad{ background:#fef2f2; border-color:#fecaca; color:var(--bad); }
+
+    .note{
+      border:1px solid var(--line);
+      background:#fafafa;
+      padding:12px 14px;
+      border-radius:12px;
+      margin: 14px 0 18px;
+      max-width: 1100px;
+    }
+    code{
+      background: #f3f4f6;
+      padding: 2px 6px;
+      border-radius: 6px;
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size: 12px;
+      word-break: break-word;
+    }
+
+    /* Diagram layout */
+    .diagram{
+      max-width: 1400px;
+      overflow-x:auto;
+      padding: 10px;
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: #fff;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: repeat(5, minmax(240px, 1fr));
+      gap: 14px;
+      min-width: 1200px; /* encourages horizontal scroll rather than squish */
+      align-items:start;
+    }
+    .colhead{
+      font-weight: 800;
+      font-size: 13px;
+      padding: 8px 10px;
+      background: var(--head);
+      border:1px solid var(--line);
+      border-radius: 12px;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+    .stack{ display:flex; flex-direction:column; gap:12px; }
+
+    .box{
+      border:1px solid var(--line);
+      border-radius: 14px;
+      background: var(--card);
+      padding: 12px 12px 10px;
+      box-shadow: 0 1px 2px rgba(0,0,0,.04);
+    }
+    .box h3{
+      margin:0 0 6px;
+      font-size: 14px;
+      letter-spacing:.2px;
+    }
+    .box p{
+      margin:0 0 8px;
+      color: var(--muted);
+      font-size: 12.5px;
+    }
+    .tags{ display:flex; gap:6px; flex-wrap:wrap; margin-top:6px; }
+    .tag{
+      font-size: 12px;
+      padding: 2px 8px;
+      border-radius: 999px;
+      border:1px solid var(--line);
+      background:#f9fafb;
+      color:#374151;
+      white-space:nowrap;
+    }
+    .tag.ok{ background:#ecfdf5; border-color:#a7f3d0; color:var(--ok); }
+    .tag.info{ background:#eff6ff; border-color:#bfdbfe; color:var(--info); }
+    .tag.warn{ background:#fffbeb; border-color:#fcd34d; color:var(--warn); }
+    .tag.bad{ background:#fef2f2; border-color:#fecaca; color:var(--bad); }
+
+    .flow{
+      font-family: ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono",monospace;
+      font-size: 12px;
+      line-height: 1.5;
+      margin: 16px 0 0;
+      border:1px dashed var(--line);
+      border-radius: 12px;
+      padding: 12px;
+      background:#fbfbfb;
+      max-width: 1100px;
+      overflow-x:auto;
+    }
+
+    .footer{
+      margin-top: 22px;
+      padding-top: 14px;
+      border-top: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 12px;
+      max-width: 1100px;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>COAI Members Custom — Overall Diagram-Style Flow Chart</h1>
+  <p class="sub">
+    This is the “big picture” of how login/auth → role mapping → staff pages → FluentCRM kiosk/2FA → member directory/edit all connect.
+    It’s intentionally written to help you spot where a redirect or role decision could be coming from.
+  </p>
+
+  <div class="meta">
+    <span>Doc Type: Overall Flow Diagram</span>
+    <span>Generated: 2026-01-12</span>
+    <span>Format: HTML (diagram grid + ASCII flow)</span>
+  </div>
+
+  <div class="legend">
+    <span class="pill info">Touchpoint</span>
+    <span class="pill ok">Expected behavior</span>
+    <span class="pill warn">Overlap / “two ways to do it”</span>
+    <span class="pill bad">High-risk / “magic likely lives here”</span>
+  </div>
+
+  <div class="note">
+    <b>How to use this:</b>
+    When something redirects unexpectedly, find the page you were trying to reach (right side) and trace backwards:
+    <code>kiosk → login_redirect → login-form redirect_to → auth-bridge role map</code>.
+  </div>
+
+  <div class="diagram">
+    <div class="grid">
+
+      <!-- Column 1 -->
+      <div class="stack">
+        <div class="colhead">1) Entry / Front-End Pages</div>
+
+        <div class="box">
+          <h3>/member-login/</h3>
+          <p>Front-end login form (shortcode). Honors <code>redirect_to</code> if present.</p>
+          <div class="tags">
+            <span class="tag info">login-form.php</span>
+            <span class="tag ok">wp_signon()</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>/member-portal/</h3>
+          <p>Main landing area after login for typical members/staff.</p>
+          <div class="tags">
+            <span class="tag info">member-portal.php</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>/staff-newsletters/</h3>
+          <p>Newsletter Center (front-end). Builds FluentCRM links with <code>coai_route</code>.</p>
+          <div class="tags">
+            <span class="tag info">staff-newsletters.php</span>
+            <span class="tag warn">identity logic</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>/member-directory/</h3>
+          <p>Directory list + filters + CSV export (template_redirect export).</p>
+          <div class="tags">
+            <span class="tag info">admin-members.php</span>
+            <span class="tag ok">filters: is_new_member</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>/member-edit/</h3>
+          <p>“Edit member” front-end view (admin mode uses edit view; member mode likely elsewhere).</p>
+          <div class="tags">
+            <span class="tag info">admin-members.php</span>
+            <span class="tag bad">wpdb->update()</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 2 -->
+      <div class="stack">
+        <div class="colhead">2) Authentication + Role Mapping</div>
+
+        <div class="box">
+          <h3>WP Core Auth</h3>
+          <p>If WP username/password matches, it wins first (no wp_members lookup).</p>
+          <div class="tags">
+            <span class="tag ok">wp_authenticate_username_password</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>COAI Auth Bridge</h3>
+          <p>Fallback auth against <code>wp_members</code> if WP auth fails. Creates/links WP user and sets role.</p>
+          <div class="tags">
+            <span class="tag info">coai-auth-bridge.php</span>
+            <span class="tag bad">role map: usergroup→role</span>
+            <span class="tag ok">blocks WP-only accounts</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Newsletter Manager Role</h3>
+          <p>Creates <code>newsletter_manager</code> WP role (WP-only identity).</p>
+          <div class="tags">
+            <span class="tag info">coai-newsletter-manager.php</span>
+            <span class="tag ok">add_role()</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Identity Helpers (Kiosk)</h3>
+          <p><code>coai_is_real_admin</code> / <code>coai_is_manager_user</code> / <code>coai_is_newsletter_user</code></p>
+          <div class="tags">
+            <span class="tag info">coai-manager-fluentcrm-kiosk.php</span>
+            <span class="tag warn">admins treated as newsletter_user</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 3 -->
+      <div class="stack">
+        <div class="colhead">3) Login Redirect + Guard Rails</div>
+
+        <div class="box">
+          <h3>Login Redirect Guard</h3>
+          <p>Ensures wp-admin requests go to wp-admin; manage_options users go to dashboard.</p>
+          <div class="tags">
+            <span class="tag info">coai-login-redirect-guard.php</span>
+            <span class="tag ok">honors /wp-admin</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Front-End Login Redirect</h3>
+          <p><code>login-form.php</code> redirects logged-in users to portal (unless in editing context).</p>
+          <div class="tags">
+            <span class="tag info">login-form.php</span>
+            <span class="tag warn">can feel “forceful”</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Staff Permission Helper</h3>
+          <p><code>coai_staff_can()</code> gates directory + export + staff shortcut pages.</p>
+          <div class="tags">
+            <span class="tag warn">fallback exists</span>
+            <span class="tag bad">duplication risk</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 4 -->
+      <div class="stack">
+        <div class="colhead">4) FluentCRM Access + Kiosk + 2FA</div>
+
+        <div class="box">
+          <h3>Newsletter Center Links</h3>
+          <p>Builds FluentCRM entry URLs using <code>admin.php?page=fluentcrm-admin&coai_route=…</code></p>
+          <div class="tags">
+            <span class="tag info">staff-newsletters.php</span>
+            <span class="tag ok">coai_route param</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Kiosk: Deny Others</h3>
+          <p>Only Manager + Newsletter Manager allowed into FluentCRM pages (non-admin).</p>
+          <div class="tags">
+            <span class="tag info">kiosk step 1</span>
+            <span class="tag ok">admin_init very early</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Kiosk: Keep Out of wp-admin</h3>
+          <p>Managers/newsletter_manager redirected away from wp-admin pages except FluentCRM/profile/logout/plumbing.</p>
+          <div class="tags">
+            <span class="tag bad">kiosk step 2</span>
+            <span class="tag warn">can “mysteriously” reroute</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Require 2FA Config Before FluentCRM</h3>
+          <p>If WP2FA not configured, redirect to <code>profile.php?page=wp-2fa-setup</code>.</p>
+          <div class="tags">
+            <span class="tag bad">kiosk step 3</span>
+            <span class="tag info">reads user_meta keys</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>coai_route → Hash Route</h3>
+          <p>Converts <code>coai_route=campaigns|broadcasts</code> into FluentCRM hash (footer script).</p>
+          <div class="tags">
+            <span class="tag info">kiosk step 6</span>
+            <span class="tag ok">admin_footer script</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Column 5 -->
+      <div class="stack">
+        <div class="colhead">5) Member Data / Directory / Editing</div>
+
+        <div class="box">
+          <h3>Directory Filters</h3>
+          <p>Single source: <code>coai_md_build_filters()</code>. New-only = <code>is_new_member=1</code> only.</p>
+          <div class="tags">
+            <span class="tag ok">admin-members.php</span>
+            <span class="tag info">filters + join levels</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>CSV Export</h3>
+          <p>Same filters used; requires nonce; requires <code>coai_staff_can('view')</code>.</p>
+          <div class="tags">
+            <span class="tag ok">template_redirect export</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>Edit View (Staff)</h3>
+          <p>Admin/Manager only. Updates columns after filtering against real DB columns.</p>
+          <div class="tags">
+            <span class="tag bad">wpdb->update()</span>
+            <span class="tag warn">COAI_number casing/guards</span>
+          </div>
+        </div>
+
+        <div class="box">
+          <h3>COAI # Rules</h3>
+          <p>Uniqueness enforced; “xx” requires <code>TEST-</code> prefix; blank/unchanged not written.</p>
+          <div class="tags">
+            <span class="tag ok">guarded update</span>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+  </div>
+
+  <h2 style="margin-top:18px;font-size:16px;">Trace Flow (ASCII version)</h2>
+  <div class="flow">
+User hits /staff-newsletters/
+  ├─ if not logged in → /member-login/?redirect_to=/staff-newsletters/
+  └─ if logged in:
+      ├─ identity computed (admin | manager | newsletter_manager)
+      ├─ deny if not staff/newsletter
+      └─ clicks Open Campaigns/Broadcasts
+           └─ goes to /wp-admin/admin.php?page=fluentcrm-admin&coai_route=campaigns|broadcasts
+                ├─ coai-login-redirect-guard may influence post-login landing if wp-login involved
+                └─ coai-manager-fluentcrm-kiosk (admin_init)
+                     ├─ step 1: deny FluentCRM if not manager/newsletter_manager (non-admin)
+                     ├─ step 2: keep manager/newsletter_manager out of wp-admin chrome
+                     ├─ step 3: if 2FA not configured → profile.php?page=wp-2fa-setup
+                     └─ step 6: convert coai_route → FluentCRM hash route
+
+Member Directory (/member-directory/)
+  ├─ filters built by coai_md_build_filters()
+  ├─ "New Members only" = wp_members.is_new_member=1 ONLY
+  └─ Export CSV uses same filters + nonce + coai_staff_can('view')
+
+Edit Member (/member-edit/?mid=###)
+  ├─ requires coai_staff_can('manage')
+  ├─ POST → sanitize → filter to real DB columns → guards
+  └─ wpdb->update() writes changes
+  </div>
+
+  <div class="footer">
+    Saved location recommendation:
+    <code>/wp-content/plugins/coai-members-custom/docs/coai-overall-flow-diagram.html</code><br/>
+    Next document: <b>NEEDS CORRECTION</b> (HTML) — a punch-list of overlaps, typos, and “gotchas” with recommended fixes.
+  </div>
+
+</body>
+</html>
