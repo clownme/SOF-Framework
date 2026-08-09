@@ -31,7 +31,6 @@ if (!defined('ABSPATH')) {
  *
  * Does NOT:
  *     - Determine audience membership
- *     - Query regional members
  *     - Validate communication lifecycle rules
  *     - Send communications
  *     - Communicate directly with delivery providers
@@ -120,15 +119,17 @@ class SOF_ComposeWorkspace
 
     $audience =
         $audience_service
-            ->resolve_current_regional_audience(
+            ->resolve_current_audience(
                 $selected_membership_statuses
             );
 
     $audience_diagnostic =
         $audience_service
-            ->diagnose_current_regional_audience();
+            ->diagnose_current_audience();
 
     $situation = null;
+    
+    $audience_population = null;
     
     $status_counts = [
         'Active'    => 0,
@@ -190,11 +191,11 @@ class SOF_ComposeWorkspace
         );
 
     /*
-     * Transitional authorization for the current regional
-     * communication experience.
+     * Transitional authorization for the current
+     * Communication audience.
      *
      * Audience resolution has already confirmed that the
-     * current user may communicate with regional members.
+     * current user may communicate with the assigned members.
      *
      * A dedicated authorization service will eventually
      * provide these actions.
@@ -215,12 +216,12 @@ class SOF_ComposeWorkspace
     $audience_name =
         $situation
             ? $situation->audience()->get_name()
-            : 'Regional Members';
+            : 'Assigned Audience';
 
     $audience_description =
         $situation
             ? $situation->audience()->get_description()
-            : 'the regional members you are authorized to contact';
+            : 'the audience you are authorized to contact';
 
     $recipients =
         $situation
@@ -327,9 +328,109 @@ class SOF_ComposeWorkspace
     }
 
     // -------------------------------------------------
-    // Communication Composition
+    // Recipient Selection
     // -------------------------------------------------
 
+    $recipient_selection =
+        $existing_communication
+            ? $existing_communication
+                ->get_recipient_selection()
+            : new SOF_CommunicationRecipientSelection(
+                SOF_CommunicationRecipientSelection::MODE_ALL,
+                []
+            );
+
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+
+        $selection_mode =
+            isset($_POST['recipient_selection_mode'])
+                ? sanitize_key(
+                    wp_unslash(
+                        $_POST['recipient_selection_mode']
+                    )
+                )
+                : SOF_CommunicationRecipientSelection::MODE_ALL;
+
+        $selected_member_ids =
+            isset($_POST['selected_member_ids']) &&
+            is_array($_POST['selected_member_ids'])
+                ? array_values(
+                    array_filter(
+                        array_map(
+                            'absint',
+                            wp_unslash(
+                                $_POST['selected_member_ids']
+                            )
+                        )
+                    )
+                )
+                : [];
+
+        $recipient_selection =
+            new SOF_CommunicationRecipientSelection(
+                $selection_mode,
+                $selected_member_ids
+            );
+    }
+
+    $selection_service =
+        new SOF_CommunicationRecipientSelectionService();
+
+    $eligible_recipients =
+        $recipients instanceof SOF_CommunicationRecipients
+            ? $recipients
+            : new SOF_CommunicationRecipients(
+                [],
+                []
+            );
+
+    $selected_recipients =
+        $selection_service->apply(
+            $eligible_recipients,
+            $recipient_selection
+        );
+
+    // -------------------------------------------------
+    // Selected Recipient Presentation
+    // -------------------------------------------------
+
+    $selected_recipient_count =
+        $selected_recipients
+            ->get_available_count();
+
+    if (
+        $recipient_selection
+            ->uses_selected_recipients()
+    ) {
+        $selected_recipient_phrase =
+            $selected_recipient_count === 1
+                ? 'One selected member'
+                : number_format_i18n(
+                    $selected_recipient_count
+                ) . ' selected members';
+
+    } else {
+        $selected_recipient_phrase =
+            $selected_recipient_count === 1
+                ? 'One eligible member'
+                : number_format_i18n(
+                    $selected_recipient_count
+                ) . ' eligible members';
+    }
+
+    $compose_recommendation_message =
+        $selected_recipient_phrase .
+        (
+            $selected_recipient_count === 1
+                ? ' is included in this communication. '
+                : ' are included in this communication. '
+        ) .
+        'Continue preparing your message.';
+
+    // -------------------------------------------------
+    // Communication Composition
+    // -------------------------------------------------
+    
     $communication = null;
 
     $persisted_communication = null;
@@ -380,7 +481,9 @@ class SOF_ComposeWorkspace
         $nonce =
             isset($_POST['sof_compose_nonce'])
                 ? sanitize_text_field(
-                    wp_unslash($_POST['sof_compose_nonce'])
+                    wp_unslash(
+                        $_POST['sof_compose_nonce']
+                    )
                 )
                 : '';
 
@@ -393,6 +496,7 @@ class SOF_ComposeWorkspace
         ) {
             $composition_error =
                 'The communication could not be prepared because the security check failed.';
+
         } else {
 
             $subject =
@@ -413,123 +517,169 @@ class SOF_ComposeWorkspace
                     )
                     : '';
 
-            $composition_service =
-                new SOF_CommunicationCompositionService();
+            // -------------------------------------------------
+            // Validate Recipient Selection
+            // -------------------------------------------------
 
-            if ($existing_communication) {
+            $validated_recipients =
+                $selection_service->apply(
+                    $eligible_recipients,
+                    $recipient_selection
+                );
 
-                // -------------------------------------------------
-                // Revise Existing Communication
-                // -------------------------------------------------
-
-                $communication =
-                    $composition_service->revise(
-                        $existing_communication,
-                        $subject,
-                        $message
-                    );
-
-            } else {
-
-    // -------------------------------------------------
-    // Compose New Communication
-    // -------------------------------------------------
-
-    $communication =
-        $composition_service->compose(
-            $audience,
-            $available_recipient_count,
-            $subject,
-            $message,
-            get_current_user_id()
-        );
-}
-
-            if (!$communication) {
-
+            if (
+                $recipient_selection
+                    ->uses_selected_recipients() &&
+                $validated_recipients
+                    ->get_available_count() < 1
+            ) {
                 $composition_error =
-                    'Enter a subject and message before continuing.';
+                    'Select at least one eligible member before continuing.';
 
             } else {
 
+                $validated_member_ids = [];
+
+                foreach (
+                    $validated_recipients
+                        ->get_available_recipients()
+                    as $recipient
+                ) {
+                    $member_id =
+                        isset($recipient['member_id'])
+                            ? (int) $recipient['member_id']
+                            : 0;
+
+                    if ($member_id > 0) {
+                        $validated_member_ids[] =
+                            $member_id;
+                    }
+                }
+
+                if (
+                    $recipient_selection
+                        ->uses_selected_recipients()
+                ) {
+                    $recipient_selection =
+                        new SOF_CommunicationRecipientSelection(
+                            SOF_CommunicationRecipientSelection::MODE_SELECTED,
+                            $validated_member_ids
+                        );
+
+                } else {
+                    $recipient_selection =
+                        new SOF_CommunicationRecipientSelection(
+                            SOF_CommunicationRecipientSelection::MODE_ALL,
+                            []
+                        );
+                }
+
                 // -------------------------------------------------
-                // Communication Persistence
+                // Compose or Revise Communication
                 // -------------------------------------------------
 
-                $communication_repository =
-                    new SOF_CommunicationRepository();
-
-                $persistence_service =
-                    new SOF_CommunicationPersistenceService(
-                        $communication_repository
-                    );
+                $composition_service =
+                    new SOF_CommunicationCompositionService();
 
                 if ($existing_communication) {
 
-                    $persisted_communication =
-                        $persistence_service->save(
-                            $communication
+                    $communication =
+                        $composition_service->revise(
+                            $existing_communication,
+                            $subject,
+                            $message
                         );
 
                 } else {
 
-    $persisted_communication =
-        $persistence_service->persist(
-            $communication
-        );
-}
+                    $communication =
+                        $composition_service->compose(
+                            $audience,
+                            $available_recipient_count,
+                            $subject,
+                            $message,
+                            get_current_user_id()
+                        );
+                }
 
-                if (!$persisted_communication) {
+                if (!$communication) {
 
                     $composition_error =
-                        'The communication was prepared but could not be saved.';
+                        'Enter a subject and message before continuing.';
 
                 } else {
 
-                    $communication_id =
-                        $persisted_communication->get_id();
+                    $communication->set_recipient_selection(
+                        $recipient_selection
+                    );
 
-                    if (!$communication_id) {
+                    // -------------------------------------------------
+                    // Communication Persistence
+                    // -------------------------------------------------
 
-            $composition_error =
-                'The communication was saved but no communication identity was returned.';
+                    if ($existing_communication) {
 
-        } else {
+                        $persisted_communication =
+                            $persistence_service->save(
+                                $communication
+                            );
 
-            // -------------------------------------------------
-            // Continue to Verify
-            // -------------------------------------------------
+                    } else {
 
-            $verify_url =
-                add_query_arg(
-                    'communication_id',
-                    $communication_id,
-                    home_url(
-                        '/verify-communication/'
-                    )
-                );
+                        $persisted_communication =
+                            $persistence_service->persist(
+                                $communication
+                            );
+                    }
 
-            wp_safe_redirect(
-                $verify_url
-            );
+                    if (!$persisted_communication) {
 
-            exit;
+                        $composition_error =
+                            'The communication was prepared but could not be saved.';
+
+                    } else {
+
+                        $communication_id =
+                            $persisted_communication->get_id();
+
+                        if (!$communication_id) {
+
+                            $composition_error =
+                                'The communication was saved but no communication identity was returned.';
+
+                        } else {
+
+                            // -------------------------------------------------
+                            // Continue to Verify
+                            // -------------------------------------------------
+
+                            $verify_url =
+                                add_query_arg(
+                                    'communication_id',
+                                    $communication_id,
+                                    home_url(
+                                        '/verify-communication/'
+                                    )
+                                );
+
+                            wp_safe_redirect(
+                                $verify_url
+                            );
+
+                            exit;
+                        }
+                    }
+                }
+            }
         }
     }
-}
-        }
-    }
-            
+
         ob_start();
         ?>
 
         <div class="sof-workspace sof-compose-workspace">
 
             <header class="sof-workspace-header">
-
-                <p class="sof-workspace-context">
-                    Communications
-                </p>
 
                 <h1>Compose Communication</h1>
 
@@ -586,13 +736,15 @@ class SOF_ComposeWorkspace
 
                                         <dd>
                                             <?php
-                                            echo esc_html(
-                                                $assessment->get_summary()
+                                            echo nl2br(
+                                                esc_html(
+                                                    $assessment->get_summary()
+                                                )
                                             );
                                             ?>
                                         </dd>
                                     </div>
-
+                                    
             <div>
                 <dt>Recommendation</dt>
 
@@ -611,12 +763,11 @@ class SOF_ComposeWorkspace
                 <dd>
                     <?php
                     echo esc_html(
-                        $recommendation->get_message()
+                        $compose_recommendation_message
                     );
                     ?>
                 </dd>
             </div>
-
             <div>
                 <dt>Available Actions</dt>
 
@@ -773,11 +924,11 @@ class SOF_ComposeWorkspace
             </div>
 
                     <div>
-                        <dt>Region Function Available</dt>
+                        <dt>Scope Resolver Available</dt>
                         <dd>
                             <?php
                             echo $audience_diagnostic[
-                                'region_function_available'
+                                'scope_resolver_available'
                             ]
                                 ? 'Yes'
                                 : 'No';
@@ -786,15 +937,15 @@ class SOF_ComposeWorkspace
                     </div>
 
                     <div>
-                        <dt>Resolved Region</dt>
+                        <dt>Resolved Scope</dt>
                         <dd>
                             <?php
                             echo esc_html(
                                 $audience_diagnostic[
-                                    'resolved_region'
+                                    'resolved_scope'
                                 ] !== ''
                                     ? $audience_diagnostic[
-                                        'resolved_region'
+                                        'resolved_scope'
                                     ]
                                     : 'None'
                             );
@@ -816,11 +967,11 @@ class SOF_ComposeWorkspace
                     </div>
 
                     <div>
-                        <dt>Can View Region Members</dt>
+                        <dt>Can Access Audience</dt>
                         <dd>
                             <?php
                             echo $audience_diagnostic[
-                                'can_view_region_members'
+                                'can_access_audience'
                             ]
                                 ? 'Yes'
                                 : 'No';
@@ -889,7 +1040,7 @@ class SOF_ComposeWorkspace
                             <div class="sof-form-field">
 
                                 <label>
-                                    Include Members
+                                    Include Membership Statuses
                                 </label>
 
                                 <div class="sof-membership-status-options">
@@ -907,7 +1058,7 @@ class SOF_ComposeWorkspace
                                             ?>
                                         >
                                         <strong>
-                                            All Eligible Members
+                                            All Eligible Statuses
                                         </strong>
                                         <span class="sof-membership-status-count">
                                             <?php
@@ -1041,38 +1192,86 @@ class SOF_ComposeWorkspace
                             </p>
 
                         </div>
+                        
+                        <?php
+                            echo SOF_CommunicationRecipientSelectionCard::render(
+                                $eligible_recipients,
+                                $recipient_selection
+                            );
+                            ?>
 
-                            <div class="sof-form-field">
+                            <?php if ($composition_error !== ''): ?>
 
-                                <label for="sof-communication-subject">
-                                    Subject
-                                </label>
+                                <div class="sof-compose-message sof-compose-message-error">
 
-                                <input
-                                    type="text"
-                                    id="sof-communication-subject"
-                                    name="sof_communication_subject"
-                                    value="<?php echo esc_attr($subject); ?>"
-                                    maxlength="200"
-                                    required
-                                >
+                                    <strong>
+                                        Communication Not Prepared
+                                    </strong>
 
-                            </div>
+                                    <p>
+                                        <?php
+                                        echo esc_html(
+                                            $composition_error
+                                        );
+                                        ?>
+                                    </p>
 
-                            <div class="sof-form-field">
+                                </div>
 
-                                <label for="sof-communication-message">
-                                    Message
-                                </label>
+                            <?php endif; ?>
 
-                                <textarea
-                                    id="sof-communication-message"
-                                    name="sof_communication_message"
-                                    rows="12"
-                                    required
-                                ><?php echo esc_textarea($message); ?></textarea>
+                            <section class="sof-card sof-message-creation-card">
 
-                            </div>
+                                <header class="sof-card-header">
+
+                                    <h3 class="sof-card-title">
+                                        Create Your Message
+                                    </h3>
+
+                                    <p class="sof-card-summary">
+                                        Create the message your selected members
+                                        will receive.
+                                    </p>
+
+                                </header>
+
+                                <div class="sof-card-content">
+
+                                    <div class="sof-form-field">
+
+                                        <label for="sof-communication-subject">
+                                            Subject
+                                        </label>
+
+                                        <input
+                                            type="text"
+                                            id="sof-communication-subject"
+                                            name="sof_communication_subject"
+                                            value="<?php echo esc_attr($subject); ?>"
+                                            maxlength="200"
+                                            required
+                                        >
+
+                                    </div>
+
+                                    <div class="sof-form-field">
+
+                                        <label for="sof-communication-message">
+                                            Message
+                                        </label>
+
+                                        <textarea
+                                            id="sof-communication-message"
+                                            name="sof_communication_message"
+                                            rows="12"
+                                            required
+                                        ><?php echo esc_textarea($message); ?></textarea>
+
+                                    </div>
+
+                                </div>
+
+                            </section>
                             
                             <?php if ($composition_error !== ''): ?>
 

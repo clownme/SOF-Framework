@@ -108,11 +108,25 @@ class SOF_CommunicationRecipientsService
         SOF_Communication $communication
     ): SOF_CommunicationRecipients
     {
-        $members =
-            $this->membership_audience_service
-                ->resolve_regional_members(
-                    $audience->get_region(),
-                );
+        if (
+            $audience->get_key() ===
+            'organization_members'
+        ) {
+            $members =
+                $this->membership_audience_service
+                    ->resolve_organizational_members(
+                        $audience->get_membership_statuses()
+                    );
+
+        } else {
+
+            $members =
+                $this->membership_audience_service
+                    ->resolve_regional_members(
+                        $audience->get_region(),
+                        $audience->get_membership_statuses()
+                    );
+        }
 
         $available = [];
         $unavailable = [];
@@ -128,11 +142,13 @@ class SOF_CommunicationRecipientsService
 
             if (empty($reasons)) {
 
-                $available[] = $member;
+                $available[] =
+                    $member;
 
             } else {
 
-                $member['reasons'] = $reasons;
+                $member['reasons'] =
+                    $reasons;
 
                 $member['reason'] =
                     implode(
@@ -140,13 +156,23 @@ class SOF_CommunicationRecipientsService
                         $reasons
                     );
 
-                $unavailable[] = $member;
+                $unavailable[] =
+                    $member;
             }
         }
 
-         return new SOF_CommunicationRecipients(
-            $available,
-            $unavailable
+        $recipients =
+            new SOF_CommunicationRecipients(
+                $available,
+                $unavailable
+            );
+
+        $selection_service =
+            new SOF_CommunicationRecipientSelectionService();
+
+        return $selection_service->apply(
+            $recipients,
+            $communication->get_recipient_selection()
         );
     }
 
@@ -160,8 +186,18 @@ class SOF_CommunicationRecipientsService
         SOF_CommunicationAudience $audience
     ): array
     {
+        if (
+            $audience->get_key() ===
+            'organization_members'
+        ) {
+            return $this->membership_audience_service
+                ->resolve_organizational_members(
+                    $audience->get_membership_statuses()
+                );
+        }
+
         return $this->membership_audience_service
-           ->resolve_regional_members(
+            ->resolve_regional_members(
                 $audience->get_region(),
                 $audience->get_membership_statuses()
             );

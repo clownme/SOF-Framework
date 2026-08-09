@@ -340,8 +340,42 @@ class SOF_ApproveWorkspace
         // Presentation
         // -------------------------------------------------
 
+        $membership_audience_service =
+            new SOF_MembershipAudienceService();
+
+        $recipients_service =
+            new SOF_CommunicationRecipientsService(
+                $membership_audience_service
+            );
+
+        $audience =
+            new SOF_CommunicationAudience(
+                $communication->get_audience_key(),
+                $communication->get_audience_name(),
+                $communication->get_audience_name() . ' members',
+                $communication->get_audience_region(),
+                $communication->get_membership_statuses(),
+                $communication->get_recipient_count(),
+                true
+            );
+
+        $eligible_recipients =
+            $recipients_service->discover(
+                $audience
+            );
+
+        $selection_service =
+            new SOF_CommunicationRecipientSelectionService();
+
+        $delivery_recipients =
+            $selection_service->apply(
+                $eligible_recipients,
+                $communication->get_recipient_selection()
+            );
+
         $recipient_count =
-            $communication->get_recipient_count();
+            $delivery_recipients
+                ->get_available_count();
 
         $channel =
             $communication->get_channel();
@@ -357,6 +391,7 @@ class SOF_ApproveWorkspace
                 )
                 : 'Communication';
 
+
         ob_start();
         ?>
 
@@ -370,16 +405,240 @@ class SOF_ApproveWorkspace
 
                 <p>
                     Review the tested communication before approving
-                    it for delivery.
+                    it for organizational delivery.
                 </p>
 
             </header>
 
-            <div class="sof-workspace-card">
+            <main class="sof-workspace-content">
 
-                <h2>
-                    Communication Details
+        <!-- ============================================= -->
+        <!-- Assessment -->
+        <!-- ============================================= -->
+
+        <section class="sof-card sof-approve-assessment-card">
+
+            <header class="sof-card-header">
+
+                <h2 class="sof-card-title">
+                    Assessment
                 </h2>
+
+                <p class="sof-card-summary">
+                    What is the current communication situation?
+                </p>
+
+            </header>
+
+            <div class="sof-card-content">
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Assessment
+                    </strong>
+
+                    <div>
+
+                        <?php
+                        if (
+                            $communication->get_status() === 'approved'
+                        ) {
+                            echo esc_html(
+                                'Communication Approved'
+                            );
+                        } else {
+                            echo esc_html(
+                                'Communication Ready for Approval'
+                            );
+                        }
+                        ?>
+
+                    </div>
+
+                </div>
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Summary
+                    </strong>
+
+                    <div>
+
+                        <?php
+
+                        if (
+                            $communication->get_status() === 'approved'
+                        ) {
+
+                            echo esc_html(
+                                'This communication has been approved for organizational delivery.'
+                            );
+
+                        } else {
+
+                            echo esc_html(
+                                sprintf(
+                                    'The communication has been successfully reviewed and tested. %s selected recipient%s will receive this communication after approval.',
+                                    number_format_i18n(
+                                        $recipient_count
+                                    ),
+                                    $recipient_count === 1
+                                        ? ''
+                                        : 's'
+                                )
+                            );
+
+                        }
+
+                        ?>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- Recommended Path -->
+        <!-- ============================================= -->
+
+        <section class="sof-card sof-approve-recommendation-card">
+
+            <header class="sof-card-header">
+
+                <h2 class="sof-card-title">
+                    Recommended Path
+                </h2>
+
+                <p class="sof-card-summary">
+                    What should you do next?
+                </p>
+
+            </header>
+
+            <div class="sof-card-content">
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Next Action
+                    </strong>
+
+                    <div>
+
+                        <?php
+
+                        if (
+                            $communication->get_status() === 'approved'
+                        ) {
+
+                            echo esc_html(
+                                'Send Communication Now'
+                            );
+
+                        } else {
+
+                            echo esc_html(
+                                'Approve Communication'
+                            );
+
+                        }
+
+                        ?>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- Communication -->
+        <!-- ============================================= -->
+
+        <section class="sof-card sof-approve-communication-card">
+
+            <header class="sof-card-header">
+
+                <h2 class="sof-card-title">
+                    Communication
+                </h2>
+
+                <p class="sof-card-summary">
+                    What communication are you approving?
+                </p>
+
+            </header>
+
+            <div class="sof-card-content">
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Subject
+                    </strong>
+
+                    <div>
+
+                        <?php
+                        echo esc_html(
+                            $communication->get_subject()
+                        );
+                        ?>
+
+                    </div>
+
+                </div>
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Message
+                    </strong>
+
+                    <div>
+
+                        <?php
+                        echo wp_kses_post(
+                            wpautop(
+                                $communication->get_body()
+                            )
+                        );
+                        ?>
+
+                    </div>
+
+                </div>
+
+            </div>
+
+        </section>      
+
+        <!-- ============================================= -->
+        <!-- Audience -->
+        <!-- ============================================= -->
+
+        <section class="sof-card sof-approve-audience-card">
+
+            <header class="sof-card-header">
+
+                <h2 class="sof-card-title">
+                    Audience
+                </h2>
+
+                <p class="sof-card-summary">
+                    Who is this communication intended for?
+                </p>
+
+            </header>
+
+            <div class="sof-card-content">
 
                 <div class="sof-communication-detail">
 
@@ -388,22 +647,25 @@ class SOF_ApproveWorkspace
                     </strong>
 
                     <div>
+
                         <?php
                         echo esc_html(
                             $communication->get_audience_name()
                         );
                         ?>
+
                     </div>
 
                 </div>
-                
+
                 <div class="sof-communication-detail">
 
                     <strong>
-                        Include Members
+                        Membership Status
                     </strong>
 
                     <div>
+
                         <?php
 
                         $membership_statuses =
@@ -419,9 +681,75 @@ class SOF_ApproveWorkspace
                         );
 
                         ?>
+
                     </div>
 
+                </div>
+
             </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- Recipients -->
+        <!-- ============================================= -->
+
+        <section class="sof-card sof-approve-recipients-card">
+
+            <header class="sof-card-header">
+
+                <h2 class="sof-card-title">
+                    Recipients
+                </h2>
+
+                <p class="sof-card-summary">
+                    Who will receive this communication?
+                </p>
+
+            </header>
+
+            <div class="sof-card-content">
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Eligible Members
+                    </strong>
+
+                    <div>
+
+                        <?php
+                        echo esc_html(
+                            number_format_i18n(
+                                $eligible_recipients
+                                    ->get_available_count()
+                            )
+                        );
+                        ?>
+
+                    </div>
+
+                </div>
+
+                <div class="sof-communication-detail">
+
+                    <strong>
+                        Selected Members
+                    </strong>
+
+                    <div>
+
+                        <?php
+                        echo esc_html(
+                            number_format_i18n(
+                                $recipient_count
+                            )
+                        );
+                        ?>
+
+                    </div>
+
+                </div>
 
                 <div class="sof-communication-detail">
 
@@ -430,83 +758,92 @@ class SOF_ApproveWorkspace
                     </strong>
 
                     <div>
+
                         <?php
-                        echo esc_html(
-                            sprintf(
-                                '%s recipients will receive this communication by %s.',
-                                number_format_i18n(
-                                    $recipient_count
+
+                        if ($recipient_count === 1) {
+
+                            printf(
+                                'One selected member will receive this communication by %s.',
+                                esc_html(
+                                    strtolower(
+                                        $channel_label
+                                    )
+                                )
+                            );
+
+                        } else {
+
+                            printf(
+                                '%s selected members will receive this communication by %s.',
+                                esc_html(
+                                    number_format_i18n(
+                                        $recipient_count
+                                    )
                                 ),
-                                $channel_label
-                            )
-                        );
+                                esc_html(
+                                    strtolower(
+                                        $channel_label
+                                    )
+                                )
+                            );
+
+                        }
+
                         ?>
+
                     </div>
 
                 </div>
 
-                <div class="sof-communication-detail">
+            </div>
 
-                    <strong>
-                        Subject
-                    </strong>
+        </section>
 
-                    <div>
-                        <?php
-                        echo esc_html(
-                            $communication->get_subject()
-                        );
-                        ?>
-                    </div>
+        <!-- ============================================= -->
+        <!-- Test Results -->
+        <!-- ============================================= -->
 
-                </div>
+        <section class="sof-card sof-approve-test-results-card">
 
-                <div class="sof-communication-detail">
+            <header class="sof-card-header">
 
-                    <strong>
-                        Message
-                    </strong>
+                <h2 class="sof-card-title">
+                    Test Results
+                </h2>
 
-                    <div>
-                        <?php
-                        echo wp_kses_post(
-                            wpautop(
-                                $communication->get_body()
-                            )
-                        );
-                        ?>
-                    </div>
+                <p class="sof-card-summary">
+                    What was confirmed during recipient review?
+                </p>
 
-                </div>
+            </header>
+
+            <div class="sof-card-content">
 
                 <div class="sof-communication-detail">
 
                     <strong>
-                        Sender
+                        Prepared By
                     </strong>
 
                     <div>
+
                         <?php
                         echo esc_html(
                             $sender->get_name()
                         );
                         ?>
+
                     </div>
 
                     <div>
+
                         <?php
                         echo esc_html(
                             $sender->get_display_title()
                         );
                         ?>
-                    </div>
 
-                    <div>
-                        <?php
-                        echo esc_html(
-                            $sender->get_email()
-                        );
-                        ?>
                     </div>
 
                 </div>
@@ -514,105 +851,113 @@ class SOF_ApproveWorkspace
                 <div class="sof-communication-detail">
 
                     <strong>
-                        Test Result
+                        Delivered By
                     </strong>
 
-                    <?php if ($communication->get_test_recipient() !== ''): ?>
+                    <div>
 
-                        <div>
-                            Test delivered successfully to
-                            <?php
-                            echo esc_html(
-                                $communication->get_test_recipient()
-                            );
-                            ?>.
-                        </div>
+                        newsletter-manager@mycoai.com
 
-                    <?php else: ?>
-
-                        <div>
-                            Test delivered successfully.
-                        </div>
-
-                    <?php endif; ?>
+                    </div>
 
                 </div>
 
-                <?php if ($communication->get_status() === 'tested'): ?>
+                <div class="sof-communication-detail">
 
-                    <div class="sof-communication-detail sof-approval-confirmation">
+                    <strong>
+                        Test Recipient
+                    </strong>
 
-                        <strong>
-                            Ready for Approval
-                        </strong>
+                    <div>
 
-                        <div>
-                            <?php
-                            echo esc_html(
-                                sprintf(
-                                    'By approving this communication, you confirm that it is ready to be delivered by %s to %s recipients in the %s. After approval, you can send it now or schedule it for delivery.',
-                                    $channel_label,
-                                    number_format_i18n(
-                                        $recipient_count
-                                    ),
-                                    $communication->get_audience_name()
-                                )
-                            );
-                            ?>
-                        </div>
+                        <?php
+
+                        echo esc_html(
+                            $communication->get_test_recipient() !== ''
+                                ? $communication->get_test_recipient()
+                                : 'Current User'
+                        );
+
+                        ?>
 
                     </div>
 
-                <?php elseif ($communication->get_status() === 'approved'): ?>
+                </div>
 
-                    <div class="sof-communication-detail sof-approval-confirmation">
+                <div class="sof-communication-detail">
 
-                        <strong>
-                            Communication Approved
-                        </strong>
+                    <strong>
+                        Result
+                    </strong>
 
-                        <div>
-                            This communication is approved and ready for release.
-                        </div>
+                    <div>
 
-                    </div>
-
-                <?php endif; ?>
-
-                <?php if ($approval_error !== ''): ?>
-
-                    <div class="sof-compose-message sof-compose-message-error">
-
-                        <strong>
-                            Communication Not Approved
-                        </strong>
-
-                        <p>
-                            <?php
-                            echo esc_html(
-                                $approval_error
-                            );
-                            ?>
-                        </p>
+                        Test delivery completed successfully.
 
                     </div>
-                    
-                <?php endif; ?>
+
+                </div>
+
+            </div>
+
+        </section>
+
+        <!-- ============================================= -->
+        <!-- Available Actions -->
+        <!-- ============================================= -->
+
+        <section class="sof-card sof-approve-actions-card">
+
+            <header class="sof-card-header">
+
+                <h2 class="sof-card-title">
+                    Available Actions
+                </h2>
+
+                <p class="sof-card-summary">
+
+                    <?php
+                    if (
+                        $communication->get_status() === 'tested'
+                    ) {
+                        ?>
+                        Return for additional testing or approve this communication for organizational delivery.
+                        <?php
+                    } else {
+                        ?>
+                        Revise this communication, send it now, or schedule delivery for later.
+                        <?php
+                    }
+                    ?>
+
+                </p>
+
+            </header>
+
+            <div class="sof-card-content">
 
                 <?php if ($communication->get_status() === 'tested'): ?>
 
                     <div class="sof-test-actions">
 
-                        <a
-                            class="sof-button sof-button-secondary"
-                            href="<?php echo esc_url($test_url); ?>"
+                        <form
+                            method="get"
+                            action="<?php echo esc_url($test_url); ?>"
+                            style="display:inline;"
                         >
-                            Back to Test
-                        </a>
+
+                        <button
+                            type="submit"
+                            class="sof-button sof-button-secondary"
+                        >
+                            Return to Test
+                        </button>
+
+                        </form>
 
                         <form
                             method="post"
-                            style="display: inline;"
+                            style="display:inline;"
                         >
 
                             <?php
@@ -646,22 +991,22 @@ class SOF_ApproveWorkspace
 
                     </div>
 
-                <?php elseif ($communication->get_status() === 'approved'): ?>
+                <?php else: ?>
 
                     <div class="sof-test-actions">
 
                         <form
                             method="post"
-                            style="display: inline;"
+                            style="display:inline;"
                         >
-                            
+
                             <?php
                             wp_nonce_field(
                                 'sof_revise_communication',
                                 'sof_revise_nonce'
                             );
                             ?>
-                            
+
                             <button
                                 type="submit"
                                 name="sof_revise_submit"
@@ -670,35 +1015,83 @@ class SOF_ApproveWorkspace
                             >
                                 Revise Communication
                             </button>
-                            
+
                         </form>
                         
-                        <a
-                        
+                        <form
+                            method="get"
+                            action="<?php
+                            echo esc_url(
+                                home_url('/send-communication/')
+                            );
+                            ?>"
+                            style="display:inline;"
+                        >
+
+                        <input
+                            type="hidden"
+                            name="communication_id"
+                            value="<?php
+                            echo esc_attr(
+                                (string)
+                                $communication->get_id()
+                            );
+                            ?>"
+                        >
+
+                        <button
+                            type="submit"
                             class="sof-button sof-button-primary"
-                            href="<?php echo esc_url($send_url); ?>"
                         >
-                            Send Now
-                        </a>
+                            Send Communication Now
+                        </button>
+
+                        </form>
                         
-                        <a
-                        
-                            class="sof-button sof-button-secondary"
-                            href="<?php echo esc_url($schedule_url); ?>"
+                        <form
+                            method="get"
+                            action="<?php 
+                            echo esc_url(
+                                home_url('/schedule_communication/')
+                            );
+                            ?>"
+                            style="display:inline;"
                         >
-                            Schedule Delivery
-                        </a>
-                        
+
+                            <input
+                                type="hidden"
+                                name="communication_id"
+                                value="<?php
+                                echo esc_attr(
+                                    (string)
+                                    $communication->get_id()
+                                );
+                                ?>"
+                            >
+                            
+                            <button
+                                type="submit"
+                                class="sof-button sof-button-secondary"
+                            >
+                                Schedule Delivery Later
+                            </button>
+
+                        </form>
+
                     </div>
 
                 <?php endif; ?>
 
             </div>
 
-        </div>
+        </section>
 
-        <?php
+    </main>
 
-        return (string) ob_get_clean();
+</div>
+
+<?php
+
+return (string) ob_get_clean();
     }
 }

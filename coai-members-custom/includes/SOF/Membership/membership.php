@@ -9,33 +9,35 @@ if (!defined('ABSPATH')) {
  * SOF Membership Framework
  * ============================================================
  *
- * Framework:
- *     Membership
- *
  * Purpose:
- *     Provide organizational membership knowledge and
- *     capabilities to SOF Business Experiences and other
- *     Knowledge Domains.
+ *     Provide Membership business knowledge and capabilities
+ *     to SOF experiences.
  *
  * Responsibilities:
- *     - Own membership knowledge
- *     - Expose membership capabilities
- *     - Resolve membership audiences
- *     - Provide membership facts to authorized consumers
+ *     - Load Membership business services
+ *     - Provide Membership-owned audience discovery
+ *     - Provide Membership-owned member search
  *
  * Does NOT:
- *     - Determine communication behavior
- *     - Render communication experiences
- *     - Send communications
+ *     - Determine Communication behavior
+ *     - Determine Access authorization
+ *     - Render presentation
+ *     - Manage organizational responsibilities
+ *
+ * Architectural Principle:
+ *
+ *     Membership owns knowledge about members.
+ *
+ *     Other SOF frameworks may consume Membership
+ *     capabilities without owning Membership data rules.
  *
  * ============================================================
  */
 
-// -------------------------------------------------
-// Framework Paths
-// -------------------------------------------------
-
-define('SOF_MEMBERSHIP_PATH', __DIR__);
+define(
+    'SOF_MEMBERSHIP_PATH',
+    __DIR__
+);
 
 // -------------------------------------------------
 // Knowledge
@@ -43,14 +45,16 @@ define('SOF_MEMBERSHIP_PATH', __DIR__);
 
 require_once SOF_MEMBERSHIP_PATH .
     '/Knowledge/MembershipRegionKnowledge.php';
-    
+
 require_once SOF_MEMBERSHIP_PATH .
     '/Knowledge/MembershipCountryKnowledge.php';
 
+// -------------------------------------------------
+// Services
+// -------------------------------------------------
 
-// -------------------------------------------------
-// Business Capabilities
-// -------------------------------------------------
+require_once SOF_MEMBERSHIP_PATH .
+    '/Services/MemberSearchService.php';
 
 require_once SOF_MEMBERSHIP_PATH .
     '/Services/MembershipAudienceService.php';

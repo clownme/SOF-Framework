@@ -4,6 +4,16 @@ if (!defined('ABSPATH')) {
     exit;
 }
 
+add_action(
+    'wp_footer',
+    function (): void {
+        echo "\n<!-- SOF PRESENTATION ACTIVE: " .
+            esc_html(__FILE__) .
+            " -->\n";
+    },
+    9999
+);
+
 /**
  * ============================================================
  * SOF Communications Presentation Bootstrap
@@ -41,6 +51,9 @@ if (!defined('ABSPATH')) {
 
 require_once __DIR__ .
     '/Cards/CommunicationWorkflowCard.php';
+    
+require_once __DIR__ .
+    '/Cards/RecipientSelectionCard.php';
 
 // -------------------------------------------------
 // Actions
@@ -152,7 +165,7 @@ add_action(
                 __FILE__
             ),
             [],
-            '1.0.2'
+            '1.1.2'
         );
 
         wp_enqueue_style(

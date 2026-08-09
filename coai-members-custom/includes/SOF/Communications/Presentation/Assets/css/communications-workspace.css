@@ -41,7 +41,135 @@
  * ------------------------------------------------------------ */
 
 .sof-communications-workspace > .sof-workspace-content {
+    display: block;
     width: 100%;
+}
+
+
+/* ------------------------------------------------------------
+ * Standard Workspace Card
+ * ------------------------------------------------------------ */
+
+.sof-communications-workspace
+> .sof-workspace-content
+> section.sof-card {
+    background: #ffffff;
+    border: 2px solid #c5ccd6;
+    border-radius: 16px;
+    box-shadow: 0 3px 8px rgba(0, 0, 0, 0.05);
+    box-sizing: border-box;
+    height: auto !important;
+    margin: 0 0 32px !important;
+    min-height: 0 !important;
+    padding: 32px;
+    position: relative;
+}
+
+.sof-communications-workspace
+> .sof-workspace-content
+> section.sof-card:last-child {
+    margin-bottom: 0 !important;
+}
+
+.sof-communications-workspace
+> .sof-workspace-content
+> section.sof-card
+> .sof-card-header {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+    height: auto !important;
+    margin: 0 0 20px !important;
+    min-height: 0 !important;
+    padding: 0 0 18px !important;
+}
+
+.sof-communications-workspace
+> .sof-workspace-content
+> section.sof-card
+.sof-card-title {
+    font-size: 28px;
+    line-height: 1.25;
+    margin: 0 0 8px !important;
+    padding: 0 !important;
+}
+
+.sof-communications-workspace
+> .sof-workspace-content
+> section.sof-card
+.sof-card-summary {
+    color: #555555;
+    line-height: 1.6;
+    margin: 0 !important;
+    padding: 0 !important;
+}
+
+.sof-communications-workspace
+> .sof-workspace-content
+> section.sof-card
+> .sof-card-content {
+    height: auto !important;
+    margin: 0 !important;
+    min-height: 0 !important;
+    padding: 0 !important;
+}
+
+
+/* ------------------------------------------------------------
+ * Business Detail
+ * ------------------------------------------------------------ */
+
+.sof-communications-workspace .sof-communication-detail {
+    display: grid;
+    gap: 6px;
+    padding: 14px 0;
+}
+
+.sof-communications-workspace
+.sof-communication-detail
++ .sof-communication-detail {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sof-communications-workspace .sof-communication-detail strong {
+    color: #444444;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sof-communications-workspace .sof-communication-detail > div {
+    line-height: 1.65;
+}
+
+
+/* ------------------------------------------------------------
+ * Situation Details
+ * ------------------------------------------------------------ */
+
+.sof-communications-workspace .sof-situation-details {
+    margin: 0;
+}
+
+.sof-communications-workspace .sof-situation-details > div {
+    display: grid;
+    gap: 8px;
+    padding: 14px 0;
+}
+
+.sof-communications-workspace
+.sof-situation-details
+> div
++ div {
+    border-top: 1px solid rgba(0, 0, 0, 0.08);
+}
+
+.sof-communications-workspace .sof-situation-details dt {
+    color: #444444;
+    font-size: 14px;
+    font-weight: 700;
+}
+
+.sof-communications-workspace .sof-situation-details dd {
+    line-height: 1.65;
+    margin: 0;
 }
 
 
@@ -95,9 +223,16 @@
         padding-right: 18px;
     }
 
+    .sof-communications-workspace
+    > .sof-workspace-content
+    > section.sof-card,
     .sof-communication-action-card {
-        border-radius: 10px;
-        padding: 20px;
+        border-radius: 10px !important;
+        padding: 20px !important;
+    }
+
+    .sof-communications-workspace .sof-card-title {
+        font-size: 24px;
     }
 }
 

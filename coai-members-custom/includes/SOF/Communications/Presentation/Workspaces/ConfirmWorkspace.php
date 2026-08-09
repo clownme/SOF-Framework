@@ -126,16 +126,23 @@ class SOF_ConfirmWorkspace
             } else {
 
                 $result_title =
-                    'Communication Sent';
+                    'Communication Delivered';
 
-                $result_message =
-                    sprintf(
-                        'Your communication was sent to %d %s.',
-                        $delivered_count,
-                        $delivered_count === 1
-                            ? 'member'
-                            : 'members'
-                    );
+                if ($delivered_count === 1) {
+
+                    $result_message =
+                        'The communication was successfully delivered to one selected member.';
+
+                } else {
+
+                    $result_message =
+                        sprintf(
+                            'The communication was successfully delivered to %s selected members.',
+                            number_format_i18n(
+                                $delivered_count
+                            )
+                        );
+                }
             }
 
         } elseif ($status === 'delivery_failed') {
@@ -205,167 +212,389 @@ class SOF_ConfirmWorkspace
                 : 'Not specified';
 
         // -------------------------------------------------
+        // Navigation
+        // -------------------------------------------------
+
+        $create_communication_url =
+            home_url(
+                '/compose-communication/'
+            );
+
+        $member_portal_url =
+            home_url(
+                '/member-portal/'
+            );
+
+        // -------------------------------------------------
         // Presentation
         // -------------------------------------------------
 
         ob_start();
         ?>
 
-        <div class="sof-communications-workspace sof-confirm-workspace">
+        <div class="sof-communications-workspace sof-workspace sof-confirm-workspace">
 
-            <div class="sof-workspace-header">
+            <header class="sof-workspace-header">
 
                 <h1>
                     Confirm Communication
                 </h1>
 
                 <p>
-                    Review the final result of this communication.
+                    Review the final outcome of this communication.
                 </p>
 
-            </div>
+            </header>
 
-            <div class="sof-communication-card">
+            <main class="sof-workspace-content">
 
-                <div class="sof-communication-status">
+                <!-- ============================================= -->
+                <!-- Final Assessment -->
+                <!-- ============================================= -->
 
-                    <h2>
-                        <?php echo esc_html($result_title); ?>
-                    </h2>
+                <section class="sof-card sof-confirm-assessment-card">
 
-                    <p>
-                        <?php echo esc_html($result_message); ?>
-                    </p>
+                    <header class="sof-card-header">
 
-                </div>
+                        <h2 class="sof-card-title">
+                            Final Assessment
+                        </h2>
 
-                <div class="sof-communication-detail">
+                        <p class="sof-card-summary">
+                            What was the final communication outcome?
+                        </p>
 
-                    <strong>
-                        Audience
-                    </strong>
+                    </header>
 
-                    <div>
-                        <?php
-                        echo esc_html(
-                            $communication->get_audience_name()
-                        );
-                        ?>
+                    <div class="sof-card-content">
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Final Assessment
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $result_title
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Summary
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $result_message
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
                     </div>
 
-                </div>
+                </section>
+                
+                <!-- ============================================= -->
+                <!-- Communication -->
+                <!-- ============================================= -->
 
-                <div class="sof-communication-detail">
+                <section class="sof-card sof-confirm-communication-card">
 
-                    <strong>
-                        Include Members
-                    </strong>
+                    <header class="sof-card-header">
 
-                    <div>
-                        <?php
-                        echo esc_html(
-                            $membership_status_label
-                        );
-                        ?>
+                        <h2 class="sof-card-title">
+                            Communication
+                        </h2>
+
+                        <p class="sof-card-summary">
+                            What communication was delivered?
+                        </p>
+
+                    </header>
+
+                    <div class="sof-card-content">
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Subject
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $communication->get_subject()
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Message
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo wp_kses_post(
+                                    wpautop(
+                                        $communication->get_body()
+                                    )
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
                     </div>
 
-                </div>
+                </section>
+                
+                <!-- ============================================= -->
+                <!-- Audience -->
+                <!-- ============================================= -->
 
-                <div class="sof-communication-detail">
+                <section class="sof-card sof-confirm-audience-card">
 
-                    <strong>
-                        Delivery
-                    </strong>
+                    <header class="sof-card-header">
 
-                    <div>
-                        <?php echo esc_html($channel_label); ?>
+                        <h2 class="sof-card-title">
+                            Audience
+                        </h2>
+
+                        <p class="sof-card-summary">
+                            Who was this communication intended for?
+                        </p>
+
+                    </header>
+
+                    <div class="sof-card-content">
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Audience
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $communication->get_audience_name()
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Membership Status
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $membership_status_label
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Delivery Method
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $channel_label
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
                     </div>
 
-                </div>
+                </section>
 
-                <div class="sof-communication-detail">
+                <!-- ============================================= -->
+                <!-- Delivery Results -->
+                <!-- ============================================= -->
 
-                    <strong>
-                        Attempted
-                    </strong>
+                <section class="sof-card sof-confirm-delivery-results-card">
 
-                    <div>
-                        <?php echo esc_html((string) $attempted_count); ?>
+                    <header class="sof-card-header">
+
+                        <h2 class="sof-card-title">
+                            Delivery Results
+                        </h2>
+
+                        <p class="sof-card-summary">
+                            What happened during organizational delivery?
+                        </p>
+
+                    </header>
+
+                    <div class="sof-card-content">
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Attempted
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    number_format_i18n(
+                                        $attempted_count
+                                    )
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Delivered
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    number_format_i18n(
+                                        $delivered_count
+                                    )
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Failed
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    number_format_i18n(
+                                        $failed_count
+                                    )
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
+                        <div class="sof-communication-detail">
+
+                            <strong>
+                                Completed
+                            </strong>
+
+                            <div>
+                                <?php
+                                echo esc_html(
+                                    $sent_label
+                                );
+                                ?>
+                            </div>
+
+                        </div>
+
                     </div>
 
-                </div>
+                </section>
+                
+                <!-- ============================================= -->
+                <!-- Available Actions -->
+                <!-- ============================================= -->
 
-                <div class="sof-communication-detail">
+                <section class="sof-card sof-confirm-actions-card">
 
-                    <strong>
-                        Delivered
-                    </strong>
+                    <header class="sof-card-header">
 
-                    <div>
-                        <?php echo esc_html((string) $delivered_count); ?>
+                        <h2 class="sof-card-title">
+                            Available Actions
+                        </h2>
+
+                        <p class="sof-card-summary">
+                            What would you like to do next?
+                        </p>
+
+                    </header>
+
+                    <div class="sof-card-content">
+
+                        <div class="sof-test-actions">
+
+                            <form
+                                method="get"
+                                action="<?php
+                                echo esc_url(
+                                    $create_communication_url
+                                );
+                                ?>"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="sof-button sof-button-primary"
+                                >
+                                    Create Another Communication
+                                </button>
+
+                            </form>
+
+                            <form
+                                method="get"
+                                action="<?php
+                                echo esc_url(
+                                    $member_portal_url
+                                );
+                                ?>"
+                                style="display:inline;"
+                            >
+
+                                <button
+                                    type="submit"
+                                    class="sof-button sof-button-secondary"
+                                >
+                                    Return to Member Portal
+                                </button>
+
+                            </form>
+
+                        </div>
+
                     </div>
 
-                </div>
+                </section>
 
-                <div class="sof-communication-detail">
-
-                    <strong>
-                        Failed
-                    </strong>
-
-                    <div>
-                        <?php echo esc_html((string) $failed_count); ?>
-                    </div>
-
-                </div>
-
-                <div class="sof-communication-detail">
-
-                    <strong>
-                        Sent
-                    </strong>
-
-                    <div>
-                        <?php echo esc_html($sent_label); ?>
-                    </div>
-
-                </div>
-
-                <div class="sof-communication-detail">
-
-                    <strong>
-                        Subject
-                    </strong>
-
-                    <div>
-                        <?php
-                        echo esc_html(
-                            $communication->get_subject()
-                        );
-                        ?>
-                    </div>
-
-                </div>
-
-                <div class="sof-communication-detail">
-
-                    <strong>
-                        Message
-                    </strong>
-
-                    <div>
-                        <?php
-                        echo wp_kses_post(
-                            wpautop(
-                                $communication->get_body()
-                            )
-                        );
-                        ?>
-                    </div>
-
-                </div>
-
-            </div>
+            </main>
 
         </div>
 

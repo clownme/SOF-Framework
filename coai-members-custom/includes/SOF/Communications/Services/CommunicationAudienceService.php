@@ -23,9 +23,9 @@ if (!defined('ABSPATH')) {
  *     current authorized user.
  *
  * Responsibilities:
- *     - Resolve the current COAI member identity
- *     - Resolve the current RVP assignment
- *     - Confirm permission to communicate with regional members
+ *     - Resolve the current audience identity
+ *     - Resolve the current user's assigned organizational scope
+ *     - Confirm permission to communicate with assigned audience
  *     - Build a Communication Audience model
  *
  * Does NOT:
@@ -40,11 +40,11 @@ if (!defined('ABSPATH')) {
 class SOF_CommunicationAudienceService
 {
     /**
-     * Resolve the regional audience for the current user.
+     * Resolve the assigned Communication audience for the current user.
      *
      * @param array<int, string> $membership_statuses
      */
-    public function resolve_current_regional_audience(
+    public function resolve_current_audience(
         array $membership_statuses = ['Active']
     ): ?SOF_CommunicationAudience
     {
@@ -66,55 +66,155 @@ class SOF_CommunicationAudienceService
 
         $member_id = (int) ($member['member_id'] ?? 0);
 
-        $usergroup = strtoupper(
-            trim((string) ($member['usergroup'] ?? ''))
-        );
-
         if ($member_id <= 0) {
             return null;
         }
 
-        if (
-            !function_exists(
-                'coai_get_active_rvp_region_for_member'
-            )
-        ) {
-            return null;
+        $usergroup =
+            strtoupper(
+                trim(
+                    (string) (
+                        $member['usergroup']
+                        ?? ''
+                    )
+                )
+            );
+
+        // -------------------------------------------------
+        // Persisted SOF Access
+        // -------------------------------------------------
+
+        if (class_exists('SOF_AccessGrantService')) {
+
+            $access_grant_service =
+                new SOF_AccessGrantService();
+
+            if (
+                $access_grant_service
+                    ->person_has_capability(
+                        $member_id,
+                        'compose_communication'
+                    )
+            ) {
+                $scope =
+                    $access_grant_service
+                        ->scope_for_capability(
+                            $member_id,
+                            'compose_communication'
+                        );
+
+                if ($scope) {
+
+                    $scope_type =
+                        trim(
+                            (string)
+                            $scope->get_type()
+                        );
+
+                    $scope_name =
+                        trim(
+                            (string)
+                            $scope->get_name()
+                        );
+
+                    if (
+                        $scope_type === 'organization' &&
+                        $scope_name !== ''
+                    ) {
+                        return new SOF_CommunicationAudience(
+                            'organization_members',
+                            $scope_name,
+                            $scope_name . ' members',
+                            '',
+                            $membership_statuses,
+                            0,
+                            false
+                        );
+                    }
+
+                    if ($scope_name !== '') {
+                        return new SOF_CommunicationAudience(
+                            'assigned_audience',
+                            $scope_name,
+                            $scope_name . ' members',
+                            $scope_name,
+                            $membership_statuses,
+                            0,
+                            false
+                        );
+                    }
+                }
+            }
         }
 
-        $region = trim(
-            (string) coai_get_active_rvp_region_for_member(
-                $member_id
-            )
-        );
+    // -------------------------------------------------
+    // Legacy Regional Access
+    // -------------------------------------------------
 
-        if ($region === '') {
-            return null;
-        }
+    if (
+        function_exists(
+            'coai_get_active_rvp_region_for_member'
+        )
+    ) {
+        $region =
+            trim(
+                (string)
+                coai_get_active_rvp_region_for_member(
+                    $member_id
+                )
+            );
 
         if (
-            !function_exists('coai_user_can') ||
-            !coai_user_can(
+            $region !== '' &&
+            function_exists('coai_user_can') &&
+            coai_user_can(
                 'view_region_members',
                 $usergroup
             )
         ) {
-            return null;
+            return new SOF_CommunicationAudience(
+                'regional_members',
+                $region,
+                $region . ' members',
+                $region,
+                $membership_statuses,
+                0,
+                false
+            );
         }
+    }
 
+    // -------------------------------------------------
+    // Legacy Organizational Access
+    // -------------------------------------------------
+
+    if (
+        in_array(
+            $usergroup,
+            [
+                'ADMIN',
+                'MANAGER',
+            ],
+            true
+        )
+    ) {
         return new SOF_CommunicationAudience(
-            'regional_members',
-            $region,
-            $region . ' members',
-            $region,
+            'organization_members',
+            'Entire Organization',
+            'Entire Organization members',
+            '',
             $membership_statuses,
             0,
             false
         );
     }
+
+    return null;
+
+    }
     
     /**
-     * Resolve the current authenticated user's COAI member record.
+     * Resolve the current member record.
      *
      * @return array<string, mixed>|null
      */
@@ -221,25 +321,25 @@ class SOF_CommunicationAudienceService
     // -------------------------------------------------
 
     /**
-     * Diagnose current regional audience resolution.
+     * Diagnose current audience resolution.
      *
      * Temporary development support only.
      *
      * @return array<string, mixed>
      */
-    public function diagnose_current_regional_audience(): array
+    public function diagnose_current_audience(): array
     {
         $diagnostic = [
-            'logged_in'                     => false,
-            'wordpress_user_id'             => 0,
-            'member_resolved'               => false,
-            'member_id'                     => 0,
-            'usergroup'                     => '',
+            'logged_in'                      => false,
+            'wordpress_user_id'              => 0,
+            'member_resolved'                => false,
+            'member_id'                      => 0,
+            'usergroup'                      => '',
             'member_lookup_available'        => false,
-            'region_function_available'      => false,
-            'resolved_region'               => '',
+            'scope_resolver_available'       => false,
+            'resolved_scope'                 => '',
             'permission_function_available'  => false,
-            'can_view_region_members'        => false,
+            'can_access_audience'            => false,
         ];
 
         $diagnostic['logged_in'] =
@@ -281,33 +381,39 @@ class SOF_CommunicationAudienceService
                 )
             );
 
-        $diagnostic['region_function_available'] =
-            function_exists(
-                'coai_get_active_rvp_region_for_member'
+        $diagnostic['scope_resolver_available'] =
+            class_exists(
+                'SOF_AccessGrantService'
             );
+
+        $diagnostic['permission_function_available'] =
+            $diagnostic['scope_resolver_available'];
 
         if (
             $diagnostic['member_id'] > 0 &&
-            $diagnostic['region_function_available']
+            $diagnostic['scope_resolver_available']
         ) {
-            $diagnostic['resolved_region'] =
-                trim(
-                    (string)
-                    coai_get_active_rvp_region_for_member(
-                        $diagnostic['member_id']
-                    )
-                );
-        }
+            $access_grant_service =
+                new SOF_AccessGrantService();
 
-        $diagnostic['permission_function_available'] =
-            function_exists('coai_user_can');
+            $diagnostic['can_access_audience'] =
+                $access_grant_service
+                    ->person_has_capability(
+                        $diagnostic['member_id'],
+                        'compose_communication'
+                    );
 
-        if ($diagnostic['permission_function_available']) {
-            $diagnostic['can_view_region_members'] =
-                coai_user_can(
-                    'view_region_members',
-                    $diagnostic['usergroup']
-                );
+            $scope =
+                $access_grant_service
+                    ->scope_for_capability(
+                        $diagnostic['member_id'],
+                        'compose_communication'
+                    );
+
+            if ($scope) {
+                $diagnostic['resolved_scope'] =
+                    $scope->get_name();
+            }
         }
 
         return $diagnostic;

@@ -125,26 +125,6 @@ class SOF_WordPressMailDeliveryProvider
 
         $sender_email =
             $sender->get_email();
-
-        if (
-            $sender_email &&
-            is_email($sender_email)
-        ) {
-            
-            /*
-             * FluentSMTP owns the physical From address used
-             * for organizational delivery through Amazon SES.
-             *
-             * SOF provides the human sender identity and the
-             * destination for replies.
-             */
-            $headers[] =
-                sprintf(
-                    'From: %s <%s>',
-                    $sender_name,
-                    $sender_email
-                );
-        }
         
         if (
             $sender_email &&
@@ -164,6 +144,20 @@ class SOF_WordPressMailDeliveryProvider
          * -----------------------------------------------------
          */
 
+        $mail_error = null;
+
+        $mail_failed_handler =
+            function ($error) use (&$mail_error): void {
+                if ($error instanceof WP_Error) {
+                    $mail_error = $error;
+                }
+            };
+
+        add_action(
+            'wp_mail_failed',
+            $mail_failed_handler
+        );
+
         $sent =
             wp_mail(
                 $destination,
@@ -172,16 +166,43 @@ class SOF_WordPressMailDeliveryProvider
                 $headers
             );
 
+        remove_action(
+            'wp_mail_failed',
+            $mail_failed_handler
+        );
+
         if (!$sent) {
+
+            $errors = [];
+
+            if ($mail_error instanceof WP_Error) {
+                $errors =
+                    $mail_error->get_error_messages();
+            }
+
+            if (!$errors) {
+                $errors[] =
+                    'wp_mail() returned an unsuccessful result.';
+            }
+
+            error_log(
+                '[SOF Communication Mail Failure] ' .
+                implode(
+                    ' | ',
+                    $errors
+                )
+            );
+
             return [
                 'success'             => false,
                 'provider'            => $this->get_name(),
                 'destination'         => $destination,
                 'provider_message_id' => '',
-                'message'             => 'The Communication could not be delivered.',
-                'errors'              => [
-                    'wp_mail() returned an unsuccessful result.'
-                ],
+                'message'             => implode(
+                    ' ',
+                    $errors
+                ),
+                'errors'              => $errors,
             ];
         }
 
@@ -190,7 +211,8 @@ class SOF_WordPressMailDeliveryProvider
             'provider'            => $this->get_name(),
             'destination'         => $destination,
             'provider_message_id' => '',
-            'message'             => 'The Communication was delivered successfully.',
+            'message'             =>
+                'The Communication was delivered successfully.',
             'errors'              => [],
         ];
     }

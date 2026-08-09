@@ -60,26 +60,23 @@ class SOF_Communication
     protected string $type = 'general';
 
     /**
+     * Optional source business object type.
+     *
+     * Examples:
+     *
+     * newsletter
+     * event
+     * membership_notice
+     */
+    protected ?string $source_type = null;
+    
+    /**
+     * Optional persistent identity of the source business object.
+     */
+    protected ?int $source_id = null;
+    
+    /**
      * Current communication lifecycle status.
-     *
-     * Lifecycle:
-     *
-     * draft
-     * composed
-     * verified
-     * tested
-     * approved
-     * sending
-     * sent
-     * completed
-     *
-     * Exception states:
-     *
-     * verification_failed
-     * test_failed
-     * delivery_failed
-     * cancelled
-     * archived
      */
     protected string $status = 'draft';
 
@@ -152,6 +149,13 @@ class SOF_Communication
      * Number of recipients resolved for the audience.
      */
     protected int $recipient_count = 0;
+
+    /**
+     * Human decision describing whether this Communication
+     * should reach all eligible recipients or a selected
+     * subset of them.
+     */
+    protected SOF_CommunicationRecipientSelection $recipient_selection;
 
     // -------------------------------------------------
     // Delivery
@@ -274,6 +278,20 @@ class SOF_Communication
         $this->type = sanitize_key(
             (string) ($data['type'] ?? 'general')
         );
+        
+        $this->source_type =
+            isset($data['source_type']) &&
+            $data['source_type'] !== ''
+                ? sanitize_key(
+                    (string) $data['source_type']
+                )
+                : null;
+
+        $this->source_id =
+            isset($data['source_id']) &&
+            (int) $data['source_id'] > 0
+                ? (int) $data['source_id']
+                : null;
 
         $this->status = sanitize_key(
             (string) ($data['status'] ?? 'draft')
@@ -332,10 +350,47 @@ class SOF_Communication
             (int) ($data['recipient_count'] ?? 0)
         );
 
+        $selection_mode =
+            (string) (
+                $data['recipient_selection_mode']
+                ?? SOF_CommunicationRecipientSelection::MODE_ALL
+            );
+
+        $selected_member_ids =
+            $data['selected_member_ids']
+            ?? [];
+
+        if (
+            is_string(
+                $selected_member_ids
+            )
+        ) {
+            $decoded_member_ids =
+                json_decode(
+                    $selected_member_ids,
+                    true
+                );
+
+            $selected_member_ids =
+                is_array(
+                    $decoded_member_ids
+                )
+                    ? $decoded_member_ids
+                    : [];
+        }
+
+        $this->recipient_selection =
+            new SOF_CommunicationRecipientSelection(
+                $selection_mode,
+                is_array($selected_member_ids)
+                    ? $selected_member_ids
+                    : []
+            );
+
         $this->channel = sanitize_key(
             (string) ($data['channel'] ?? 'email')
         );
-
+        
         $this->provider = sanitize_key(
             (string) ($data['provider'] ?? '')
         );
@@ -411,6 +466,55 @@ class SOF_Communication
     public function get_type(): string
     {
         return $this->type;
+    }
+    
+        public function get_source_type(): ?string
+    {
+        return $this->source_type;
+    }
+
+    public function get_source_id(): ?int
+    {
+        return $this->source_id;
+    }
+    
+        /**
+     * Identify the business object that originated
+     * this Communication.
+     */
+    public function set_source(
+        string $source_type,
+        int $source_id
+    ): void {
+        $source_type =
+            sanitize_key(
+                $source_type
+            );
+
+        if (
+            $source_type === '' ||
+            $source_id <= 0
+        ) {
+            $this->source_type = null;
+            $this->source_id = null;
+
+            return;
+        }
+
+        $this->source_type =
+            $source_type;
+
+        $this->source_id =
+            $source_id;
+    }
+
+    public function has_source(): bool
+    {
+        return
+            $this->source_type !== null &&
+            $this->source_type !== '' &&
+            $this->source_id !== null &&
+            $this->source_id > 0;
     }
 
     public function get_status(): string
@@ -509,10 +613,29 @@ class SOF_Communication
         return $this->recipient_count;
     }
 
+    public function get_recipient_selection():
+        SOF_CommunicationRecipientSelection
+    {
+        return $this->recipient_selection;
+    }
+
+    /**
+     * Record the person's recipient selection for this
+     * Communication.
+     */
+    public function set_recipient_selection(
+        SOF_CommunicationRecipientSelection $selection
+    ): void {
+        $this->recipient_selection =
+            $selection;
+
+        $this->touch();
+    }
+
     // -------------------------------------------------
     // Delivery
     // -------------------------------------------------
-
+    
     public function get_channel(): string
     {
         return $this->channel;
@@ -811,6 +934,8 @@ class SOF_Communication
         return [
             'id'                  => $this->id,
             'type'                => $this->type,
+            'source_type'         => $this->source_type,
+            'source_id'           => $this->source_id,
             'status'              => $this->status,
             'subject'             => $this->subject,
             'body'                => $this->body,
@@ -822,6 +947,17 @@ class SOF_Communication
                 $this->membership_statuses
             ),
             'recipient_count'     => $this->recipient_count,
+
+            'recipient_selection_mode' =>
+                $this->recipient_selection
+                    ->get_mode(),
+
+            'selected_member_ids' =>
+                wp_json_encode(
+                    $this->recipient_selection
+                        ->get_member_ids()
+                ),
+
             'channel'             => $this->channel,
             'provider'            => $this->provider,
             'scheduled_at'        => $this->scheduled_at,

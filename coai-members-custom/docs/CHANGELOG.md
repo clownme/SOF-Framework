@@ -3,6 +3,226 @@ All notable changes to the **COAI Members Custom** plugin will be documented in 
 
 FORMAT FOR ALL CHANGELOG ENTIRES CODE BLOCK FORMAT
 
+# ============================================================
+# RP43 — Communications Production Deployment
+# ============================================================
+
+Date:
+    August 9, 2026
+
+Status:
+    Production Validated
+
+------------------------------------------------------------
+Summary
+------------------------------------------------------------
+
+RP43 Communications Workspace Experience was successfully
+deployed from the Test environment into Production.
+
+The complete Communications lifecycle is now operational
+in Production:
+
+    Compose Communication
+        ↓
+    Verify Communication
+        ↓
+    Test Communication
+        ↓
+    Approve Communication
+        ↓
+    Send Communication
+        ↓
+    Confirm Communication
+
+A controlled Production communication was successfully
+completed through the entire lifecycle.
+
+------------------------------------------------------------
+Production Deployment
+------------------------------------------------------------
+
+The current SOF Communications, Membership, Audience,
+Presentation, and supporting framework files were deployed
+into Production.
+
+Production WordPress pages were created for the
+Communications Workspace lifecycle.
+
+During Production validation, an older version of:
+
+    Communications/Services/CommunicationAudienceService.php
+
+was discovered in Production.
+
+The Production file was replaced with the current RP43
+Test version supporting:
+
+    resolve_current_audience()
+
+This restored the expected RP43 audience resolution used
+by Compose Communication.
+
+------------------------------------------------------------
+Production Database Migration
+------------------------------------------------------------
+
+The Production table:
+
+    wp_sof_communications
+
+was updated to support the current RP43 Communication model.
+
+Columns added:
+
+    source_type
+    source_id
+    recipient_selection_mode
+    selected_member_ids
+
+This aligned the Production database schema with the
+Communication persistence model.
+
+A separate migration record was created:
+
+    RP43-PRODUCTION-DATABASE-CHANGES.txt
+
+------------------------------------------------------------
+Production Operational Validation
+------------------------------------------------------------
+
+The complete Communications lifecycle was validated in
+Production.
+
+Compose Communication
+    PASS
+
+Verify Communication
+    PASS
+
+Test Communication
+    PASS
+
+Amazon SES Test Delivery
+    PASS
+
+Test Email Received
+    PASS
+
+Approve Communication
+    PASS
+
+Send Communication
+    PASS
+
+Confirm Communication
+    PASS
+
+------------------------------------------------------------
+Controlled Production Delivery
+------------------------------------------------------------
+
+The Production validation used recipient selection to
+ensure that organizational delivery remained controlled.
+
+Eligible Members:
+    152
+
+Selected Members:
+    1
+
+Approved Recipients:
+    1
+
+Currently Available:
+    1
+
+Attempted:
+    1
+
+Delivered:
+    1
+
+Failed:
+    0
+
+The selected-recipient intent successfully survived the
+entire lifecycle from Compose through actual delivery.
+
+------------------------------------------------------------
+Production Result
+------------------------------------------------------------
+
+RP43 Communications Workspace Experience is operational
+and validated in Production.
+
+The Production deployment demonstrated successful:
+
+    Audience resolution
+    Recipient selection
+    Communication persistence
+    Lifecycle transitions
+    Amazon SES test delivery
+    Organizational delivery
+    Delivery confirmation
+
+RP43 is considered stable and Production ready.
+
+------------------------------------------------------------
+Architecture Observations
+------------------------------------------------------------
+
+The Production deployment reinforced an important SOF
+deployment requirement:
+
+    Application Files
+        +
+    WordPress Presentation Pages
+        +
+    Database Schema
+        =
+    Complete Deployment
+
+WordPress Workspace pages are database-managed resources
+and therefore must be included in future deployment
+planning even though they are not represented by the
+plugin Git repository.
+
+Database migrations must likewise be explicitly documented
+and applied when framework models evolve.
+
+------------------------------------------------------------
+Next Development Direction
+------------------------------------------------------------
+
+The next development direction will focus on SOF Access
+and organizational capabilities.
+
+The Member Portal will remain the common home for all
+members.
+
+Personal account functions remain available through the
+member account experience.
+
+Organizational capabilities will be presented through:
+
+    Staff Tools
+
+Staff Tools will expose capabilities according to the
+person's authorization and organizational scope.
+
+Planned capabilities include:
+
+    Compose Communication
+    Compose Newsletter
+
+Administrators and Managers will be able to control which
+people are authorized to use these capabilities.
+
+The existing SOF Newsletter composition framework will
+also be reviewed for reintegration with the completed
+RP43 Communications lifecycle.
+
 ====================================================================
 # RP38 - Communications Workflow and Release
 ====================================================================

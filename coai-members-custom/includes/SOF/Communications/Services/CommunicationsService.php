@@ -296,8 +296,9 @@ class SOF_CommunicationsService
     ): array {
         if (
             !in_array(
-               $communication->get_status(),
+                $communication->get_status(),
                 [
+                    'verified',
                     'tested',
                     'test_failed',
                     'approved',
@@ -307,7 +308,7 @@ class SOF_CommunicationsService
         ) {
             return $this->failure(
                 'invalid_status',
-                'This communication cannot be returned for revision from its current lifecycle state.'
+                'This communication is not available for revision.'
             );
         }
 

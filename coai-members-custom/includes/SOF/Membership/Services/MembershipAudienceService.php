@@ -16,46 +16,34 @@ if (!defined('ABSPATH')) {
  *     Business
  *
  * Service:
- *     Membership Audience Service
+ *     Membership Audience
  *
  * Purpose:
- *     Resolve members who belong to a defined organizational
- *     membership audience.
+ *     Resolve members belonging to an organizational
+ *     Membership audience.
  *
  * Responsibilities:
- *     - Resolve active members belonging to an organizational region
- *     - Consume Membership-owned region knowledge
- *     - Use the established membership repository
- *     - Return membership facts to other SOF domains
- *     - Preserve Membership ownership of member discovery
+ *     - Resolve members for an organizational region
+ *     - Apply requested Membership statuses
+ *     - Use Membership-owned region knowledge
+ *     - Use Membership-owned country knowledge
+ *     - Return member information for consuming frameworks
  *
  * Does NOT:
- *     - Determine communication authorization
- *     - Assess recipient availability
- *     - Determine communication readiness
- *     - Recommend communication actions
- *     - Render member information
- *     - Send communications
- *
- * Business Question:
- *     Which active members belong to this membership audience?
+ *     - Determine Communication authorization
+ *     - Determine recipient availability
+ *     - Determine Communication lifecycle state
+ *     - Render presentation
+ *     - Deliver Communications
  *
  * ============================================================
  */
 
 class SOF_MembershipAudienceService
 {
-    // -------------------------------------------------
-    // Knowledge
-    // -------------------------------------------------
-
     protected SOF_MembershipRegionKnowledge $region_knowledge;
-    
-    protected SOF_MembershipCountryKnowledge $country_knowledge;
 
-    // -------------------------------------------------
-    // Construction
-    // -------------------------------------------------
+    protected SOF_MembershipCountryKnowledge $country_knowledge;
 
     public function __construct(
         ?SOF_MembershipRegionKnowledge $region_knowledge = null,
@@ -70,404 +58,546 @@ class SOF_MembershipAudienceService
             new SOF_MembershipCountryKnowledge();
     }
 
-    // -------------------------------------------------
-    // Regional Membership
-    // -------------------------------------------------
-
     /**
-     * Resolve active members belonging to an
-     * organizational region.
+     * Resolve members belonging to an organizational region.
+     *
+     * @param array<int, string> $membership_statuses
      *
      * @return array<int, array<string, mixed>>
      */
     public function resolve_regional_members(
         string $region,
-        ?array $statuses = ['Active']
+        array $membership_statuses = ['Active']
     ): array {
-        $region = trim($region);
+        global $wpdb;
+
+        $region =
+            trim($region);
 
         if ($region === '') {
             return [];
         }
 
-        if (
-            !function_exists('coai_members_table') ||
-            !function_exists('coai_get_members_page')
+        // -------------------------------------------------
+        // Resolve Member Table
+        // -------------------------------------------------
+
+        $table = '';
+
+        if (function_exists('coai_members_table')) {
+            $table =
+                coai_members_table();
+
+        } elseif (
+            function_exists('coai_get_members_table')
         ) {
+            $table =
+                coai_get_members_table();
+        }
+
+        if ($table === '') {
             return [];
         }
 
         // -------------------------------------------------
-        // Resolve Organizational Knowledge
+        // Resolve Region Definition
         // -------------------------------------------------
 
-        $region_definition =
-            $this->region_knowledge->region($region);
+        $definition =
+            $this->region_knowledge
+                ->region($region);
 
-        if (!$region_definition) {
+        if (!$definition) {
             return [];
         }
 
-        $resolution_type = trim(
-            (string) (
-                $region_definition['type'] ?? ''
-            )
-        );
-
         // -------------------------------------------------
-        // Resolve Audience
+        // Normalize Membership Statuses
         // -------------------------------------------------
 
-        switch ($resolution_type) {
+        $membership_statuses =
+            $this->normalize_membership_statuses(
+                $membership_statuses
+            );
 
-            case 'location':
+        if (!$membership_statuses) {
+            return [];
+        }
 
-                return $this->resolve_location_members(
-                    $region_definition,
-                    $statuses
-                );
+        // -------------------------------------------------
+        // Build Membership Status Filter
+        // -------------------------------------------------
 
-            case 'country_group':
+        $status_placeholders =
+            implode(
+                ', ',
+                array_fill(
+                    0,
+                    count($membership_statuses),
+                    '%s'
+                )
+            );
 
-                return $this->resolve_country_group_members(
-                    $region_definition,
-                    $statuses
-                );
+        $where = [
+            "
+            UPPER(TRIM(status))
+            IN ({$status_placeholders})
+            ",
+        ];
 
-            default:
+        $args =
+            array_map(
+                static function (
+                    string $status
+                ): string {
+                    return strtoupper($status);
+                },
+                $membership_statuses
+            );
 
+        // -------------------------------------------------
+        // Location-Based Region
+        // -------------------------------------------------
+
+        if (
+            ($definition['type'] ?? '') ===
+                'location'
+        ) {
+            $locations =
+                $definition['locations'] ?? [];
+
+            if (
+                !is_array($locations) ||
+                !$locations
+            ) {
                 return [];
+            }
+
+            $location_placeholders =
+                implode(
+                    ', ',
+                    array_fill(
+                        0,
+                        count($locations),
+                        '%s'
+                    )
+                );
+
+            $where[] =
+                "
+                UPPER(TRIM(state))
+                IN ({$location_placeholders})
+                ";
+
+            foreach ($locations as $location) {
+                $args[] =
+                    strtoupper(
+                        trim(
+                            (string) $location
+                        )
+                    );
+            }
+
+            $country =
+                trim(
+                    (string) (
+                        $definition['country']
+                        ?? ''
+                    )
+                );
+
+            if ($country !== '') {
+
+                $country_values =
+                    $this->database_values_for_country(
+                        $country
+                    );
+
+                if ($country_values) {
+
+                    $country_placeholders =
+                        implode(
+                            ', ',
+                            array_fill(
+                                0,
+                                count($country_values),
+                                '%s'
+                            )
+                        );
+
+                    $where[] =
+                        "
+                        UPPER(TRIM(country))
+                        IN ({$country_placeholders})
+                        ";
+
+                    foreach (
+                        $country_values
+                        as $country_value
+                    ) {
+                        $args[] =
+                            strtoupper(
+                                trim(
+                                    $country_value
+                                )
+                            );
+                    }
+                }
+            }
         }
+
+        // -------------------------------------------------
+        // Country-Group Region
+        // -------------------------------------------------
+
+        elseif (
+            ($definition['type'] ?? '') ===
+                'country_group'
+        ) {
+            $group =
+                trim(
+                    (string) (
+                        $definition['group']
+                        ?? ''
+                    )
+                );
+
+            if ($group === '') {
+                return [];
+            }
+
+            $country_values =
+                $this->country_knowledge
+                    ->database_values_for_group(
+                        $group
+                    );
+
+            if (!$country_values) {
+                return [];
+            }
+
+            $country_placeholders =
+                implode(
+                    ', ',
+                    array_fill(
+                        0,
+                        count($country_values),
+                        '%s'
+                    )
+                );
+
+            $where[] =
+                "
+                UPPER(TRIM(country))
+                IN ({$country_placeholders})
+                ";
+
+            foreach (
+                $country_values
+                as $country_value
+            ) {
+                $args[] =
+                    strtoupper(
+                        trim(
+                            $country_value
+                        )
+                    );
+            }
+        }
+
+        else {
+            return [];
+        }
+
+        // -------------------------------------------------
+        // Query Membership
+        // -------------------------------------------------
+
+        $where_sql =
+            implode(
+                ' AND ',
+                $where
+            );
+
+        $sql =
+            "
+            SELECT *
+            FROM {$table}
+            WHERE {$where_sql}
+            ORDER BY last_name, first_name, member_id
+            ";
+
+        $rows =
+            $wpdb->get_results(
+                $wpdb->prepare(
+                    $sql,
+                    ...$args
+                ),
+                ARRAY_A
+            );
+
+        return $rows ?: [];
     }
     
     /**
-     * Resolve membership population counts by status
+     * Resolve members belonging to the entire organization.
+     *
+     * @param array<int, string> $membership_statuses
+     *
+     * @return array<int, array<string, mixed>>
+     */
+    public function resolve_organizational_members(
+        array $membership_statuses = ['Active']
+    ): array {
+        global $wpdb;
+
+        // -------------------------------------------------
+        // Resolve Member Table
+        // -------------------------------------------------
+
+        $table = '';
+
+        if (function_exists('coai_members_table')) {
+            $table =
+                coai_members_table();
+
+        } elseif (
+            function_exists('coai_get_members_table')
+        ) {
+            $table =
+                coai_get_members_table();
+        }
+
+        if ($table === '') {
+            return [];
+        }
+
+        // -------------------------------------------------
+        // Normalize Membership Statuses
+        // -------------------------------------------------
+
+        $membership_statuses =
+            $this->normalize_membership_statuses(
+                $membership_statuses
+            );
+
+        if (!$membership_statuses) {
+            return [];
+        }
+
+        // -------------------------------------------------
+        // Build Membership Status Filter
+        // -------------------------------------------------
+
+        $status_placeholders =
+            implode(
+                ', ',
+                array_fill(
+                    0,
+                    count($membership_statuses),
+                    '%s'
+                )
+            );
+
+        $args =
+            array_map(
+                static function (
+                    string $status
+                ): string {
+                    return strtoupper($status);
+                },
+                $membership_statuses
+            );
+
+        // -------------------------------------------------
+        // Query Membership
+        // -------------------------------------------------
+
+        $sql =
+            "
+            SELECT *
+            FROM {$table}
+            WHERE UPPER(TRIM(status))
+                IN ({$status_placeholders})
+            ORDER BY last_name, first_name, member_id
+            ";
+
+        $rows =
+            $wpdb->get_results(
+                $wpdb->prepare(
+                    $sql,
+                    ...$args
+                ),
+                ARRAY_A
+            );
+
+        return $rows ?: [];
+    }
+
+    /**
+     * Resolve the current Membership population counts
+     * for the entire organization.
+     *
+     * @return array<string, int>
+     */
+    public function resolve_organizational_status_counts():
+        array {
+
+        $status_counts = [
+            'Active'   => 0,
+            'Expired'  => 0,
+            'Archived' => 0,
+        ];
+
+        foreach (
+            array_keys($status_counts)
+            as $membership_status
+        ) {
+            $members =
+                $this->resolve_organizational_members(
+                    [
+                        $membership_status,
+                    ]
+                );
+
+            $status_counts[$membership_status] =
+                count(
+                    $members
+                );
+        }
+
+        return $status_counts;
+    }
+    
+    /**
+     * Resolve the current Membership population counts
      * for an organizational region.
-     *
-     * Normal Communication audience statuses:
-     *
-     * Active
-     * Expired
-     * Archived
-     *
-     * Deceased is intentionally excluded from the
-     * normal Communication audience population.
      *
      * @return array<string, int>
      */
     public function resolve_regional_status_counts(
         string $region
     ): array {
-        $statuses = [
+        $region =
+            trim(
+                $region
+            );
+
+        $status_counts = [
+            'Active' => 0,
+            'Expired' => 0,
+            'Archived' => 0,
+        ];
+
+        if ($region === '') {
+            return $status_counts;
+        }
+
+        foreach (
+            array_keys($status_counts)
+            as $membership_status
+        ) {
+            $members =
+                $this->resolve_regional_members(
+                    $region,
+                    [
+                        $membership_status,
+                    ]
+                );
+
+            $status_counts[$membership_status] =
+                count(
+                    $members
+                );
+        }
+
+        return $status_counts;
+    }
+
+    /**
+     * Normalize supported Membership statuses.
+     *
+     * @param array<int, string> $statuses
+     *
+     * @return array<int, string>
+     */
+    private function normalize_membership_statuses(
+        array $statuses
+    ): array {
+
+        $supported = [
             'Active',
             'Expired',
             'Archived',
         ];
 
-        $counts = [
-            'Active'   => 0,
-            'Expired'  => 0,
-            'Archived' => 0,
-        ];
+        $normalized = [];
 
         foreach ($statuses as $status) {
 
-            $members =
-                $this->resolve_regional_members(
-                    $region,
-                    [
+            $status =
+                trim(
+                    (string) $status
+                );
+
+            foreach ($supported as $known_status) {
+
+                if (
+                    strcasecmp(
                         $status,
-                    ]
-                );
+                        $known_status
+                    ) === 0
+                ) {
+                    $normalized[] =
+                        $known_status;
 
-            $counts[$status] =
-                count($members);
-        }
-
-        return $counts;
-    }
-
-    // -------------------------------------------------
-    // Location Resolution
-    // -------------------------------------------------
-
-    /**
-     * Resolve members belonging to an organizational region
-     * defined by states, provinces, or territories.
-     *
-     * @param array<string, mixed> $definition
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    protected function resolve_location_members(
-        array $definition,
-        ?array $statuses = ['Active']
-    ): array {
-        $locations =
-            $definition['locations'] ?? [];
-
-        if (
-            !is_array($locations) ||
-            empty($locations)
-        ) {
-            return [];
-        }
-
-        $locations = array_values(
-            array_filter(
-                array_map(
-                    static function ($location): string {
-                        return strtoupper(
-                            trim((string) $location)
-                        );
-                    },
-                    $locations
-                )
-            )
-        );
-
-        if (!$locations) {
-            return [];
-        }
-
-        $table = coai_members_table();
-
-        $join_sql = '';
-
-        $placeholders = implode(
-            ', ',
-            array_fill(
-                0,
-                count($locations),
-                '%s'
-            )
-        );
-
-        /*
-         * Location codes are currently sufficient to identify
-         * the organizational territory.
-         *
-         * We intentionally do not require country here because
-         * legacy membership records may contain incomplete or
-         * inconsistent country values.
-         */
-        $where = "
-            WHERE UPPER(TRIM(`$table`.state))
-                IN ($placeholders)
-        ";
-
-        $args = $locations;
-
-        /*
-         * -------------------------------------------------
-         * Membership Status
-         * -------------------------------------------------
-         *
-         * By default, audience discovery returns Active
-         * members.
-         *
-         * A null status collection means return all members
-         * belonging to the organizational audience.
-         */
-
-        if ($statuses !== null) {
-
-            $statuses = array_values(
-                array_filter(
-                    array_map(
-                        static function ($status): string {
-                            return trim((string) $status);
-                        },
-                        $statuses
-                    )
-                )
-            );
-
-            if ($statuses) {
-
-                $status_placeholders = implode(
-                    ', ',
-                    array_fill(
-                        0,
-                        count($statuses),
-                        '%s'
-                    )
-                );
-
-                $where .= "
-                    AND `$table`.status
-                        IN ($status_placeholders)
-                ";
-
-                $args = array_merge(
-                    $args,
-                    $statuses
-                );
+                    break;
+                }
             }
         }
 
-        return $this->discover_members(
-            $table,
-            $join_sql,
-            $where,
-            $args
+        return array_values(
+            array_unique(
+                $normalized
+            )
         );
     }
 
-    // -------------------------------------------------
-    // Country Group Resolution
-    // -------------------------------------------------
-
     /**
-     * Resolve members belonging to an organizational
-     * country group.
+     * Return database values that may represent one country.
      *
-     * @param array<string, mixed> $definition
-     *
-     * @return array<int, array<string, mixed>>
+     * @return array<int, string>
      */
-    protected function resolve_country_group_members(
-        array $definition,
-        ?array $statuses = ['Active']
+    private function database_values_for_country(
+        string $country
     ): array {
-        $group = trim(
-            (string) (
-                $definition['group'] ?? ''
-            )
-        );
 
-        if ($group === '') {
-            return [];
-        }
-
-       $country_values =
+        $canonical =
             $this->country_knowledge
-                ->database_values_for_group($group);
+                ->normalize($country);
 
-        if (!$country_values) {
+        if ($canonical === '') {
             return [];
         }
 
-        $table = coai_members_table();
+        $values = [
+            $canonical,
+        ];
 
-        $join_sql = '';
-
-        $placeholders = implode(
-            ', ',
-            array_fill(
-                0,
-                count($country_values),
-                '%s'
-            )
-        );
-
-        $where = "
-            WHERE UPPER(TRIM(`$table`.country))
-                IN ($placeholders)
-        ";
-
-        $args = $country_values;
-
-        /*
-         * -------------------------------------------------
-         * Membership Status
-         * -------------------------------------------------
-         *
-         * By default, audience discovery returns Active
-         * members.
-         *
-         * A null status collection means return all members
-         * belonging to the organizational audience.
-         */
-
-        if ($statuses !== null) {
-
-            $statuses = array_values(
-                array_filter(
-                    array_map(
-                        static function ($status): string {
-                            return trim((string) $status);
-                        },
-                        $statuses
-                    )
-                )
-            );
-
-            if ($statuses) {
-
-                $status_placeholders = implode(
-                    ', ',
-                    array_fill(
-                        0,
-                        count($statuses),
-                        '%s'
-                    )
-                );
-
-                $where .= "
-                    AND `$table`.status
-                        IN ($status_placeholders)
-                ";
-
-                $args = array_merge(
-                    $args,
-                    $statuses
-                );
+        foreach (
+            $this->country_knowledge->aliases()
+            as $alias => $resolved
+        ) {
+            if ($resolved === $canonical) {
+                $values[] =
+                    $alias;
             }
-        }       
+        }
 
-        return $this->discover_members(
-            $table,
-            $join_sql,
-            $where,
-            $args
-        );
-    }
-
-
-    // -------------------------------------------------
-    // Repository Discovery
-    // -------------------------------------------------
-
-    /**
-     * Execute member discovery through the established
-     * Membership repository.
-     *
-     * @param array<int, mixed> $args
-     *
-     * @return array<int, array<string, mixed>>
-     */
-    protected function discover_members(
-        string $table,
-        string $join_sql,
-        string $where,
-        array $args
-    ): array {
-        $order_by = "
-            ORDER BY
-                `$table`.last_name ASC,
-                `$table`.first_name ASC
-        ";
-
-        /*
-         * Organizational audiences currently contain far fewer
-         * members than this limit. The boundary prevents
-         * accidental truncation without creating an unrestricted
-         * query.
-         */
-        $limit = 5000;
-
-        $offset = 0;
-
-        return coai_get_members_page(
-            $table,
-            $join_sql,
-            $where,
-            $args,
-            $order_by,
-            $limit,
-            $offset,
-            false
+        return array_values(
+            array_unique(
+                $values
+            )
         );
     }
 }

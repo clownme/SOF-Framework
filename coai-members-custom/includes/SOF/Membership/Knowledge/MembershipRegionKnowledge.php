@@ -247,7 +247,7 @@ class SOF_MembershipRegionKnowledge
              */
             'International Region' => [
                 'type' => 'country_group',
-                'group' => 'EUROPE_AUSTRALIA_ASIA',
+                'group' => 'EUROPE_ASIA_OCEANIA',
             ],
         ];
     }

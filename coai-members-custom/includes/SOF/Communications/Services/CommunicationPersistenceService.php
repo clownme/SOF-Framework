@@ -37,19 +37,31 @@ if (!defined('ABSPATH')) {
 
 class SOF_CommunicationPersistenceService
 {
-    /**
-     * Communication repository.
-     */
-    protected SOF_CommunicationRepository $repository;
+/**
+ * Communication repository.
+ */
+protected SOF_CommunicationRepository $repository;
 
-    /**
-     * Constructor.
-     */
-    public function __construct(
-        SOF_CommunicationRepository $repository
-    ) {
-        $this->repository = $repository;
-    }
+/**
+ * Organizational Event service.
+ */
+protected SOF_EventService $event_service;
+
+/**
+ * Constructor.
+ */
+ 
+public function __construct(
+    SOF_CommunicationRepository $repository,
+    ?SOF_EventService $event_service = null
+) {
+    $this->repository =
+        $repository;
+
+    $this->event_service =
+        $event_service
+        ?? new SOF_EventService();
+}
 
     /**
      * Persist a new Communication.
@@ -70,10 +82,84 @@ class SOF_CommunicationPersistenceService
             return null;
         }
 
-        return $this->repository->find(
-            $communication_id
+        $persisted_communication =
+            $this->repository->find(
+                $communication_id
+            );
+ 
+        if (!$persisted_communication) {
+            return null;
+        }
+
+    // -------------------------------------------------
+    // Organizational Memory
+    // -------------------------------------------------
+
+    $event =
+        new SOF_Event([
+            'domain' =>
+                'communications',
+
+            'entity_type' =>
+                'communication',
+
+            'entity_id' =>
+                $communication_id,
+
+            'event_type' =>
+                'communication.created',
+
+            'actor_id' =>
+                $persisted_communication
+                    ->get_created_by(),
+
+            'occurred_at' =>
+                $persisted_communication
+                    ->get_created_at()
+                ?: current_time('mysql'),
+
+            'summary' =>
+                'Communication created.',
+
+            'metadata' => [
+                'subject' =>
+                    $persisted_communication
+                        ->get_subject(),
+
+                'audience_key' =>
+                    $persisted_communication
+                        ->get_audience_key(),
+
+                'audience_name' =>
+                    $persisted_communication
+                        ->get_audience_name(),
+
+                'channel' =>
+                    $persisted_communication
+                        ->get_channel(),
+
+                'recipient_count' =>
+                    $persisted_communication
+                        ->get_recipient_count(),
+            ],
+        ]);
+
+    $recorded_event =
+        $this->event_service->record(
+            $event
+        );
+
+    if (!$recorded_event) {
+        error_log(
+            sprintf(
+                '[SOF Memory] Communication created, but Event recording failed. Communication ID: %d',
+                $communication_id
+            )
         );
     }
+
+    return $persisted_communication;
+}
     
     /**
      * Save changes to an existing persisted Communication.

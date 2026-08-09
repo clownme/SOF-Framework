@@ -1,0 +1,35 @@
+RP43 Production Database Migration
+August 9, 2026
+
+Table:
+    wp_sof_communications
+
+Columns added:
+    source_type VARCHAR(50) NULL
+    source_id BIGINT(20) UNSIGNED NULL
+    recipient_selection_mode VARCHAR(20) NOT NULL DEFAULT 'all'
+    selected_member_ids LONGTEXT NULL
+
+Purpose:
+    Align the Production Communications database schema
+    with the RP43 Communication model.
+
+Production Validation:
+    Compose             PASS
+    Verify              PASS
+    Test                PASS
+    Amazon SES Test     PASS
+    Approve             PASS
+    Send                PASS
+    Confirm             PASS
+
+Controlled Production Delivery:
+    Eligible Members    152
+    Selected Members    1
+    Attempted           1
+    Delivered           1
+    Failed              0
+
+Result:
+    RP43 Communications successfully deployed and
+    operationally validated in Production.

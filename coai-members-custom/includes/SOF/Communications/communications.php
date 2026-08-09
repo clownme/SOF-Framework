@@ -58,6 +58,9 @@ require_once SOF_COMMUNICATIONS_PATH .
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Models/CommunicationRecipients.php';
+    
+require_once SOF_COMMUNICATIONS_PATH .
+    '/Models/CommunicationRecipientSelection.php';
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Models/CommunicationAssessment.php';
@@ -70,9 +73,6 @@ require_once SOF_COMMUNICATIONS_PATH .
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Models/CommunicationSituation.php';
-
-require_once SOF_COMMUNICATIONS_PATH .
-    '/Models/CommunicationReadiness.php';
     
 // -------------------------------------------------
 // Repositories
@@ -136,6 +136,9 @@ require_once SOF_COMMUNICATIONS_PATH .
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Services/CommunicationAssessmentService.php';
+    
+require_once SOF_COMMUNICATIONS_PATH .
+    '/Services/CommunicationRecipientSelectionService.php';
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Services/CommunicationRecommendationService.php';

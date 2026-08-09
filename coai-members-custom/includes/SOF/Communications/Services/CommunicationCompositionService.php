@@ -78,6 +78,7 @@ class SOF_CommunicationCompositionService
                 'body'                => $message,
                 'audience_key'        => $audience->get_key(),
                 'audience_name'       => $audience->get_name(),
+                'audience_region'     => $audience->get_region(),
                 'membership_statuses' =>
                     $audience->get_membership_statuses(),
                 'recipient_count'     => max(

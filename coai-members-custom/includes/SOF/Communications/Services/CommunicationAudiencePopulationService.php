@@ -58,11 +58,22 @@ class SOF_CommunicationAudiencePopulationService
         SOF_CommunicationAudience $audience
     ): SOF_CommunicationAudiencePopulation {
 
-        $status_counts =
-            $this->membership_audience_service
-                ->resolve_regional_status_counts(
-                    $audience->get_region()
-                );
+        if (
+            $audience->get_key() ===
+            'organization_members'
+        ) {
+            $status_counts =
+                $this->membership_audience_service
+                    ->resolve_organizational_status_counts();
+
+        } else {
+
+            $status_counts =
+                $this->membership_audience_service
+                    ->resolve_regional_status_counts(
+                        $audience->get_region()
+                    );
+        }
 
         $eligible_counts = [
             'Active' =>
