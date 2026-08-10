@@ -87,11 +87,23 @@ coai_safe_require('includes/SOF/Magazines/magazines.php');
 // SOF Membership
 coai_safe_require('includes/SOF/Membership/membership.php');
 
+// SOF Organization
+coai_safe_require('includes/SOF/Organization/organization.php');
+
+// SOF Access
+coai_safe_require('includes/SOF/Access/access.php');
+
+// SOF Audience
+coai_safe_require('includes/SOF/Audience/audience.php');
+
 // SOF Organizational Memory
 coai_safe_require('includes/SOF/Memory/memory.php');
 
 // SOF Communications
 coai_safe_require('includes/SOF/Communications/communications.php');
+
+// SOF Newsletters
+coai_safe_require('includes/SOF/Newsletters/newsletters.php');
 
 // Core Communications
 coai_safe_require('includes/services/communications-service.php');

@@ -229,10 +229,20 @@ add_shortcode('coai_member_portal', function () {
     <div class="coai-portal-card" style="max-width:720px;margin:1rem auto;padding:1.25rem;border:1px solid #e5e7eb;border-radius:12px;background:#fff;">
       <h3 style="margin:0 0 .5rem;">Newsletter Tools</h3>
       <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
-        <a class="button" href="<?php echo esc_url(home_url('/staff-newsletters/')); ?>"
-           style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-          Newsletter &amp; Announcements
-        </a>
+          <a class="button" href="<?php echo esc_url(home_url('/communications/')); ?>"
+             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
+            Compose Communications
+          </a>
+
+          <a class="button" href="<?php echo esc_url(home_url('/newsletters/')); ?>"
+             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
+            Compose Newsletters
+          </a>
+          
+          <a class="button" href="<?php echo esc_url(home_url('/access/')); ?>"
+             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
+            Grant Access
+          </a>
       </div>
     </div>
   <?php endif; ?>
@@ -300,9 +310,19 @@ add_shortcode('coai_member_portal', function () {
             Manual Add Member
           </a>
 
-          <a class="button" href="<?php echo esc_url(home_url('/staff-newsletters/')); ?>"
+          <a class="button" href="<?php echo esc_url(home_url('/compose-communication/')); ?>"
              style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-            Newsletter &amp; Announcements
+            Compose Communications
+          </a>
+
+          <a class="button" href="<?php echo esc_url(home_url('/newsletters/')); ?>"
+             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
+            Compose Newsletters
+          </a>
+          
+          <a class="button" href="<?php echo esc_url(home_url('/access/')); ?>"
+             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
+            Manage Access
           </a>
         <?php endif; ?>
 

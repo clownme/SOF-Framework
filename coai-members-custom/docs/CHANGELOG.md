@@ -3,683 +3,541 @@ All notable changes to the **COAI Members Custom** plugin will be documented in 
 
 FORMAT FOR ALL CHANGELOG ENTIRES CODE BLOCK FORMAT
 
-====================================================
-## Recovery Point RP44
-====================================================
+=================================================================
+# RP44 — Newsletter Production Deployment & SOF Access Validation
+=================================================================
 
-**Recovery Point:** RP44  
-**Version:** v4.3.0-RP44  
 **Date:** August 10, 2026  
-**Focus:** Newsletter Integration, Audience Standardization, and Workflow Validation
+**Recovery Point:** RP44  
+**Status:** Production Deployed and Validated
 
 ---
 
-# Summary
+## Summary
 
-RP44 completes the integration and refinement of the SOF Newsletter experience with the established SOF Communications lifecycle.
+RP44 completed the Production deployment and operational validation of the SOF Newsletter framework.
 
-The Newsletter framework now provides a complete human-centered composition experience while delegating communication verification, testing, approval, and delivery responsibilities to the Communications framework.
+The Newsletter authoring experience is now integrated with the SOF Communications lifecycle and supported by SOF Access, Audience, Organization, and Membership capabilities.
 
-Newsletter audience selection was standardized with Communications so that both experiences use the same organizational audience concepts, membership-status filtering, and selected-member behavior.
+Production validation confirmed that an authorized Administrator can create a Newsletter, define its audience, select individual recipients, preview the completed Newsletter, perform a test delivery, review the communication, approve it, and safely move backward through the lifecycle for additional testing or revision.
 
-The Newsletter workflow was validated through:
+This recovery point also established the SOF Access persistence infrastructure required for capability-based Newsletter authorization.
+
+---
+
+## Newsletter Production Deployment
+
+Deployed the SOF Newsletter framework to Production.
+
+Production now includes:
+
+- Newsletter Models
+- Newsletter Services
+- Newsletter Repository
+- Newsletter HTML Renderer
+- Newsletter Composition Workspace
+- Newsletter Library Workspace
+- Newsletter Preview Workspace
+- Newsletter Shortcodes
+- Newsletter presentation assets
+- Newsletter communication integration
+
+Created the Production Newsletter persistence table required by the framework.
+
+Created the required WordPress pages for:
+
+- Newsletters
+- Compose Newsletter
+- Newsletter Preview
+
+Validated that the Newsletter workspaces load correctly from the Production Member Portal.
+
+---
+
+## SOF Supporting Framework Deployment
+
+Production was brought into alignment with the SOF architecture required by Newsletters and Communications.
+
+The following SOF frameworks were deployed or activated:
+
+- Access
+- Audience
+- Organization
+- Newsletters
+
+The primary plugin loader was updated so these frameworks are loaded in the required architectural sequence.
+
+---
+
+## SOF Access Persistence
+
+Production was missing the persistence layer required by the SOF Access framework.
+
+Created:
+
+- `wp_sof_access_assignments`
+- `wp_sof_access_grants`
+
+The Production schemas were matched to the validated Test environment, including required indexes and uniqueness constraints.
+
+Access was then assigned through the SOF Manage Access experience rather than by manually inserting authorization records.
+
+The Production Super Admin profile successfully generated its associated business and platform capability grants.
+
+---
+
+## Newsletter Authorization
+
+Validated the SOF authorization path:
+
+Person  
+→ Access Profile  
+→ Capability Grant  
+→ Scope  
+→ Newsletter Audience
+
+The Production Administrator was assigned:
+
+- Access Profile: Super Admin
+- Scope: Entire Organization
+
+The resulting capability grants included:
+
+- `manage_newsletters`
+
+with organization-wide scope.
+
+Newsletter audience resolution subsequently identified the organization-wide membership population correctly.
+
+---
+
+## Newsletter Audience and Recipient Selection
+
+Before SOF Access persistence was established, Newsletter composition reported:
+
+- Eligible Members: 0
+- Specific Member Selection: unavailable
+
+After Access configuration, Production correctly resolved:
+
+- Membership Status: Active
+- Eligible Members: 1,052
+
+Specific Member Selection successfully loaded the eligible member population.
+
+Production testing used a single selected member to prevent accidental organizational delivery during validation.
+
+---
+
+## Newsletter Media
+
+Validated WordPress Media Library integration in Production.
+
+Newsletter authors can select Production media for:
+
+- Header logos
+- Newsletter section images
+- Signature images
+
+Confirmed that media selection resolves against the Production WordPress uploads environment.
+
+---
+
+## Newsletter Action Buttons
+
+Validated Newsletter section action buttons.
+
+A rendering artifact was discovered around Newsletter action buttons during lifecycle review and delivered email testing.
+
+The Newsletter action button renderer was revised to use email-compatible presentation-table markup.
+
+The button was further constrained to retain its natural content width rather than expanding across the Newsletter.
+
+Final validation confirmed:
+
+- Compact action button presentation
+- Correct button label
+- Correct link behavior
+- No unwanted rendering artifact
+- Correct presentation in delivered test email
+
+---
+
+## Structured Newsletter HTML
+
+A presentation issue was identified when Newsletter HTML entered the Communications lifecycle.
+
+Approve Communication was applying `wpautop()` to the already structured Newsletter HTML.
+
+Because Newsletter bodies contain complete HTML structures including presentation tables, images, sections, and action buttons, applying `wpautop()` could introduce additional paragraph or break markup.
+
+Approve Communication was updated to distinguish structured HTML from ordinary Communication content.
+
+Structured Newsletter HTML is now rendered without additional automatic paragraph processing.
+
+Normal text Communications continue to receive standard paragraph formatting.
+
+This preserves both:
+
+- traditional Communication rendering
+- structured Newsletter rendering
+
+---
+
+## Communications Lifecycle Integration
+
+Production successfully validated the Newsletter-to-Communications workflow:
 
 Newsletter Composition  
-→ Audience Selection  
-→ Selected Member Resolution  
-→ Verify Communication  
+→ Save Draft  
+→ Preview  
+→ Verify  
 → Test Communication Delivery  
 → Approve Communication
 
-A successful test email delivery confirmed that the Newsletter content and audience information survive the transition into the Communications lifecycle.
+Validation confirmed preservation of:
 
-Final organizational delivery was intentionally not performed because validation did not require sending the test Newsletter to a live member.
-
----
-
-# Newsletter Composition
-
-The Newsletter composition experience was refined into the SOF card-based presentation model.
-
-Newsletter composition now supports:
-
-- Newsletter Title
-- Email Subject
-- Newsletter design settings
-- Header logo/image
-- Multiple content sections
-- Section headings
+- Newsletter subject
+- Newsletter HTML
+- Header logo
 - Section content
 - Section images
-- Section links
-- Signature name
-- Signature title
-- Signature image
-- Live Newsletter preview
-- Draft persistence
-
-New Newsletter Title and Subject fields are blank rather than populated with demonstration information.
-
-Existing Newsletter drafts continue to populate previously saved information.
-
-Form readability was improved throughout the Newsletter workspace.
-
-Entered text now uses a standard dark text color for improved readability, particularly for users who may have difficulty reading low-contrast interfaces.
-
-Placeholder text remains visually distinct from entered information.
+- Action buttons
+- Signature
+- Audience
+- Membership status
+- Eligible recipient population
+- Selected recipient population
 
 ---
 
-# Newsletter Audience Integration
+## Lifecycle Navigation
 
-Newsletter audience selection was expanded and standardized with the SOF Communications framework.
+A defect was identified in:
 
-Newsletter audience intent now supports:
+Approve Communication  
+→ Return to Test
 
-- Organizational audience scope
-- Membership-status selection
-- Active members
-- Expired members
-- Archived members
-- Selected Members
-- Organizationally authorized member populations
+The Test URL contained the Communication identity, but the GET form did not explicitly submit the `communication_id`.
 
-Newsletter audience information is persisted with the Newsletter rather than reconstructed later in the workflow.
+The navigation was updated to submit the Communication identity as a hidden form value.
 
-Newsletter persistence now includes:
+Production validation confirmed:
 
-- `membership_statuses`
-- `audience_scope_key`
-- `recipient_selection_mode`
-- `selected_member_ids`
+Approve Communication  
+→ Return to Test  
+→ Correct Communication Restored
 
-This allows the Newsletter to retain the human's audience decision throughout the complete communication lifecycle.
+The communication retained:
 
----
+- Entire Organization audience
+- Active membership status
+- 1,052 eligible members
+- 1 selected member
+- Newsletter content
+- Test delivery results
 
-# Selected Member Experience
-
-The Selected Members experience was aligned with the existing SOF Communications recipient-selection model.
-
-When Selected Members is chosen, the user can:
-
-- View eligible members
-- Browse members in manageable groups
-- Search for a specific member
-- Select individual members
-- Review selected recipients
-- Continue composition with the selection preserved
-
-Organizational scope remains authoritative.
-
-For example, a Regional Vice President using Selected Members may select only people within the audience authorized for that Regional Vice President.
-
-This maintains the SOF principle that presentation may offer choices only within the business authority already established for the person.
+This confirms that the Communications lifecycle can move backward for additional review without losing its business context.
 
 ---
 
-# Newsletter to Communication Handoff
+## Production Safety Validation
 
-The Newsletter framework now hands a prepared Newsletter into the existing Communications lifecycle.
+Production testing deliberately used a single selected member.
 
-Newsletter information successfully propagates into:
+The workflow was exercised through the final approval/review stages without performing an unintended organization-wide delivery.
 
-- Verify Communication
-- Test Communication Delivery
-- Approve Communication
-
-Newsletter-selected recipients are preserved during the handoff.
-
-Validation confirmed the distinction between:
-
-- Eligible Members
-- Selected Members
-
-For the final RP44 validation:
-
-- Eligible Members: 1,050
-- Selected Members: 1
-
-Verify Communication correctly reported one selected member rather than treating all 1,050 eligible members as selected recipients.
+The Revise Communication and Return to Test paths were also exercised to confirm safe backward lifecycle navigation.
 
 ---
 
-# Test Communication Delivery
+## Architectural Validation
 
-Newsletter test delivery was successfully completed through the Communications framework.
+RP44 demonstrates the operational SOF relationship:
 
-The Test Communication workspace correctly displayed:
+Organization  
+→ Person  
+→ Access  
+→ Capability  
+→ Scope  
+→ Audience  
+→ Communication  
+→ Human Experience
 
-- Eligible member population
-- Selected member population
-- Delivery intent
-- Test recipient
-- Test delivery result
+Authorization is no longer determined merely by a WordPress role or legacy member `usergroup`.
 
-A test Newsletter email was successfully received by the designated reviewer.
+SOF Access provides explicit business capabilities and organizational scope that downstream frameworks can consume.
 
-The test recipient remained separate from the organizational delivery audience.
-
----
-
-# Approve Communication Validation
-
-The Newsletter-derived Communication successfully reached the Approve Communication stage.
-
-Approve Communication retained the correct audience information and selected-recipient count.
-
-The final organizational Send action was intentionally not executed during RP44 validation.
-
-The workflow had already established:
-
-- Newsletter content persistence
-- Audience persistence
-- Selected-member persistence
-- Communication creation
-- Verification
-- Test delivery
-- Approval readiness
-
-Sending the test Newsletter to a live organizational member was therefore unnecessary for RP44 validation.
+Newsletter audience resolution successfully demonstrated this architecture in Production.
 
 ---
 
-# Newsletter Source Protection
+## Production Status
 
-A Newsletter remains the editable business object for Newsletter-originated Communications.
+At completion of RP44:
 
-Newsletter content is rendered into HTML when handed to Communications for delivery.
+- SOF Newsletters operational
+- SOF Access operational
+- SOF Audience operational
+- SOF Organization operational
+- Newsletter persistence operational
+- Access persistence operational
+- Administrator authorization operational
+- Organization-wide audience resolution operational
+- Membership filtering operational
+- Specific recipient selection operational
+- WordPress Media Library integration operational
+- Newsletter preview operational
+- Test email delivery operational
+- Structured HTML rendering operational
+- Newsletter action buttons operational
+- Communications lifecycle integration operational
+- Return to Test navigation operational
+- Revision workflow operational
 
-The generic Compose Communication workspace previously exposed this rendered HTML inside the standard Message field when a Newsletter-derived Communication was opened for revision.
-
-Source-aware routing was introduced so Newsletter-originated Communications return to:
-
-`Compose Newsletter`
-
-rather than exposing the rendered Newsletter HTML through:
-
-`Compose Communication`
-
-This preserves the architectural separation between:
-
-Newsletter  
-→ Editable business content
-
-and:
-
-Communication  
-→ Prepared delivery representation
-
----
-
-# Newsletter Navigation
-
-Newsletter composition navigation was improved.
-
-The composition workspace now provides clear actions for:
-
-- Save Draft
-- Preview Newsletter
-- Continue to Verify
-- Start New Newsletter
-- Back to Newsletters
-
-Saving a draft no longer leaves the user without an obvious path to begin another Newsletter or return to the Newsletter Library.
-
-Workflow actions and navigation actions are visually separated.
+**RP44 Production deployment and operational validation are complete.**
 
 ---
 
-# Newsletter Library
+## Next — RP45 Newsletter Authoring Experience
 
-The Newsletter Library presentation was redesigned using the SOF card model.
+The next Newsletter evolution will focus on improving the author's content-writing experience.
 
-The Newsletter landing experience now provides a dedicated Newsletter Actions card with:
+Initial capabilities identified for RP45 include:
 
-- Start New Newsletter
-- Select Previous Newsletter
+- Bold
+- Italic
+- Links
+- Bulleted lists
+- Numbered lists
+- Undo
+- Redo
 
-Previous Newsletters are presented as individual cards.
+The author will control the meaning and emphasis of the content while SOF continues to control the overall Newsletter presentation and design.
 
-Each card displays:
+### Design Principle
 
-- Newsletter Title
-- Subject
-- Status
-- Appropriate next action
-
-This follows the SOF presentation principle:
-
-**One Business Thought = One Card**
-
----
-
-# Previous Newsletter Behavior
-
-The Previous Newsletter workflow was corrected to distinguish between active drafts and historical Newsletters.
-
-Previously, selecting an existing Draft invoked the `copy_as_new_draft()` workflow.
-
-This could create duplicate Draft records when the user's actual intention was simply to continue editing the existing Newsletter.
-
-The new behavior is:
-
-### Draft Newsletter
-
-Action:
-
-**Continue Editing**
-
-The existing Newsletter is opened directly.
-
-No duplicate Newsletter is created.
-
-### Historical / Completed Newsletter
-
-Action:
-
-**Use as New Newsletter**
-
-The historical Newsletter may be copied into a new Draft without modifying the original Newsletter.
-
-This makes the presented action reflect the actual business situation.
-
----
-
-# Duplicate Draft Cleanup
-
-Testing of the previous Newsletter workflow produced two Test Newsletter Draft records.
-
-The records were identified as:
-
-- Original Test Newsletter Draft
-- Duplicate Draft created during previous-selection testing
-
-The duplicate test record was removed after the workflow correction was implemented.
-
-The Newsletter Library now displays only the intended Test Newsletter Draft.
-
----
-
-# Presentation Refinement
-
-Newsletter presentation was further aligned with the RP43 Communications presentation standard.
-
-Improvements include:
-
-- Card-based Newsletter Actions
-- Card-based Previous Newsletter presentation
-- Consistent workspace margins
-- Improved content alignment
-- Clearer action hierarchy
-- Improved button presentation
-- Improved text contrast
-- Darker user-entered text
-- More readable instructional text
-- Responsive action grouping
-- Separation of workflow actions from navigation actions
-
-These changes continue the SOF presentation objective:
-
-> Hide complexity. Expose simplicity. Show people what matters.
-
----
-
-# Architectural Outcome
-
-RP44 establishes a clearer separation of responsibility between Newsletters and Communications.
-
-## Newsletters
-
-Responsible for:
-
-- Newsletter composition
-- Newsletter design
-- Newsletter sections
-- Newsletter images
-- Newsletter signature
-- Newsletter audience intent
-- Newsletter draft persistence
-- Newsletter revision
-
-## Communications
-
-Responsible for:
-
-- Audience verification
-- Recipient resolution
-- Communication assessment
-- Test delivery
-- Approval
-- Organizational delivery
-- Delivery confirmation
-
-The Newsletter does not recreate the Communications lifecycle.
-
-Instead, it prepares a specialized communication experience and then enters the established Communications workflow.
-
----
-
-# SOF Standardization
-
-RP44 reinforces an important SOF architectural principle:
-
-> Different business experiences may require different composition tools while sharing the same underlying business capabilities.
-
-A Newsletter and a standard Communication are different human experiences.
-
-They can nevertheless share:
-
-- Audience resolution
-- Authorization
-- Recipient selection
-- Verification
-- Testing
-- Approval
-- Delivery
-- Confirmation
-
-This allows SOF to standardize business capabilities without forcing every business experience into the same screen.
-
----
-
-# Validation Status
-
-RP44 Newsletter integration is considered operationally validated through the Approve Communication stage.
-
-Validated:
-
-- Newsletter creation
-- Newsletter editing
-- Draft persistence
-- Newsletter preview
-- Image support
-- Signature support
-- Audience selection
-- Membership-status filtering
-- Selected Members
-- Member search
-- Selected-member persistence
-- Newsletter-to-Communication handoff
-- Verify Communication
-- Test Communication Delivery
-- Successful test email receipt
-- Approve Communication
-- Newsletter revision routing
-- Newsletter Library
-- Continue Editing behavior
-- New Newsletter navigation
-
-Organizational delivery was intentionally not performed during final RP44 testing.
-
----
-
-# Recovery Point
-
-RP44 represents the stable development baseline for Newsletter integration prior to Production deployment.
-
-**Tag:**
-
-`v4.3.0-RP44`
-
----
-
-# Next Phase
-
-## RP45 — Production Deployment and Operational Validation
-
-The next phase will move the validated RP44 implementation into Production.
-
-RP45 should focus on:
-
-- Production environment assessment
-- Production/database comparison
-- Required database schema updates
-- Controlled deployment of changed files
-- Production access validation
-- Communications smoke testing
-- Newsletter smoke testing
-- Audience-resolution validation
-- Selected-member validation
-- Test delivery validation
-- Controlled organizational delivery when appropriate
-- Post-deployment operational validation
-- Recovery and rollback readiness
-
-Production deployment should preserve RP44 as the known-good pre-deployment recovery point.
-
----
-
-# Recovery Point Status
-
-**RP44 — COMPLETE**
-
-Newsletter Integration  
-Audience Standardization  
-Selected Member Integration  
-Communications Lifecycle Integration  
-Newsletter Library Refinement  
-Workflow Validation
-
-**Next: RP45 — Production Deployment and Operational Validation**
+> **Authors control the message. SOF protects the experience.**
 
 # ============================================================
-# SOF Change Log
+# RP43 — Communications Production Deployment
 # ============================================================
-
-Recovery Point:
-    RP43
 
 Date:
-    August 8, 2026
+    August 9, 2026
 
-Title:
-    Communications Workspace Presentation Framework Complete
+Status:
+    Production Validated
 
 ------------------------------------------------------------
 Summary
 ------------------------------------------------------------
 
-Completed the redesign of the Communications Workspace
-presentation layer.
+RP43 Communications Workspace Experience was successfully
+deployed from the Test environment into Production.
 
-The Communications lifecycle now presents a consistent
-business experience across all operational stages while
-preserving existing business services.
+The complete Communications lifecycle is now operational
+in Production:
 
-------------------------------------------------------------
-Changes
-------------------------------------------------------------
+    Compose Communication
+        ↓
+    Verify Communication
+        ↓
+    Test Communication
+        ↓
+    Approve Communication
+        ↓
+    Send Communication
+        ↓
+    Confirm Communication
 
-Presentation
-
-• Removed duplicate Communications page headings.
-
-• Standardized workspace layout.
-
-• Standardized card presentation.
-
-• Standardized section ordering.
-
-• Standardized Available Actions.
-
-• Standardized business wording.
-
-• Improved mobile presentation.
-
-Verify Workspace
-
-• Updated presentation layout.
-
-• Standardized Assessment.
-
-• Standardized Recommended Path.
-
-• Standardized Communication.
-
-• Standardized Audience.
-
-• Standardized Recipients.
-
-• Standardized Available Actions.
-
-Review Workspace
-
-• Rebuilt using the standardized presentation model.
-
-• Improved recipient review experience.
-
-• Simplified navigation.
-
-Approve Workspace
-
-• Rebuilt using the standardized presentation model.
-
-• Improved approval workflow.
-
-• Updated sender presentation.
-
-• Standardized action buttons.
-
-Send Workspace
-
-• Completely rebuilt.
-
-• Standardized delivery presentation.
-
-• Standardized delivery information.
-
-• Improved workflow navigation.
-
-• Corrected delivery submission.
-
-Confirm Workspace
-
-• Completely rebuilt.
-
-• Introduced Final Assessment.
-
-• Added Communication card.
-
-• Added Audience card.
-
-• Added Delivery Results card.
-
-• Added Available Actions.
-
-• Simplified confirmation experience.
+A controlled Production communication was successfully
+completed through the entire lifecycle.
 
 ------------------------------------------------------------
-Result
+Production Deployment
 ------------------------------------------------------------
 
-The Communications framework now provides a complete,
-consistent operational experience from composing a
-communication through confirming successful delivery.
+The current SOF Communications, Membership, Audience,
+Presentation, and supporting framework files were deployed
+into Production.
 
-RP43 establishes the SOF Workspace Presentation Framework
-for future operational domains.
+Production WordPress pages were created for the
+Communications Workspace lifecycle.
 
+During Production validation, an older version of:
 
-# ============================================================
-# SOF CHANGELOG
-# ============================================================
+    Communications/Services/CommunicationAudienceService.php
 
-Date:
-    2026-08-08
+was discovered in Production.
 
-Recovery Point:
-    RP43 – Communications Production Readiness
+The Production file was replaced with the current RP43
+Test version supporting:
 
-------------------------------------------------------------
-Added
-------------------------------------------------------------
+    resolve_current_audience()
 
-Recipient Selection Experience redesigned into
-multiple guided business cards.
-
-Added:
-
-• Recipient Summary
-• Choose Recipients
-• Find Members
-• Selected Members
-• Create Your Message
-
-Added client-side member search.
-
-Added recipient pagination.
-
-Added dynamic selected member summary.
-
-Added selected member list.
-
-Added message creation experience card.
-
-Improved responsive presentation.
+This restored the expected RP43 audience resolution used
+by Compose Communication.
 
 ------------------------------------------------------------
-Changed
+Production Database Migration
 ------------------------------------------------------------
 
-Compose Communication presentation reorganized into
-progressive business experiences.
+The Production table:
 
-Recipient selection now focuses on the current business
-decision instead of displaying the entire eligible
-population continuously.
+    wp_sof_communications
 
-Create Your Message now clearly separates message
-creation from recipient selection.
+was updated to support the current RP43 Communication model.
 
-Overall workflow now follows:
+Columns added:
 
-Recipient Summary
+    source_type
+    source_id
+    recipient_selection_mode
+    selected_member_ids
 
-↓
+This aligned the Production database schema with the
+Communication persistence model.
 
-Choose Recipients
+A separate migration record was created:
 
-↓
-
-Find Members
-
-↓
-
-Selected Members
-
-↓
-
-Create Your Message
+    RP43-PRODUCTION-DATABASE-CHANGES.txt
 
 ------------------------------------------------------------
-Architecture
+Production Operational Validation
 ------------------------------------------------------------
 
-Discovered and documented the SOF Workspace Experience
-pattern.
+The complete Communications lifecycle was validated in
+Production.
 
-Identified reusable business experience flow for all
-future SOF domains.
+Compose Communication
+    PASS
 
-Presentation emphasis shifted from displaying data to
-guiding business decisions.
+Verify Communication
+    PASS
+
+Test Communication
+    PASS
+
+Amazon SES Test Delivery
+    PASS
+
+Test Email Received
+    PASS
+
+Approve Communication
+    PASS
+
+Send Communication
+    PASS
+
+Confirm Communication
+    PASS
 
 ------------------------------------------------------------
-Production Readiness
+Controlled Production Delivery
 ------------------------------------------------------------
 
-Communications has transitioned from implementation
-toward production polish.
+The Production validation used recipient selection to
+ensure that organizational delivery remained controlled.
 
-Future sessions will focus on:
+Eligible Members:
+    152
 
-• Presentation consistency
-• User experience
-• Accessibility
-• Mobile responsiveness
-• Workflow refinement
-• Production validation
+Selected Members:
+    1
+
+Approved Recipients:
+    1
+
+Currently Available:
+    1
+
+Attempted:
+    1
+
+Delivered:
+    1
+
+Failed:
+    0
+
+The selected-recipient intent successfully survived the
+entire lifecycle from Compose through actual delivery.
+
+------------------------------------------------------------
+Production Result
+------------------------------------------------------------
+
+RP43 Communications Workspace Experience is operational
+and validated in Production.
+
+The Production deployment demonstrated successful:
+
+    Audience resolution
+    Recipient selection
+    Communication persistence
+    Lifecycle transitions
+    Amazon SES test delivery
+    Organizational delivery
+    Delivery confirmation
+
+RP43 is considered stable and Production ready.
+
+------------------------------------------------------------
+Architecture Observations
+------------------------------------------------------------
+
+The Production deployment reinforced an important SOF
+deployment requirement:
+
+    Application Files
+        +
+    WordPress Presentation Pages
+        +
+    Database Schema
+        =
+    Complete Deployment
+
+WordPress Workspace pages are database-managed resources
+and therefore must be included in future deployment
+planning even though they are not represented by the
+plugin Git repository.
+
+Database migrations must likewise be explicitly documented
+and applied when framework models evolve.
+
+------------------------------------------------------------
+Next Development Direction
+------------------------------------------------------------
+
+The next development direction will focus on SOF Access
+and organizational capabilities.
+
+The Member Portal will remain the common home for all
+members.
+
+Personal account functions remain available through the
+member account experience.
+
+Organizational capabilities will be presented through:
+
+    Staff Tools
+
+Staff Tools will expose capabilities according to the
+person's authorization and organizational scope.
+
+Planned capabilities include:
+
+    Compose Communication
+    Compose Newsletter
+
+Administrators and Managers will be able to control which
+people are authorized to use these capabilities.
+
+The existing SOF Newsletter composition framework will
+also be reviewed for reintegration with the completed
+RP43 Communications lifecycle.
 
 ====================================================================
 # RP38 - Communications Workflow and Release

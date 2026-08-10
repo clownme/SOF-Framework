@@ -514,30 +514,50 @@ class SOF_NewsletterHtmlRenderer
         }
 
         return '
-            <div style="
-                margin-top:22px;
-            ">
-
-                <a
-                    href="' .
-                    esc_url($section->get_link_url()) .
-                    '"
-                    style="
-                        display:inline-block;
-                        padding:12px 20px;
-                        background:#374151;
-                        color:#ffffff;
-                        text-decoration:none;
-                        font-size:15px;
-                        font-weight:bold;
-                        border-radius:4px;
-                    "
-                >
-                    ' .
-                    esc_html($section->get_link_label()) .
-                    '
-                </a>
-
-            </div>';
+            <table
+                role="presentation"
+                cellspacing="0"
+                cellpadding="0"
+                border="0"
+                width="auto"
+                style="
+                    width:auto !important;
+                    max-width:none !important;
+                    margin-top:22px;
+                    border-collapse:collapse;
+                "
+            >
+                <tr>
+                    <td
+                        bgcolor="#374151"
+                        style="
+                            background:#374151;
+                            border-radius:4px;
+                            text-align:center;
+                        "
+                    >
+                        <a
+                            class="sof-newsletter-action-button"
+                            href="' .
+                            esc_url($section->get_link_url()) .
+                            '"
+                            style="
+                                display:block;
+                                padding:12px 20px;
+                                color:#ffffff;
+                                text-decoration:none;
+                                font-size:15px;
+                                font-weight:bold;
+                                line-height:1.2;
+                                border:0;
+                            "
+                        >
+                            ' .
+                            esc_html($section->get_link_label()) .
+                            '
+                        </a>
+                    </td>
+                </tr>
+            </table>';
     }
 }

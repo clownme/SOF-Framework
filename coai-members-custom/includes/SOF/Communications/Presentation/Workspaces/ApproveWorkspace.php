@@ -605,11 +605,36 @@ class SOF_ApproveWorkspace
                     <div>
 
                         <?php
-                        echo wp_kses_post(
-                            wpautop(
-                                $communication->get_body()
-                            )
-                        );
+
+                        $communication_body =
+                            $communication->get_body();
+
+                        $is_structured_html =
+                            stripos(
+                                $communication_body,
+                                '<table'
+                            ) !== false ||
+                            stripos(
+                                $communication_body,
+                                'role="presentation"'
+                            ) !== false;
+
+                        if ($is_structured_html) {
+
+                            echo wp_kses_post(
+                                $communication_body
+                            );
+
+                        } else {
+
+                            echo wp_kses_post(
+                                wpautop(
+                                    $communication_body
+                                )
+                            );
+
+                        }
+
                         ?>
 
                     </div>
@@ -942,16 +967,33 @@ class SOF_ApproveWorkspace
 
                         <form
                             method="get"
-                            action="<?php echo esc_url($test_url); ?>"
+                            action="<?php
+                            echo esc_url(
+                                home_url(
+                                    '/test-communication/'
+                                )
+                            );
+                            ?>"
                             style="display:inline;"
                         >
 
-                        <button
-                            type="submit"
-                            class="sof-button sof-button-secondary"
-                        >
-                            Return to Test
-                        </button>
+                            <input
+                                type="hidden"
+                                name="communication_id"
+                                value="<?php
+                                echo esc_attr(
+                                    (string)
+                                    $communication->get_id()
+                                );
+                                ?>"
+                            >
+
+                            <button
+                                type="submit"
+                                class="sof-button sof-button-secondary"
+                            >
+                                Return to Test
+                            </button>
 
                         </form>
 

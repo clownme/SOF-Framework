@@ -903,3 +903,14 @@
     background: #2271b1 !important;
     color: #ffffff !important;
 }
+
+/* -------------------------------------------------
+ * Newsletter Action Button
+ * Prevent theme link decorations
+ * ------------------------------------------------- */
+
+.sof-newsletter-action-button::before,
+.sof-newsletter-action-button::after {
+    content: none !important;
+    display: none !important;
+}
