@@ -1,0 +1,361 @@
+/* ============================================================
+ * SOF Newsletter Library Workspace
+ * ============================================================ */
+
+.sof-newsletter-library {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 2rem 2rem;
+}
+
+.sof-newsletter-library-header {
+    margin: 0 0 1.5rem;
+    padding: 0 2rem;
+}
+
+.sof-newsletter-library-header h2 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-header p {
+    margin: 0;
+}
+
+/* ------------------------------------------------------------
+ * Newsletter Actions Card
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-library-card {
+    width: 100%;
+    max-width: 640px;
+    margin: 1.5rem 2rem 0;
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #d9dee5;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+}
+
+.sof-newsletter-library-card-header {
+    margin-bottom: 1.25rem;
+}
+
+.sof-newsletter-library-card-header h3 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-card-header p {
+    margin: 0;
+}
+
+/* ------------------------------------------------------------
+ * Actions
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-library-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+}
+
+.sof-newsletter-library-actions .sof-button {
+    display: inline-block;
+    padding: 0.75rem 1rem;
+    border-radius: 8px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none !important;
+}
+
+.sof-newsletter-library-actions .sof-button-primary {
+    background: #cf6638;
+    border: 1px solid #cf6638;
+    color: #ffffff !important;
+}
+
+.sof-newsletter-library-actions .sof-button-secondary {
+    background: #ffffff;
+    border: 1px solid #cfd5dc;
+    color: #26323d !important;
+}
+
+.sof-newsletter-library-actions .sof-button:hover {
+    opacity: 0.92;
+    text-decoration: none !important;
+}
+
+/* -------------------------------------------------
+ * Previous Newsletter Library
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-previous {
+    margin-top: 2rem;
+}
+
+.sof-newsletter-library-previous-header {
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-previous-header h3 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-previous-header p {
+    margin: 0;
+    color: #374151;
+}
+
+.sof-newsletter-library-items {
+    display: grid;
+    gap: 1.25rem;
+}
+
+/* -------------------------------------------------
+ * Previous Newsletter Card
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-item {
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sof-newsletter-library-item-header {
+    margin-bottom: 1.25rem;
+}
+
+.sof-newsletter-library-item-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1f2937;
+}
+
+/* -------------------------------------------------
+ * Newsletter Details
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-item-details {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sof-newsletter-library-detail strong {
+    color: #374151;
+}
+
+.sof-newsletter-library-detail span {
+    color: #111827;
+}
+
+/* -------------------------------------------------
+ * Newsletter Selection
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-select {
+    margin: 0;
+}
+
+.sof-newsletter-library-select .sof-button {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #2271b1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #2271b1;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sof-newsletter-library-select .sof-button:hover {
+    background: #f5f9fc;
+    color: #135e96;
+}
+
+/* =========================================================
+ * Newsletter Workspace Readability
+ * ========================================================= */
+
+/* Instructions and explanatory text */
+.sof-compose-newsletter-workspace
+.sof-newsletter-compose-section p,
+.sof-compose-newsletter-workspace
+.sof-compose-newsletter-preview-header p,
+.sof-compose-newsletter-workspace
+.sof-compose-newsletter-header p {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* Form field labels */
+.sof-compose-newsletter-workspace
+.sof-newsletter-compose-section label,
+.sof-compose-newsletter-workspace
+.sof-newsletter-compose-section label strong {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* Text entered by the user */
+.sof-compose-newsletter-workspace
+input[type="text"],
+.sof-compose-newsletter-workspace
+input[type="url"],
+.sof-compose-newsletter-workspace
+textarea,
+.sof-compose-newsletter-workspace
+select {
+    color: #111111 !important;
+    -webkit-text-fill-color: #111111 !important;
+    opacity: 1 !important;
+}
+
+/* Placeholder text */
+.sof-compose-newsletter-workspace
+input[type="text"]::placeholder,
+.sof-compose-newsletter-workspace
+input[type="url"]::placeholder,
+.sof-compose-newsletter-workspace
+textarea::placeholder {
+    color: #6b7280 !important;
+    -webkit-text-fill-color: #6b7280 !important;
+    opacity: 1 !important;
+}
+
+/* Empty preview instructions */
+.sof-compose-newsletter-workspace
+.sof-newsletter-empty-preview {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+.sof-compose-newsletter-workspace
+.sof-newsletter-empty-preview strong,
+.sof-compose-newsletter-workspace
+.sof-newsletter-empty-preview p {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+/* ------------------------------------------------------------
+ * Previous Newsletter Library - Final Presentation
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-library-previous {
+    width: auto;
+    max-width: 760px;
+    margin: 2rem 2rem 0;
+}
+
+.sof-newsletter-library-previous-header {
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-previous-header h3 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-previous-header p {
+    margin: 0;
+    color: #374151 !important;
+}
+
+.sof-newsletter-library-items {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ------------------------------------------------------------
+ * Individual Previous Newsletter Card
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-item {
+    display: block;
+    width: 100%;
+    box-sizing: border-box;
+    padding: 1.5rem;
+    background: #ffffff !important;
+    border: 1px solid #d9dee5 !important;
+    border-radius: 12px !important;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08) !important;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-item-header {
+    margin-bottom: 1.25rem;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-item-header h4 {
+    margin: 0;
+    color: #26323d !important;
+    font-size: 1.25rem;
+}
+
+/* ------------------------------------------------------------
+ * Previous Newsletter Details
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-item-details {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.35rem;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-detail strong {
+    color: #374151 !important;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-detail span {
+    color: #111827 !important;
+}
+
+/* ------------------------------------------------------------
+ * Select Newsletter Action
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-select {
+    margin: 0;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-select .sof-button {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0.75rem 1.25rem;
+    background: #ffffff !important;
+    border: 1px solid #2271b1 !important;
+    border-radius: 8px !important;
+    color: #2271b1 !important;
+    font-weight: 600;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.sof-newsletter-library-previous
+.sof-newsletter-library-select .sof-button:hover {
+    background: #f5f9fc !important;
+    color: #135e96 !important;
+}

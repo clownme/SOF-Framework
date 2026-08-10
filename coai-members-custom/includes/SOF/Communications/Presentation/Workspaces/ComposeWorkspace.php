@@ -325,6 +325,40 @@ class SOF_ComposeWorkspace
             $persistence_service->find(
                 $communication_id
             );
+
+        /*
+         * -------------------------------------------------
+         * Newsletter Source Routing
+         * -------------------------------------------------
+         *
+         * A Newsletter remains the editable business object.
+         * Its Communication body contains rendered delivery
+         * HTML and must not be exposed in the generic
+         * Communication composition experience.
+         */
+
+        if (
+            $existing_communication instanceof SOF_Communication &&
+            $existing_communication->get_source_type() ===
+                'newsletter' &&
+            $existing_communication->get_source_id() > 0
+        ) {
+
+            $newsletter_url =
+                add_query_arg(
+                    'newsletter_id',
+                    $existing_communication->get_source_id(),
+                    home_url(
+                        '/compose-newsletter/'
+                    )
+                );
+
+            wp_safe_redirect(
+                $newsletter_url
+            );
+
+            exit;
+        }
     }
 
     // -------------------------------------------------
@@ -1310,19 +1344,44 @@ class SOF_ComposeWorkspace
                                 </div>
 
                             <?php endif; ?>
+                            
+                            <?php
+
+                            $cancel_url =
+                                home_url(
+                                    '/communications/'
+                                );
+
+                            if (
+                                $communication instanceof SOF_Communication &&
+                                $communication->get_source_type() ===
+                                    'newsletter' &&
+                                $communication->get_source_id() > 0
+                            ) {
+                                $cancel_url =
+                                    add_query_arg(
+                                        'newsletter_id',
+                                        $communication->get_source_id(),
+                                        home_url(
+                                            '/compose-newsletter/'
+                                        )
+                                    );
+                            }
+
+                            ?>                            
 
                             <div class="sof-compose-actions">
 
-                                <a
-                                    class="sof-button sof-button-secondary"
-                                    href="<?php
-                                    echo esc_url(
-                                        home_url('/communications/')
-                                    );
-                                    ?>"
-                                >
-                                    Cancel
-                                </a>
+                            <a
+                                class="sof-button sof-button-secondary"
+                                href="<?php
+                                echo esc_url(
+                                    $cancel_url
+                                );
+                                ?>"
+                            >
+                                Cancel
+                            </a>
 
                                 <button
                                     type="submit"

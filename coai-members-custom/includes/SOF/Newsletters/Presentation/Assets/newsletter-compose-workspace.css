@@ -1,0 +1,905 @@
+/**
+ * ============================================================
+ * SOF Newsletter Compose Workspace
+ * ============================================================
+ *
+ * Framework:
+ *     Newsletters
+ *
+ * Layer:
+ *     Presentation
+ *
+ * Asset:
+ *     Compose Newsletter Workspace
+ *
+ * Purpose:
+ *     Present Newsletter composition and preview in a clear,
+ *     responsive SOF Workspace.
+ *
+ * ============================================================
+ */
+
+.sof-compose-newsletter-workspace {
+    width: 100%;
+    max-width: 1500px;
+    margin: 0 auto;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+.sof-compose-newsletter-workspace *,
+.sof-compose-newsletter-workspace *::before,
+.sof-compose-newsletter-workspace *::after {
+    box-sizing: border-box;
+}
+
+/* ------------------------------------------------------------
+ * Header Logo
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-header-logo-field {
+    margin-top: 24px;
+    padding-top: 22px;
+    border-top: 1px solid #e5e7eb;
+}
+
+.sof-newsletter-header-logo-heading {
+    margin-bottom: 16px;
+}
+
+.sof-newsletter-header-logo-heading h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.sof-newsletter-header-logo-heading p {
+    margin: 0;
+    color: #68737d;
+}
+
+.sof-newsletter-header-logo-preview {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 90px;
+    margin: 16px 0;
+    padding: 18px;
+    border: 1px dashed #cbd5e1;
+    border-radius: 8px;
+    background: #f8fafc;
+}
+
+.sof-newsletter-header-logo-preview:empty {
+    display: none;
+}
+
+.sof-newsletter-selected-logo {
+    display: block;
+    width: auto;
+    max-width: 240px;
+    max-height: 100px;
+    height: auto;
+}
+
+/* ------------------------------------------------------------
+ * Workspace Header
+ * ------------------------------------------------------------ */
+
+.sof-compose-newsletter-header {
+    margin-bottom: 28px;
+}
+
+.sof-compose-newsletter-header h1 {
+    margin: 0 0 8px;
+    font-size: 32px;
+    line-height: 1.2;
+}
+
+.sof-compose-newsletter-header p {
+    margin: 0;
+    max-width: 720px;
+    color: #59636e;
+    font-size: 16px;
+    line-height: 1.6;
+}
+
+
+/* ------------------------------------------------------------
+ * Two Column Workspace
+ * ------------------------------------------------------------ */
+
+.sof-compose-newsletter-layout {
+    display: grid;
+    grid-template-columns:
+        minmax(420px, 1fr)
+        minmax(480px, 1fr);
+    gap: 32px;
+    align-items: start;
+}
+
+.sof-compose-newsletter-editor,
+.sof-compose-newsletter-preview-column {
+    min-width: 0;
+}
+
+
+/* ------------------------------------------------------------
+ * Compose Cards
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-compose-section {
+    margin: 0 0 20px;
+    padding: 24px;
+    background: #ffffff;
+    border: 1px solid #dfe3e8;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+}
+
+.sof-newsletter-compose-section h2 {
+    margin: 0 0 8px;
+    font-size: 22px;
+    line-height: 1.3;
+}
+
+.sof-newsletter-compose-section > p:first-of-type {
+    margin-top: 0;
+}
+
+.sof-newsletter-compose-section p {
+    margin: 16px 0 6px;
+    line-height: 1.5;
+}
+
+
+/* ------------------------------------------------------------
+ * Form Fields
+ * ------------------------------------------------------------ */
+
+.sof-compose-newsletter-workspace input[type="text"],
+.sof-compose-newsletter-workspace textarea,
+.sof-compose-newsletter-workspace select {
+    display: block;
+    width: 100%;
+    max-width: 100%;
+    padding: 11px 12px;
+    border: 1px solid #cfd5dc;
+    border-radius: 7px;
+    background: #f8fafc;
+    font: inherit;
+    line-height: 1.4;
+}
+
+.sof-compose-newsletter-workspace input::placeholder,
+.sof-compose-newsletter-workspace textarea::placeholder {
+    color: #8b96a3;
+    opacity: 1;
+}
+
+.sof-compose-newsletter-workspace textarea {
+    min-height: 180px;
+    resize: vertical;
+}
+
+.sof-compose-newsletter-workspace input[type="text"]:focus,
+.sof-compose-newsletter-workspace textarea:focus,
+.sof-compose-newsletter-workspace select:focus {
+    outline: 2px solid rgba(34, 113, 177, 0.18);
+    border-color: #2271b1;
+}
+
+
+/* ------------------------------------------------------------
+ * Color Controls
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-color-fields {
+    display: grid;
+    grid-template-columns: repeat(2, minmax(180px, 1fr));
+    gap: 18px;
+    margin-top: 18px;
+}
+
+.sof-newsletter-color-fields label {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.sof-newsletter-color-fields input[type="color"] {
+    width: 100%;
+    height: 46px;
+    padding: 4px;
+    border: 1px solid #cfd5dc;
+    border-radius: 7px;
+    background: #ffffff;
+    cursor: pointer;
+}
+
+/* ------------------------------------------------------------
+ * Signature
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-signature-heading {
+    margin-bottom: 18px;
+}
+
+.sof-newsletter-signature-heading h2 {
+    margin: 0 0 6px;
+}
+
+.sof-newsletter-signature-heading p {
+    margin: 0;
+    color: #68737d;
+}
+
+.sof-newsletter-signature-fields {
+    display: grid;
+    grid-template-columns:
+        repeat(2, minmax(0, 1fr));
+    gap: 18px;
+}
+
+.sof-newsletter-signature-fields label {
+    display: block;
+    margin-bottom: 7px;
+}
+
+@media (max-width: 640px) {
+
+    .sof-newsletter-signature-fields {
+        grid-template-columns: 1fr;
+    }
+}
+
+/* ------------------------------------------------------------
+ * Save State
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-save-message {
+    margin: 0 0 22px;
+    padding: 12px 16px;
+    border: 1px solid #b7d7bf;
+    border-radius: 8px;
+    background: #f2fbf4;
+    color: #245c31;
+    font-weight: 600;
+}
+
+/* ------------------------------------------------------------
+ * Actions
+ * ------------------------------------------------------------ */
+
+/* ------------------------------------------------------------
+ * Actions
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-compose-actions {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 14px;
+    margin-top: 22px;
+}
+
+.sof-newsletter-primary-actions,
+.sof-newsletter-navigation-actions {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-end;
+    gap: 12px;
+}
+
+.sof-newsletter-compose-actions button,
+.sof-newsletter-action-link {
+    appearance: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 46px;
+    padding: 12px 20px;
+    border-radius: 7px;
+    font: inherit;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none !important;
+    cursor: pointer;
+}
+
+.sof-newsletter-compose-actions button {
+    border: 0;
+    background: #2271b1;
+    color: #ffffff !important;
+}
+
+.sof-newsletter-compose-actions button:hover {
+    opacity: 0.92;
+}
+
+.sof-newsletter-action-link {
+    border: 1px solid #2271b1;
+    background: #ffffff;
+    color: #2271b1 !important;
+}
+
+.sof-newsletter-action-link:hover {
+    background: #f5f9fc;
+    color: #135e96 !important;
+}
+
+.sof-newsletter-compose-actions button:hover {
+    opacity: 0.92;
+}
+
+.sof-newsletter-compose-actions
+.sof-newsletter-save-draft {
+    background: #ffffff;
+    color: #2271b1;
+    border: 1px solid #2271b1;
+}
+
+/* ------------------------------------------------------------
+ * Newsletter Content Sections
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-sections {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+
+.sof-newsletter-content-section {
+    padding: 20px;
+    border: 1px solid #dfe3e8;
+    border-radius: 10px;
+    background: #f8f9fa;
+}
+
+.sof-newsletter-content-section-heading {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+.sof-newsletter-content-section-heading h3 {
+    margin: 0;
+    font-size: 17px;
+}
+
+.sof-newsletter-remove-section {
+    padding: 6px 10px;
+    border: 1px solid #dfb7b7;
+    border-radius: 6px;
+    background: #ffffff;
+    color: #a61b1b;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sof-newsletter-remove-section:hover {
+    background: #fff5f5;
+}
+
+.sof-newsletter-add-section-action {
+    margin-top: 20px;
+}
+
+.sof-newsletter-add-section-action button {
+    width: 100%;
+    padding: 11px 16px;
+    border: 1px dashed #9da8b3;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #374151;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sof-newsletter-add-section-action button:hover {
+    background: #f5f7f9;
+}
+
+/* -------------------------------------------------
+ * Newsletter Library Actions
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1rem 0 1.5rem;
+}
+
+.sof-newsletter-library-actions .sof-button {
+    display: inline-block;
+    padding: 0.65rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #111827;
+    font-weight: 600;
+    text-decoration: none;
+    line-height: 1.2;
+    cursor: pointer;
+}
+
+.sof-newsletter-library-actions .sof-button:hover {
+    background: #f3f4f6;
+    text-decoration: none;
+}
+
+/* ------------------------------------------------------------
+ * Section Images
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-image-field {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #e4e7eb;
+}
+
+.sof-newsletter-image-field > p {
+    margin: 6px 0 14px;
+    color: #68737d;
+    font-size: 14px;
+}
+
+.sof-newsletter-image-preview {
+    margin-bottom: 14px;
+}
+
+.sof-newsletter-selected-image {
+    display: block;
+    max-width: 100%;
+    max-height: 220px;
+    width: auto;
+    height: auto;
+    border: 1px solid #dfe3e8;
+    border-radius: 8px;
+}
+
+.sof-newsletter-image-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.sof-newsletter-image-actions button {
+    padding: 9px 14px;
+    border: 1px solid #cfd5dc;
+    border-radius: 7px;
+    background: #ffffff;
+    color: #26323d;
+    font: inherit;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.sof-newsletter-image-actions button:hover {
+    background: #f5f7f9;
+}
+
+.sof-newsletter-remove-image {
+    color: #a61b1b !important;
+}
+
+
+/* ------------------------------------------------------------
+ * Section Actions
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-link-fields {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #e4e7eb;
+}
+
+.sof-newsletter-link-fields h4 {
+    margin: 0 0 10px;
+    font-size: 16px;
+}
+
+/* ------------------------------------------------------------
+ * Preview Column
+ * ------------------------------------------------------------ */
+
+.sof-compose-newsletter-preview-column {
+    position: sticky;
+    top: 24px;
+}
+
+.sof-compose-newsletter-preview-header {
+    margin-bottom: 14px;
+}
+
+.sof-compose-newsletter-preview-header h2 {
+    margin: 0 0 5px;
+    font-size: 22px;
+}
+
+.sof-compose-newsletter-preview-header p {
+    margin: 0;
+    color: #59636e;
+}
+
+.sof-newsletter-compose-preview {
+    margin: 0;
+}
+
+.sof-newsletter-compose-preview > h2 {
+    display: none;
+}
+
+.sof-newsletter-empty-preview {
+    padding: 48px 28px;
+    border: 1px dashed #cfd5dc;
+    border-radius: 12px;
+    background: #f8f9fa;
+    text-align: center;
+    color: #68737d;
+}
+
+
+/* ------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------ */
+
+@media (max-width: 900px) {
+
+    .sof-compose-newsletter-layout {
+        grid-template-columns: 1fr;
+    }
+
+    .sof-compose-newsletter-preview-column {
+        position: static;
+    }
+}
+
+@media (max-width: 640px) {
+
+    .sof-compose-newsletter-workspace {
+        padding: 16px;
+    }
+
+    .sof-newsletter-compose-section {
+        padding: 18px;
+    }
+
+    .sof-newsletter-color-fields {
+        grid-template-columns: 1fr;
+    }
+
+    .sof-newsletter-compose-actions {
+        justify-content: stretch;
+    }
+
+    .sof-newsletter-compose-actions button {
+        width: 100%;
+    }
+}
+
+/* -------------------------------------------------
+ * Newsletter Library
+ * ------------------------------------------------- */
+
+.sof-newsletter-library {
+    max-width: 1100px;
+    margin: 0 auto;
+    padding: 2rem 1.5rem;
+}
+
+.sof-newsletter-library-header {
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-header h2 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-header p {
+    margin: 0;
+}
+
+.sof-newsletter-library-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.75rem;
+    margin: 1.5rem 0 2rem;
+}
+
+.sof-newsletter-library .sof-button {
+    display: inline-block;
+    padding: 0.75rem 1rem;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    font-weight: 600;
+    line-height: 1.2;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sof-newsletter-library .sof-button-primary {
+    background: #cf6638;
+    color: #ffffff;
+    border-color: #cf6638;
+}
+
+.sof-newsletter-library .sof-button-secondary {
+    background: #ffffff;
+    color: #111827;
+}
+
+.sof-newsletter-library .sof-button:hover {
+    text-decoration: none;
+}
+
+/* -------------------------------------------------
+ * Newsletter Library Card
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-card {
+    margin-top: 1.5rem;
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sof-newsletter-library-card-header {
+    margin-bottom: 1.25rem;
+}
+
+.sof-newsletter-library-card-header h3 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-card-header p {
+    margin: 0;
+}
+
+/* -------------------------------------------------
+ * Previous Newsletter Library
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-previous {
+    margin-top: 2rem;
+}
+
+.sof-newsletter-library-previous-header {
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-previous-header h3 {
+    margin: 0 0 0.5rem;
+}
+
+.sof-newsletter-library-previous-header p {
+    margin: 0;
+    color: #374151;
+}
+
+.sof-newsletter-library-items {
+    display: grid;
+    gap: 1.25rem;
+}
+
+/* -------------------------------------------------
+ * Previous Newsletter Card
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-item {
+    padding: 1.5rem;
+    background: #ffffff;
+    border: 1px solid #d1d5db;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.sof-newsletter-library-item-header {
+    margin-bottom: 1.25rem;
+}
+
+.sof-newsletter-library-item-header h4 {
+    margin: 0;
+    font-size: 1.25rem;
+    color: #1f2937;
+}
+
+/* -------------------------------------------------
+ * Newsletter Details
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-item-details {
+    display: grid;
+    gap: 1rem;
+    margin-bottom: 1.5rem;
+}
+
+.sof-newsletter-library-detail {
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.sof-newsletter-library-detail strong {
+    color: #374151;
+}
+
+.sof-newsletter-library-detail span {
+    color: #111827;
+}
+
+/* -------------------------------------------------
+ * Newsletter Selection
+ * ------------------------------------------------- */
+
+.sof-newsletter-library-select {
+    margin: 0;
+}
+
+.sof-newsletter-library-select .sof-button {
+    display: inline-block;
+    padding: 0.75rem 1.25rem;
+    border: 1px solid #2271b1;
+    border-radius: 8px;
+    background: #ffffff;
+    color: #2271b1;
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.sof-newsletter-library-select .sof-button:hover {
+    background: #f5f9fc;
+    color: #135e96;
+}
+
+/* ============================================================
+ * Newsletter Workspace Readability
+ * ============================================================ */
+
+/* Workspace explanatory text */
+.sof-compose-newsletter-workspace p {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* Form labels */
+.sof-compose-newsletter-workspace label,
+.sof-compose-newsletter-workspace label strong {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* User-entered values */
+.sof-compose-newsletter-workspace input[type="text"],
+.sof-compose-newsletter-workspace input[type="url"],
+.sof-compose-newsletter-workspace textarea,
+.sof-compose-newsletter-workspace select {
+    color: #111111 !important;
+    -webkit-text-fill-color: #111111 !important;
+    opacity: 1 !important;
+}
+
+/* Placeholder text */
+.sof-compose-newsletter-workspace input[type="text"]::placeholder,
+.sof-compose-newsletter-workspace input[type="url"]::placeholder,
+.sof-compose-newsletter-workspace textarea::placeholder {
+    color: #5f6873 !important;
+    -webkit-text-fill-color: #5f6873 !important;
+    opacity: 1 !important;
+}
+
+/* Preview guidance */
+.sof-compose-newsletter-workspace
+.sof-newsletter-empty-preview,
+.sof-compose-newsletter-workspace
+.sof-newsletter-empty-preview strong,
+.sof-compose-newsletter-workspace
+.sof-newsletter-empty-preview p {
+    color: #374151 !important;
+    opacity: 1 !important;
+}
+
+/* ============================================================
+ * Newsletter Audience
+ * ============================================================ */
+
+.sof-newsletter-audience-group {
+    margin-top: 22px;
+    padding-top: 18px;
+    border-top: 1px solid #e4e7eb;
+}
+
+.sof-newsletter-audience-group:first-of-type {
+    margin-top: 16px;
+    padding-top: 0;
+    border-top: 0;
+}
+
+.sof-newsletter-audience-group h3 {
+    margin: 0 0 6px;
+    font-size: 18px;
+}
+
+.sof-newsletter-audience-group > p {
+    margin: 0 0 14px;
+}
+
+.sof-newsletter-membership-statuses {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 14px;
+}
+
+.sof-newsletter-membership-status {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    color: #111827 !important;
+}
+
+.sof-newsletter-recipient-options {
+    display: grid;
+    gap: 12px;
+}
+
+.sof-newsletter-recipient-option {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 14px;
+    border: 1px solid #d1d5db;
+    border-radius: 8px;
+    background: #f8fafc;
+    cursor: pointer;
+}
+
+.sof-newsletter-recipient-option input {
+    margin-top: 3px;
+}
+
+.sof-newsletter-recipient-option span {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.sof-newsletter-recipient-option strong {
+    color: #111827 !important;
+}
+
+.sof-newsletter-recipient-option small {
+    color: #4b5563 !important;
+    line-height: 1.4;
+}
+
+/* ------------------------------------------------------------
+ * Compose Action Button Final Overrides
+ * ------------------------------------------------------------ */
+
+.sof-newsletter-compose-actions
+.sof-newsletter-save-draft {
+    background: #ffffff !important;
+    color: #2271b1 !important;
+    border: 1px solid #2271b1 !important;
+}
+
+.sof-newsletter-compose-actions
+.sof-newsletter-save-draft:hover {
+    background: #f5f9fc !important;
+    color: #135e96 !important;
+}
+
+.sof-newsletter-compose-actions
+.sof-newsletter-continue {
+    background: #2271b1 !important;
+    color: #ffffff !important;
+}
