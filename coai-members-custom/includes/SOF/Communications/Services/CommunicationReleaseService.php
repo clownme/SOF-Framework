@@ -19,23 +19,24 @@ if (!defined('ABSPATH')) {
  *     Communication Release
  *
  * Purpose:
- *     Coordinate the immediate release of an approved
- *     Communication to its currently eligible recipients.
+ *     Begin durable queued delivery of an approved
+ *     Communication.
  *
  * Responsibilities:
  *     - Confirm the Communication may begin delivery
- *     - Begin the Communication delivery lifecycle
- *     - Deliver the Communication to each available recipient
- *     - Record successful and failed deliveries
- *     - Complete the Communication delivery lifecycle
- *     - Return the release result
+ *     - Atomically claim the Communication for delivery
+ *     - Freeze the final resolved recipient population
+ *     - Initialize durable recipient delivery work
+ *     - Return the queued delivery result
  *
  * Does NOT:
  *     - Discover Communication audiences
  *     - Determine recipient eligibility
  *     - Approve Communications
+ *     - Deliver recipients directly
  *     - Communicate directly with delivery providers
- *     - Render presentation
+ *     - Process background delivery batches
+ *     - Render Presentation
  *
  * ============================================================
  */
@@ -45,26 +46,54 @@ class SOF_CommunicationReleaseService
     protected SOF_CommunicationsService $communications_service;
 
     protected SOF_CommunicationDeliveryService $delivery_service;
-    
+
     protected SOF_CommunicationPersistenceService $persistence_service;
+
+    protected SOF_CommunicationDeliveryQueueService $queue_service;
 
     public function __construct(
         SOF_CommunicationsService $communications_service,
         SOF_CommunicationDeliveryService $delivery_service,
-        SOF_CommunicationPersistenceService $persistence_service
+        SOF_CommunicationPersistenceService $persistence_service,
+        ?SOF_CommunicationDeliveryQueueService $queue_service = null
     ) {
         $this->communications_service =
             $communications_service;
 
+        /*
+         * Preserve the existing Delivery Service dependency.
+         *
+         * Delivery is now performed by the worker rather than
+         * directly by the Release Service, but retaining this
+         * dependency keeps the current constructor contract
+         * compatible while the queued delivery architecture
+         * is introduced.
+         */
         $this->delivery_service =
             $delivery_service;
-    
+
         $this->persistence_service =
-        $persistence_service;
+            $persistence_service;
+
+        if ($queue_service) {
+
+            $this->queue_service =
+                $queue_service;
+
+        } else {
+
+            $queue_repository =
+                new SOF_CommunicationDeliveryQueueRepository();
+
+            $this->queue_service =
+                new SOF_CommunicationDeliveryQueueService(
+                    $queue_repository
+                );
+        }
     }
 
     /**
-     * Release an approved Communication immediately.
+     * Begin queued delivery of an approved Communication.
      *
      * @return array<string, mixed>
      */
@@ -75,7 +104,7 @@ class SOF_CommunicationReleaseService
     ): array {
 
         // -------------------------------------------------
-        // Begin Delivery
+        // Confirm Delivery May Begin
         // -------------------------------------------------
 
         $begin_result =
@@ -86,17 +115,31 @@ class SOF_CommunicationReleaseService
 
         if (!$begin_result['success']) {
             return [
-                'success' => false,
-                'status' => $begin_result['status'],
-                'message' => $begin_result['message'],
-                'delivered' => 0,
-                'failed' => 0,
-                'errors' => $begin_result['errors'],
+                'success' =>
+                    false,
+
+                'status' =>
+                    $begin_result['status'],
+
+                'message' =>
+                    $begin_result['message'],
+
+                'queued' =>
+                    0,
+
+                'delivered' =>
+                    0,
+
+                'failed' =>
+                    0,
+
+                'errors' =>
+                    $begin_result['errors'],
             ];
         }
-        
+
         // -------------------------------------------------
-        // Atomically Begin Delivery
+        // Atomically Claim Communication
         // -------------------------------------------------
 
         $sending_communication =
@@ -107,12 +150,24 @@ class SOF_CommunicationReleaseService
 
         if (!$sending_communication) {
             return [
-                'success' => false,
-                'status' => 'delivery_start_failed',
+                'success' =>
+                    false,
+
+                'status' =>
+                    'delivery_start_failed',
+
                 'message' =>
                     'The communication could not begin delivery because it is no longer available for release.',
-                'delivered' => 0,
-                'failed' => 0,
+
+                'queued' =>
+                    0,
+
+                'delivered' =>
+                    0,
+
+                'failed' =>
+                    0,
+
                 'errors' => [
                     'The approved Communication could not be claimed for delivery.',
                 ],
@@ -123,11 +178,12 @@ class SOF_CommunicationReleaseService
             $sending_communication;
 
         // -------------------------------------------------
-        // Available Recipients
+        // Final Available Recipients
         // -------------------------------------------------
 
         $available_recipients =
-            $recipients->get_available_recipients();
+            $recipients
+                ->get_available_recipients();
 
         if (!$available_recipients) {
 
@@ -149,124 +205,181 @@ class SOF_CommunicationReleaseService
 
             if (!$saved_communication) {
                 return [
-                    'success' => false,
-                    'status' => 'release_result_persistence_failed',
+                    'success' =>
+                        false,
+
+                    'status' =>
+                        'release_result_persistence_failed',
+
                     'message' =>
                         'No recipients were available for delivery, but the final communication state could not be saved.',
-                    'delivered' => 0,
-                    'failed' => 0,
+
+                    'queued' =>
+                        0,
+
+                    'delivered' =>
+                        0,
+
+                    'failed' =>
+                        0,
+
                     'errors' => [
                         'The delivery failure state could not be persisted.',
                     ],
                 ];
             }
 
+            $failure_result['queued'] = 0;
+
             return $failure_result;
         }
 
         // -------------------------------------------------
-        // Delivery
+        // Initialize Durable Delivery Queue
         // -------------------------------------------------
 
-        $delivered_count = 0;
-        $failed_count = 0;
-        $errors = [];
-
-        foreach ($available_recipients as $recipient) {
-
-            $destination =
-                sanitize_email(
-                    (string) (
-                        $recipient['email'] ?? ''
-                    )
+        $queue_result =
+            $this->queue_service
+                ->initialize(
+                    $communication,
+                    $recipients
                 );
 
-            if (
-                $destination === '' ||
-                !is_email($destination)
-            ) {
-                $failed_count++;
+        if (empty($queue_result['success'])) {
 
-                $errors[] =
-                    'A recipient could not be delivered because no valid email address was available.';
+            $queue_errors =
+                isset($queue_result['errors']) &&
+                is_array($queue_result['errors'])
+                    ? $queue_result['errors']
+                    : [];
 
-                continue;
+            if (!$queue_errors) {
+                $queue_errors[] =
+                    'The Communication delivery queue could not be initialized.';
             }
 
-            $delivery_result =
-                $this->delivery_service
-                    ->deliver(
-                        $communication,
-                        $sender,
-                        $destination,
-                        $communication->get_channel()
-                    );
-
-            if (!empty($delivery_result['success'])) {
-
-                $delivered_count++;
-
-            } else {
-
-                $failed_count++;
-
-                $errors[] =
-                    (string) (
-                        $delivery_result['message']
-                        ?? 'A recipient delivery failed.'
-                    );
-            }
-        }
-
-        // -------------------------------------------------
-        // Delivery Result
-        // -------------------------------------------------
-
-        if ($delivered_count < 1) {
-
-            $release_result =
+            $failure_result =
                 $this->communications_service
                     ->fail_delivery(
                         $communication,
-                        $failed_count,
-                        $errors
+                        (int) (
+                            $queue_result['failed']
+                            ?? 0
+                        ),
+                        $queue_errors
                     );
 
-        } else {
-
-            $release_result =
-                $this->communications_service
-                    ->complete_delivery(
-                        $communication,
-                        $delivered_count,
-                        $failed_count
+            $saved_communication =
+                $this->persistence_service
+                    ->save(
+                        $communication
                     );
+
+            if (!$saved_communication) {
+                return [
+                    'success' =>
+                        false,
+
+                    'status' =>
+                        'release_result_persistence_failed',
+
+                    'message' =>
+                        'The delivery queue could not be created and the final Communication state could not be saved.',
+
+                    'queued' =>
+                        0,
+
+                    'delivered' =>
+                        0,
+
+                    'failed' =>
+                        (int) (
+                            $queue_result['failed']
+                            ?? 0
+                        ),
+
+                    'errors' =>
+                        $queue_errors,
+                ];
+            }
+
+            $failure_result['queued'] = 0;
+
+            return $failure_result;
         }
 
         // -------------------------------------------------
-        // Persist Delivery Result
+        // Delivery Successfully Queued
         // -------------------------------------------------
 
-        $saved_communication =
-            $this->persistence_service
-                ->save(
-                    $communication
-                );
+        $scheduled =
+            SOF_CommunicationDeliveryRunnerService::schedule(
+                (int) $communication->get_id()
+            );
 
-        if (!$saved_communication) {
+        if (!$scheduled) {
+
             return [
-                'success' => false,
-                'status' => 'release_result_persistence_failed',
+                'success' =>
+                    false,
+
+                'status' =>
+                    'delivery_schedule_failed',
+
                 'message' =>
-                    'The communication delivery was processed, but the final lifecycle result could not be saved.',
-                'delivered' => $delivered_count,
-                'failed' => $failed_count,
+                    'The Communication was queued, but background delivery could not be scheduled.',
+
+                'queued' =>
+                    (int) (
+                        $queue_result['queued']
+                        ?? 0
+                    ),
+
+                'delivered' =>
+                    0,
+
+                'failed' =>
+                    (int) (
+                        $queue_result['failed']
+                        ?? 0
+                    ),
+
                 'errors' => [
-                    'The final communication delivery state could not be persisted.',
+                    'The background delivery runner could not be scheduled.',
                 ],
             ];
         }
 
-        return $release_result;
+        return [
+            'success' =>
+                true,
+
+            'status' =>
+                'queued',
+
+            'message' =>
+                'The Communication has been queued for organizational delivery.',
+
+            'queued' =>
+                (int) (
+                    $queue_result['queued']
+                    ?? 0
+                ),
+
+            'delivered' =>
+                0,
+
+            'failed' =>
+                (int) (
+                    $queue_result['failed']
+                    ?? 0
+                ),
+
+            'errors' =>
+                isset($queue_result['errors']) &&
+                is_array($queue_result['errors'])
+                    ? $queue_result['errors']
+                    : [],
+        ];
     }
 }

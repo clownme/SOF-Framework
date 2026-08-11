@@ -237,6 +237,41 @@ class SOF_CommunicationAudienceService
     }
 
     /**
+     * Resolve the member record belonging to a specific
+     * WordPress user.
+     *
+     * Background processes do not have an authenticated
+     * browser session, so they must be able to resolve
+     * organizational identity from a persisted user ID.
+     *
+     * @return array<string, mixed>|null
+     */
+    public function resolve_member_for_user(
+        int $user_id
+    ): ?array {
+        if ($user_id <= 0) {
+            return null;
+        }
+
+        $user =
+            get_user_by(
+                'id',
+                $user_id
+            );
+
+        if (
+            !$user ||
+            !($user instanceof WP_User)
+        ) {
+            return null;
+        }
+
+        return $this->resolve_member(
+            $user
+        );
+    }
+
+    /**
      * Resolve the COAI member record belonging to a
      * WordPress user.
      *

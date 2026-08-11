@@ -56,12 +56,56 @@ class SOF_CommunicationSenderService
             $this->audience_service
                 ->resolve_current_member();
 
+        return $this->build_sender_from_member(
+            $member
+        );
+    }
+
+    /**
+     * Resolve a Communication sender for a specific
+     * WordPress user.
+     *
+     * This path is safe for background processing because
+     * it does not depend on an authenticated browser session.
+     */
+    public function resolve_sender_for_user(
+        int $user_id
+    ): ?SOF_CommunicationSender {
+
+        if ($user_id <= 0) {
+            return null;
+        }
+
+        $member =
+            $this->audience_service
+                ->resolve_member_for_user(
+                    $user_id
+                );
+
+        return $this->build_sender_from_member(
+            $member
+        );
+    }
+
+    /**
+     * Build a Communication Sender from a resolved
+     * member record.
+     *
+     * @param array<string, mixed>|null $member
+     */
+    protected function build_sender_from_member(
+        ?array $member
+    ): ?SOF_CommunicationSender {
+
         if (!$member) {
             return null;
         }
 
         $member_id =
-            (int) ($member['member_id'] ?? 0);
+            (int) (
+                $member['member_id']
+                ?? 0
+            );
 
         if ($member_id <= 0) {
             return null;
@@ -69,21 +113,34 @@ class SOF_CommunicationSenderService
 
         $name =
             trim(
-                (string) ($member['full_name'] ?? '')
+                (string) (
+                    $member['full_name']
+                    ?? ''
+                )
             );
 
         if ($name === '') {
+
             $name =
                 trim(
-                    (string) ($member['first_name'] ?? '') .
+                    (string) (
+                        $member['first_name']
+                        ?? ''
+                    ) .
                     ' ' .
-                    (string) ($member['last_name'] ?? '')
+                    (string) (
+                        $member['last_name']
+                        ?? ''
+                    )
                 );
         }
 
         $email =
             sanitize_email(
-                (string) ($member['email'] ?? '')
+                (string) (
+                    $member['email']
+                    ?? ''
+                )
             );
 
         // -------------------------------------------------
@@ -120,14 +177,18 @@ class SOF_CommunicationSenderService
 
             $scope =
                 trim(
-                    (string)
-                    ($assignment['coai_region'] ?? '')
+                    (string) (
+                        $assignment['coai_region']
+                        ?? ''
+                    )
                 );
 
             $role =
                 trim(
-                    (string)
-                    ($assignment['contact_title'] ?? '')
+                    (string) (
+                        $assignment['contact_title']
+                        ?? ''
+                    )
                 );
         }
 
