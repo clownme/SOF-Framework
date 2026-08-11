@@ -480,6 +480,21 @@ class SOF_ComposeWorkspace
         $existing_communication
             ? $existing_communication->get_body()
             : '';
+            
+    /*
+     * Communication formatting is intentionally limited.
+     *
+     * Full rich-text composition belongs to Newsletters.
+     */
+    $allowed_message_html = [
+        'p' => [],
+        'br' => [],
+        'div' => [],
+        'strong' => [],
+        'b' => [],
+        'em' => [],
+        'i' => [],
+    ];
 
     /*
      * Preserve composition content when the audience
@@ -498,11 +513,12 @@ class SOF_ComposeWorkspace
         }
 
         if (isset($_POST['sof_communication_message'])) {
-            $message =
-                wp_kses_post(
+           $message =
+               wp_kses(
                     wp_unslash(
                         $_POST['sof_communication_message']
-                    )
+                    ),
+                    $allowed_message_html
                 );
         }
     }
@@ -544,10 +560,11 @@ class SOF_ComposeWorkspace
 
             $message =
                 isset($_POST['sof_communication_message'])
-                    ? wp_kses_post(
+                    ? wp_kses(
                         wp_unslash(
                             $_POST['sof_communication_message']
-                        )
+                        ),
+                        $allowed_message_html
                     )
                     : '';
 
@@ -1290,18 +1307,85 @@ class SOF_ComposeWorkspace
 
                                     <div class="sof-form-field">
 
-                                        <label for="sof-communication-message">
+                                        <label for="sof-communication-message-editor">
                                             Message
                                         </label>
 
-                                        <textarea
-                                            id="sof-communication-message"
-                                            name="sof_communication_message"
-                                            rows="12"
-                                            required
-                                        ><?php echo esc_textarea($message); ?></textarea>
+                                        <div
+                                            class="sof-communication-format-toolbar"
+                                            style="
+                                                display:flex;
+                                                gap:6px;
+                                                margin:0 0 8px;
+                                            "
+                                        >
+
+                                        <button
+                                            type="button"
+                                            id="sof-communication-bold"
+                                            title="Bold"
+                                            aria-label="Bold"
+                                            style="
+                                                min-width:38px;
+                                                padding:6px 10px;
+                                                border:1px solid #cbd5e1;
+                                                border-radius:6px;
+                                                background:#ffffff;
+                                                font-weight:700;
+                                                cursor:pointer;
+                                            "
+                                        >
+                                            B
+                                        </button>
+
+                                        <button
+                                            type="button"
+                                            id="sof-communication-italic"
+                                            title="Italic"
+                                            aria-label="Italic"
+                                            style="
+                                                min-width:38px;
+                                                padding:6px 10px;
+                                                border:1px solid #cbd5e1;
+                                                border-radius:6px;
+                                                background:#ffffff;
+                                                font-style:italic;
+                                                cursor:pointer;
+                                            "
+                                        >
+                                            I
+                                        </button>
 
                                     </div>
+
+                                    <div
+                                        id="sof-communication-message-editor"
+                                        contenteditable="true"
+                                        role="textbox"
+                                        aria-multiline="true"
+                                        style="
+                                            min-height:220px;
+                                            padding:12px;
+                                            border:1px solid #cbd5e1;
+                                            border-radius:6px;
+                                            background:#ffffff;
+                                            line-height:1.5;
+                                            overflow:auto;
+                                        "
+                                    ><?php
+                                         echo wp_kses_post(
+                                             $message !== ''
+                                                 ? wpautop($message)
+                                                 : ''
+                                         );
+                                    ?></div>
+
+                                    <textarea
+                                        id="sof-communication-message"
+                                        name="sof_communication_message"
+                                        required
+                                        style="display:none;"
+                                   ><?php echo esc_textarea($message); ?></textarea>
 
                                 </div>
 
@@ -1404,6 +1488,107 @@ class SOF_ComposeWorkspace
             </main>
 
         </div>
+        
+        <script>
+(function () {
+    'use strict';
+
+    var editor =
+        document.getElementById(
+            'sof-communication-message-editor'
+        );
+
+    var messageField =
+        document.getElementById(
+            'sof-communication-message'
+        );
+
+    var boldButton =
+        document.getElementById(
+            'sof-communication-bold'
+        );
+
+    var italicButton =
+        document.getElementById(
+            'sof-communication-italic'
+        );
+
+    if (!editor || !messageField) {
+        return;
+    }
+
+    function syncMessage() {
+        messageField.value =
+            editor.innerHTML.trim();
+    }
+
+    function applyFormat(command) {
+
+        editor.focus();
+
+        document.execCommand(
+            command,
+            false,
+            null
+        );
+
+        syncMessage();
+    }
+
+    if (boldButton) {
+
+        boldButton.addEventListener(
+            'mousedown',
+            function (event) {
+                event.preventDefault();
+            }
+        );
+
+        boldButton.addEventListener(
+            'click',
+            function () {
+                applyFormat('bold');
+            }
+        );
+    }
+
+    if (italicButton) {
+
+        italicButton.addEventListener(
+            'mousedown',
+            function (event) {
+                event.preventDefault();
+            }
+        );
+
+        italicButton.addEventListener(
+            'click',
+            function () {
+                applyFormat('italic');
+            }
+        );
+    }
+
+    editor.addEventListener(
+        'input',
+        syncMessage
+    );
+
+    var form =
+        editor.closest('form');
+
+    if (form) {
+
+        form.addEventListener(
+            'submit',
+            function () {
+                syncMessage();
+            }
+        );
+    }
+
+}());
+</script>
 
         <?php
 

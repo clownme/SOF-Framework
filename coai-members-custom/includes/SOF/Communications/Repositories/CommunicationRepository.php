@@ -187,4 +187,61 @@ class SOF_CommunicationRepository
 
         return new SOF_Communication($row);
     }
+
+    /**
+     * Find the current person's most recent active or
+     * recently completed Communication delivery.
+     */
+    public function find_latest_delivery_for_creator(
+        int $user_id
+    ): ?SOF_Communication {
+        global $wpdb;
+
+        if ($user_id < 1) {
+            return null;
+        }
+
+        $table =
+            $this->table_name();
+
+        $completed_since =
+            gmdate(
+                'Y-m-d H:i:s',
+                time() - (7 * DAY_IN_SECONDS)
+            );
+
+        $row =
+            $wpdb->get_row(
+                $wpdb->prepare(
+                    "
+                    SELECT *
+                    FROM {$table}
+                    WHERE created_by = %d
+                      AND (
+                            status = %s
+                            OR (
+                                status = %s
+                                AND sent_at IS NOT NULL
+                                AND sent_at >= %s
+                            )
+                          )
+                    ORDER BY id DESC
+                    LIMIT 1
+                    ",
+                    $user_id,
+                    'sending',
+                    'sent',
+                    $completed_since
+                ),
+                ARRAY_A
+            );
+
+        if (!$row) {
+            return null;
+        }
+
+        return new SOF_Communication(
+            $row
+        );
+    }
 }

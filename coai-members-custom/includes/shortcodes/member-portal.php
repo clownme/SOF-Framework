@@ -106,14 +106,23 @@ add_shortcode('coai_member_portal', function () {
     in_array('finance', $roles, true) ||
     ($usergroup === 'FINANCE');
     
+  // -----------------------------
+  // SOF Access capability
+  // -----------------------------
+  $can_manage_access =
+      function_exists('sof_current_user_can') &&
+      sof_current_user_can('manage_access');
+
   $is_staff =
-    $is_admin_manager ||
-    $is_finance ||
-    $is_newsletter_manager;
-    
+      $is_admin_manager ||
+      $is_finance ||
+      $is_newsletter_manager ||
+      $can_manage_access;
+
   // -----------------------------
   // Regional Vice President access
   // -----------------------------
+  
   $rvp_region = ($member_id > 0 && function_exists('coai_get_active_rvp_region_for_member'))
       ? coai_get_active_rvp_region_for_member($member_id)
       : '';
@@ -159,6 +168,58 @@ add_shortcode('coai_member_portal', function () {
   $ins_exp_disp    = $format_date($ins_exp);
 
   $has_any_ins = ($ins_status !== '' || $ins_eff !== '' || $ins_exp !== '');
+
+  // -----------------------------
+  // Recent Communication Delivery
+  // -----------------------------
+
+  $recent_communication = null;
+
+  $communication_progress = [
+      'total' => 0,
+      'pending' => 0,
+      'processing' => 0,
+      'sent' => 0,
+      'failed' => 0,
+  ];
+
+  $communication_remaining = 0;
+
+  if (
+      class_exists('SOF_CommunicationRepository') &&
+      class_exists('SOF_CommunicationDeliveryQueueRepository') &&
+      class_exists('SOF_CommunicationDeliveryQueueService')
+  ) {
+
+      $communication_repository =
+          new SOF_CommunicationRepository();
+
+      $recent_communication =
+          $communication_repository
+              ->find_latest_delivery_for_creator(
+                  $wp
+              );
+
+      if ($recent_communication) {
+
+          $queue_repository =
+              new SOF_CommunicationDeliveryQueueRepository();
+
+          $queue_service =
+              new SOF_CommunicationDeliveryQueueService(
+                  $queue_repository
+              );
+
+          $communication_progress =
+              $queue_service->progress(
+                  (int) $recent_communication->get_id()
+              );
+
+          $communication_remaining =
+              (int) $communication_progress['pending'] +
+              (int) $communication_progress['processing'];
+      }
+  }
 
   // ✅ Start buffering BEFORE any HTML output
   ob_start();
@@ -207,6 +268,201 @@ add_shortcode('coai_member_portal', function () {
       </a>
     </div>
   </div>
+  
+    <?php if ($recent_communication): ?>
+
+    <?php
+      $communication_status =
+          $recent_communication->get_status();
+
+      $communication_id =
+          (int) $recent_communication->get_id();
+
+      $communication_subject =
+          trim(
+              (string) $recent_communication->get_subject()
+          );
+
+      $communication_complete =
+          $communication_status === 'sent';
+
+      $delivery_results_url =
+          add_query_arg(
+              'communication_id',
+              $communication_id,
+              home_url('/confirm-communication/')
+          );
+    ?>
+
+    <div
+      class="coai-portal-card coai-communication-status-card"
+      style="margin:1rem 0;padding:1.25rem;border:1px solid #e5e7eb;border-radius:12px;background:#fff;"
+    >
+
+      <h3 style="margin:0 0 .5rem;">
+        <?php if ($communication_complete): ?>
+          Communication Delivery Complete
+        <?php else: ?>
+          Communication Delivery in Progress
+        <?php endif; ?>
+      </h3>
+
+      <?php if ($communication_subject !== ''): ?>
+
+        <p style="margin:.25rem 0 .75rem;">
+          <strong>Subject:</strong>
+          <?php echo esc_html($communication_subject); ?>
+        </p>
+
+      <?php endif; ?>
+
+      <?php if ($communication_complete): ?>
+
+        <p style="margin:0 0 .75rem;color:#374151;">
+          Your Communication has finished delivery.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr;gap:.35rem;margin-bottom:1rem;">
+
+          <div>
+            <strong>Attempted:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      (int) $communication_progress['total']
+                  )
+              );
+            ?>
+          </div>
+
+          <div>
+            <strong>Delivered:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      (int) $communication_progress['sent']
+                  )
+              );
+            ?>
+          </div>
+
+          <div>
+            <strong>Failed:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      (int) $communication_progress['failed']
+                  )
+              );
+            ?>
+          </div>
+
+        </div>
+
+        <form
+          method="get"
+          action="<?php
+            echo esc_url(
+                home_url('/confirm-communication/')
+            );
+          ?>"
+          style="display:inline;"
+        >
+
+          <input
+            type="hidden"
+            name="communication_id"
+            value="<?php
+              echo esc_attr(
+                  (string) $communication_id
+              );
+            ?>"
+          >
+
+        <button
+            type="submit"
+            style="
+                display:inline-block;
+                padding:12px 20px;
+                margin:8px 0 0;
+                background:#1f365c;
+                color:#ffffff;
+                border:1px solid #1f365c;
+                border-radius:8px;
+                font-size:16px;
+                font-weight:600;
+                line-height:1.2;
+                text-decoration:none;
+                cursor:pointer;
+                appearance:none;
+                -webkit-appearance:none;
+            "
+        >
+            View Delivery Results
+        </button>
+
+        </form>
+
+      <?php else: ?>
+
+        <p style="margin:0 0 .75rem;color:#374151;">
+          SOF is continuing delivery in the background.
+          You may continue using the Member Portal.
+        </p>
+
+        <div style="display:grid;grid-template-columns:1fr;gap:.35rem;">
+
+          <div>
+            <strong>Queued Recipients:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      (int) $communication_progress['total']
+                  )
+              );
+            ?>
+          </div>
+
+          <div>
+            <strong>Delivered:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      (int) $communication_progress['sent']
+                  )
+              );
+            ?>
+          </div>
+
+          <div>
+            <strong>Failed:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      (int) $communication_progress['failed']
+                  )
+              );
+            ?>
+          </div>
+
+          <div>
+            <strong>Remaining:</strong>
+            <?php
+              echo esc_html(
+                  number_format_i18n(
+                      $communication_remaining
+                  )
+              );
+            ?>
+          </div>
+
+        </div>
+
+      <?php endif; ?>
+
+    </div>
+
+  <?php endif; ?>
 
   <!-- Insurance card (shown if any insurance data exists; flip to always-show if you prefer) -->
   <?php if ($has_any_ins): ?>
@@ -229,20 +485,10 @@ add_shortcode('coai_member_portal', function () {
     <div class="coai-portal-card" style="max-width:720px;margin:1rem auto;padding:1.25rem;border:1px solid #e5e7eb;border-radius:12px;background:#fff;">
       <h3 style="margin:0 0 .5rem;">Newsletter Tools</h3>
       <div style="display:flex;flex-wrap:wrap;gap:.5rem;">
-          <a class="button" href="<?php echo esc_url(home_url('/communications/')); ?>"
-             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-            Compose Communications
-          </a>
-
-          <a class="button" href="<?php echo esc_url(home_url('/newsletters/')); ?>"
-             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-            Compose Newsletters
-          </a>
-          
-          <a class="button" href="<?php echo esc_url(home_url('/access/')); ?>"
-             style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-            Grant Access
-          </a>
+        <a class="button" href="<?php echo esc_url(home_url('/staff-newsletters/')); ?>"
+           style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
+          Newsletter &amp; Announcements
+        </a>
       </div>
     </div>
   <?php endif; ?>
@@ -317,14 +563,15 @@ add_shortcode('coai_member_portal', function () {
 
           <a class="button" href="<?php echo esc_url(home_url('/newsletters/')); ?>"
              style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-            Compose Newsletters
+              Compose Newsletters
           </a>
-          
+
           <a class="button" href="<?php echo esc_url(home_url('/access/')); ?>"
              style="text-decoration:none;padding:.5rem .75rem;border:1px solid #d1d5db;border-radius:8px;">
-            Manage Access
+              Manage Access
           </a>
-        <?php endif; ?>
+
+          <?php endif; ?>
 
         <?php if ($is_finance): ?>
           <a class="button" href="<?php echo esc_url(home_url('/finance-portal/')); ?>"

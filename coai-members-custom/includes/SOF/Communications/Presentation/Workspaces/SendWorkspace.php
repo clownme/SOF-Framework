@@ -87,8 +87,36 @@ class SOF_SendWorkspace
         // Lifecycle Guard
         // -------------------------------------------------
 
-        if ($communication->get_status() !== 'approved') {
-            return '<p>The communication must be approved before it can be released.</p>';
+        $communication_status =
+            $communication->get_status();
+            
+        if ($communication_status === 'sent') {
+            
+            $confirm_url =
+                add_query_arg(
+                    'communication_id',
+                    $communication->get_id(),
+                    site_url('/confirm-communication/')
+                );
+
+            wp_safe_redirect(
+                $confirm_url
+            );
+
+            exit;
+        }
+
+        if (
+            !in_array(
+                $communication_status,
+                [
+                    'approved',
+                    'sending',
+                ],
+                true
+            )
+        ) {
+            return '<p>The communication is not currently available for delivery.</p>';
         }
 
         // -------------------------------------------------
@@ -118,7 +146,46 @@ class SOF_SendWorkspace
         $release_warning = '';
         $release_error = '';
         $release_result = null;
+        
+        // -------------------------------------------------
+        // Queued Delivery Progress
+        // -------------------------------------------------
+ 
+        $delivery_started =
+            $communication_status === 'sending';
 
+        $delivery_progress = [
+            'total' =>
+                0,
+
+            'pending' =>
+                0,
+
+            'processing' =>
+                0,
+
+            'sent' =>
+                0,
+
+            'failed' =>
+                0,
+        ];
+
+        if ($delivery_started) {
+
+            $queue_repository =
+                new SOF_CommunicationDeliveryQueueRepository();
+
+            $queue_service =
+                new SOF_CommunicationDeliveryQueueService(
+                    $queue_repository
+                );
+
+            $delivery_progress =
+                $queue_service->progress(
+                    $communication_id
+                );
+        }
 
         // -------------------------------------------------
         // Release Audience
@@ -228,13 +295,20 @@ class SOF_SendWorkspace
                     );
 
                 if (
-                    $release_status ===
-                    'release_result_persistence_failed'
-                ) {
-
-                    $release_warning =
-                        $release_result['message']
-                            ?? 'The communication was processed, but the final release result could not be saved.';
+                    $release_status === 'queued') {
+                        
+                        $send_url =
+                            add_query_arg(
+                                'communication_id',
+                                $communication->get_id(),
+                                site_url('/send-communication/')
+                            );
+                            
+                        wp_safe_redirect(
+                            $send_url
+                        );
+                        
+                        exit;
 
                 } elseif (
                     in_array(
@@ -752,7 +826,109 @@ class SOF_SendWorkspace
         <!-- Delivery Messages -->
         <!-- ============================================= -->
 
-        <?php if ($release_warning !== ''): ?>
+        <?php if ($delivery_started): ?>
+        
+            <?php
+            
+            $remaining_count =
+                (int) $delivery_progress['pending'] +
+                (int) $delivery_progress['processing'];
+                
+            ?>
+            
+            <section class="sof-card sof-send-progress-card">
+
+        <header class="sof-card-header">
+
+            <h2 class="sof-card-title">
+                Communication Delivery Started
+            </h2>
+
+            <p class="sof-card-summary">
+                SOF is managing delivery to the queued recipients.
+            </p>
+
+        </header>
+
+        <div class="sof-card-content">
+
+            <div class="sof-communication-detail">
+
+                <strong>
+                    Queued Recipients
+                </strong>
+
+                <div>
+                    <?php
+                    echo esc_html(
+                        number_format_i18n(
+                            (int) $delivery_progress['total']
+                        )
+                    );
+                    ?>
+                </div>
+
+            </div>
+
+            <div class="sof-communication-detail">
+
+                <strong>
+                    Sent
+                </strong>
+
+                <div>
+                    <?php
+                    echo esc_html(
+                        number_format_i18n(
+                            (int) $delivery_progress['sent']
+                        )
+                    );
+                    ?>
+                </div>
+
+            </div>
+
+            <div class="sof-communication-detail">
+
+                <strong>
+                    Failed
+                </strong>
+
+                <div>
+                    <?php
+                    echo esc_html(
+                        number_format_i18n(
+                            (int) $delivery_progress['failed']
+                        )
+                    );
+                    ?>
+                </div>
+
+            </div>
+
+            <div class="sof-communication-detail">
+
+                <strong>
+                    Remaining
+                </strong>
+
+                <div>
+                    <?php
+                    echo esc_html(
+                        number_format_i18n(
+                            $remaining_count
+                        )
+                    );
+                    ?>
+                </div>
+
+            </div>
+
+        </div>
+
+    </section>
+
+<?php elseif ($release_warning !== ''): ?>
 
             <section class="sof-card sof-send-warning-card">
 
@@ -889,7 +1065,13 @@ class SOF_SendWorkspace
 
                 <p class="sof-card-summary">
 
-                    <?php if ($release_warning !== ''): ?>
+                    <?php if ($delivery_started): ?>
+                    
+                        Delivery is continuing in the background. You may remain on this page
+                        to review progress or return to the Member Portal. Leaving this page 
+                        will not stop delivery.
+                        
+                    <?php elseif ($release_warning !== ''): ?>
 
                         Return to approval and review the delivery status
                         before taking further action.
@@ -904,81 +1086,106 @@ class SOF_SendWorkspace
 
             </header>
 
-            <div class="sof-card-content">
+<div class="sof-card-content">
 
-                <div class="sof-test-actions">
+    <div class="sof-test-actions">
 
-                    <form
-                        method="get"
-                        action="<?php
-                        echo esc_url(
-                            home_url('/approve-communication/')
+        <?php if ($delivery_started): ?>
+
+            <form
+                method="get"
+                action="<?php
+                echo esc_url(
+                    home_url('/member-portal/')
+                );
+                ?>"
+                style="display:inline;"
+            >
+
+                <button
+                    type="submit"
+                    class="sof-button sof-button-secondary"
+                >
+                    Return to Member Portal
+                </button>
+
+            </form>
+
+        <?php else: ?>
+
+            <form
+                method="get"
+                action="<?php
+                echo esc_url(
+                    home_url('/approve-communication/')
+                );
+                ?>"
+                style="display:inline;"
+            >
+
+                <input
+                    type="hidden"
+                    name="communication_id"
+                    value="<?php
+                    echo esc_attr(
+                        (string)
+                        $communication->get_id()
+                    );
+                    ?>"
+                >
+
+                <button
+                    type="submit"
+                    class="sof-button sof-button-secondary"
+                >
+                    Return to Approval
+                </button>
+
+            </form>
+
+            <?php if ($release_warning === ''): ?>
+
+                <form
+                    method="post"
+                    style="display:inline;"
+                >
+
+                    <?php
+                    wp_nonce_field(
+                        'sof_send_communication',
+                        'sof_send_nonce'
+                    );
+                    ?>
+
+                    <input
+                        type="hidden"
+                        name="communication_id"
+                        value="<?php
+                        echo esc_attr(
+                            (string)
+                            $communication->get_id()
                         );
                         ?>"
-                        style="display:inline;"
                     >
 
-                        <input
-                            type="hidden"
-                            name="communication_id"
-                            value="<?php
-                            echo esc_attr(
-                                (string)
-                                $communication->get_id()
-                            );
-                            ?>"
-                        >
+                    <button
+                        type="submit"
+                        name="sof_send_submit"
+                        value="1"
+                        class="sof-button sof-button-primary"
+                    >
+                        Send Communication
+                    </button>
 
-                        <button
-                            type="submit"
-                            class="sof-button sof-button-secondary"
-                        >
-                            Return to Approval
-                        </button>
+                </form>
 
-                    </form>
+            <?php endif; ?>
 
-                    <?php if ($release_warning === ''): ?>
+        <?php endif; ?>
 
-                        <form
-                            method="post"
-                            style="display:inline;"
-                        >
+    </div>
 
-                            <?php
-                            wp_nonce_field(
-                                'sof_send_communication',
-                                'sof_send_nonce'
-                            );
-                            ?>
-
-                            <input
-                                type="hidden"
-                                name="communication_id"
-                                value="<?php
-                                echo esc_attr(
-                                    (string)
-                                    $communication->get_id()
-                                );
-                                ?>"
-                            >
-
-                            <button
-                                type="submit"
-                                name="sof_send_submit"
-                                value="1"
-                                class="sof-button sof-button-primary"
-                            >
-                                Send Communication
-                            </button>
-
-                        </form>
-
-                    <?php endif; ?>
-
-                </div>
-
-            </div>
+</div>
 
         </section>
 
@@ -986,9 +1193,25 @@ class SOF_SendWorkspace
 
 </div>
 
-<?php
+<?php if ($delivery_started): ?>
 
-return (string) ob_get_clean();        
+    <script>
+        (function () {
+            'use strict';
 
+            window.setTimeout(
+                function () {
+                    window.location.reload();
+                },
+                5000
+            );
+        }());
+    </script>
+
+<?php endif; ?>
+
+        <?php
+
+        return ob_get_clean();
     }
 }

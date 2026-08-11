@@ -61,6 +61,9 @@ require_once SOF_COMMUNICATIONS_PATH .
     
 require_once SOF_COMMUNICATIONS_PATH .
     '/Models/CommunicationRecipientSelection.php';
+    
+require_once SOF_COMMUNICATIONS_PATH .
+    '/Models/CommunicationDeliveryQueueItem.php';
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Models/CommunicationAssessment.php';
@@ -80,6 +83,9 @@ require_once SOF_COMMUNICATIONS_PATH .
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Repositories/CommunicationRepository.php';
+
+require_once SOF_COMMUNICATIONS_PATH .
+    '/Repositories/CommunicationDeliveryQueueRepository.php';
 
 // -------------------------------------------------
 // Delivery Providers
@@ -123,6 +129,15 @@ require_once SOF_COMMUNICATIONS_PATH .
     '/Services/CommunicationDeliveryService.php';
     
 require_once SOF_COMMUNICATIONS_PATH .
+    '/Services/CommunicationDeliveryQueueService.php';
+    
+require_once SOF_COMMUNICATIONS_PATH .
+    '/Services/CommunicationDeliveryWorkerService.php';
+    
+require_once SOF_COMMUNICATIONS_PATH .
+    '/Services/CommunicationDeliveryRunnerService.php';
+
+require_once SOF_COMMUNICATIONS_PATH .
     '/Services/CommunicationTestDeliveryService.php';
     
 require_once SOF_COMMUNICATIONS_PATH .
@@ -155,4 +170,63 @@ require_once SOF_COMMUNICATIONS_PATH .
 
 require_once SOF_COMMUNICATIONS_PATH .
     '/Presentation/presentation.php';
-    
+
+// -------------------------------------------------
+// Background Delivery
+// -------------------------------------------------
+
+add_action(
+    SOF_CommunicationDeliveryRunnerService::CRON_HOOK,
+    [
+        SOF_CommunicationDeliveryRunnerService::class,
+        'handle',
+    ],
+    10,
+    1
+);
+
+// -------------------------------------------------
+// Background Delivery Recovery
+// -------------------------------------------------
+
+add_filter(
+    'cron_schedules',
+    static function (
+        array $schedules
+    ): array {
+
+        if (!isset($schedules['sof_every_minute'])) {
+
+            $schedules['sof_every_minute'] = [
+                'interval' =>
+                    60,
+
+                'display' =>
+                    'SOF Every Minute',
+            ];
+        }
+
+        return $schedules;
+    }
+);
+
+add_action(
+    SOF_CommunicationDeliveryRunnerService::RECOVERY_CRON_HOOK,
+    [
+        SOF_CommunicationDeliveryRunnerService::class,
+        'recover_pending_deliveries',
+    ]
+);
+
+if (
+    !wp_next_scheduled(
+        SOF_CommunicationDeliveryRunnerService::RECOVERY_CRON_HOOK
+    )
+) {
+
+    wp_schedule_event(
+        time() + 5,
+        'sof_every_minute',
+        SOF_CommunicationDeliveryRunnerService::RECOVERY_CRON_HOOK
+    );
+}
