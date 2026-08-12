@@ -548,9 +548,7 @@ class SOF_SendWorkspace
                     <div>
                         <?php
                         echo wp_kses_post(
-                            wpautop(
                                 $communication->get_body()
-                            )
                         );
                         ?>
                     </div>

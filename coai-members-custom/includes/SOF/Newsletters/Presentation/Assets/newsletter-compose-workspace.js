@@ -90,7 +90,7 @@
      * --------------------------------------------------------
      */
 
-    function renumberSections() {
+        function renumberSections() {
         $('.sof-newsletter-content-section')
             .each(function (index) {
                 const section = $(this);
@@ -105,12 +105,15 @@
                     .text(index + 1);
 
                 section
-                    .find('[name]')
+                    .find('input[name], textarea[name], select[name]')
                     .each(function () {
                         const field = $(this);
                         const name = field.attr('name');
 
-                        if (!name) {
+                        if (
+                            !name ||
+                            !/^sections\[\d+\]/.test(name)
+                        ) {
                             return;
                         }
 
@@ -122,7 +125,7 @@
                             )
                         );
                     });
-                    
+
                 const imageInput =
                     section.find(
                         'input[type="hidden"][name*="[image_attachment_id]"]'
@@ -174,20 +177,50 @@
                     );
             });
 
-                const sectionCount =
-                    $('.sof-newsletter-content-section').length;
+        const sectionCount =
+            $('.sof-newsletter-content-section').length;
 
-                $('.sof-newsletter-remove-section')
-                    .prop(
-                        'hidden',
-                        sectionCount <= 1
-                    );
+        $('.sof-newsletter-remove-section')
+            .prop(
+                'hidden',
+                sectionCount <= 1
+            );
+    }
+
+
+    function initializeSectionEditor(editorId) {
+
+        if (
+            !window.wp ||
+            !wp.editor ||
+            typeof wp.editor.initialize !== 'function'
+        ) {
+            return;
+        }
+
+        wp.editor.initialize(
+            editorId,
+            {
+                tinymce: {
+                    toolbar1:
+                        'formatselect,bold,italic,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,undo,redo',
+
+                    toolbar2:
+                        'forecolor,removeformat,charmap,outdent,indent'
+                },
+
+                quicktags: true,
+
+                mediaButtons: false
             }
+        );
+    }
 
 
     $('#sof-newsletter-add-section').on(
         'click',
         function () {
+
             const container =
                 $('#sof-newsletter-sections');
 
@@ -200,12 +233,65 @@
                 return;
             }
 
+            /*
+             * Clone the business section structure.
+             *
+             * TinyMCE itself must NOT be cloned as an active
+             * editor. The cloned editor wrapper will be replaced
+             * with a fresh textarea and WordPress will initialize
+             * a brand-new editor for the new section.
+             */
             const newSection =
                 firstSection.clone(false, false);
 
+            const newIndex =
+                container
+                    .find('.sof-newsletter-content-section')
+                    .length;
+
+            const editorId =
+                'sof_newsletter_section_content_dynamic_' +
+                Date.now() +
+                '_' +
+                newIndex;
+
+            const editorWrap =
+                newSection.find('.wp-editor-wrap').first();
+
+            if (editorWrap.length) {
+
+                const editorTextarea =
+                    $('<textarea>', {
+                        id: editorId,
+                        name:
+                            'sections[' +
+                            newIndex +
+                            '][content]',
+                        rows: 10,
+                        class: 'wp-editor-area'
+                    });
+
+                editorWrap.replaceWith(
+                    editorTextarea
+                );
+            }
+
             newSection
-                .find('input, textarea')
+                .find('input')
+                .not(
+                    'input[type="button"], ' +
+                    'input[type="submit"]'
+                )
                 .val('');
+
+            newSection
+                .find('textarea')
+                .not('#' + editorId)
+                .val('');
+                
+            newSection
+                .find('.sof-newsletter-image-size')
+                .val('medium');
 
             newSection
                 .find('.sof-newsletter-image-preview')
@@ -218,9 +304,16 @@
                     true
                 );
 
-            container.append(newSection);
+            container.append(
+                newSection
+            );
 
-            renumberSections();      }
+            renumberSections();
+
+            initializeSectionEditor(
+                editorId
+            );
+        }
     );
 
 
@@ -228,6 +321,7 @@
         'click',
         '.sof-newsletter-remove-section',
         function () {
+
             const sections =
                 $('.sof-newsletter-content-section');
 
@@ -235,11 +329,58 @@
                 return;
             }
 
-            $(this)
-                .closest('.sof-newsletter-content-section')
-                .remove();
+            const section =
+                $(this)
+                    .closest(
+                        '.sof-newsletter-content-section'
+                    );
+
+            const editor =
+                section
+                    .find('textarea.wp-editor-area')
+                    .first();
+
+            const editorId =
+                editor.attr('id');
+
+            /*
+             * Properly detach TinyMCE before removing the
+             * Newsletter section from the page.
+             */
+            if (
+                editorId &&
+                window.wp &&
+                wp.editor &&
+                typeof wp.editor.remove === 'function'
+            ) {
+                wp.editor.remove(
+                    editorId
+                );
+            }
+
+            section.remove();
 
             renumberSections();
+        }
+    );
+
+
+    /*
+     * Make sure TinyMCE pushes the current visual-editor
+     * contents back into the underlying textareas before
+     * the Newsletter form is submitted.
+     */
+    $(document).on(
+        'submit',
+        'form',
+        function () {
+
+            if (
+                window.tinymce &&
+                typeof tinymce.triggerSave === 'function'
+            ) {
+                tinymce.triggerSave();
+            }
         }
     );
 

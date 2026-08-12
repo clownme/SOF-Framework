@@ -135,10 +135,12 @@ class SOF_NewsletterHtmlRenderer
                                     ' . $header_logo_html . '
 
                                     <div style="
-                                        font-size:30px;
+                                        font-size:26px;
                                         line-height:1.2;
                                         font-weight:bold;
                                         color:#111827;
+                                        word-break:normal;
+                                        overflow-wrap:normal;
                                     ">
                                         ' . $title . '
                                     </div>
@@ -415,6 +417,9 @@ class SOF_NewsletterHtmlRenderer
                     font-size:16px;
                     line-height:1.7;
                     color:#374151;
+                    word-break:normal;
+                    overflow-wrap:break-word;
+                    white-space:normal;
                 ">
                     ' .
                     wpautop(
@@ -433,6 +438,8 @@ class SOF_NewsletterHtmlRenderer
                 <td style="
                     padding:28px;
                     border-bottom:1px solid #e5e7eb;
+                    word-break:normal;
+                    overflow-wrap:break-word;
                 ">
 
                     ' . $heading . '
@@ -473,6 +480,20 @@ class SOF_NewsletterHtmlRenderer
         if (!$image_url) {
             return '';
         }
+        
+        $image_layout =
+            $section->get_image_layout();
+
+        $image_widths = [
+            'small' => 240,
+            'medium' => 360,
+            'large' => 520,
+            'full' => 624,
+        ];
+
+        $max_width =
+            $image_widths[$image_layout]
+                ?? 360;
 
         return '
             <div style="
@@ -485,11 +506,20 @@ class SOF_NewsletterHtmlRenderer
                     alt="' .
                     esc_attr($section->get_image_alt()) .
                     '"
-                    width="624"
+                    width="' .
+                        esc_attr(
+                            (string) $max_width
+                        ) .
+                    '"
+                    
                     style="
                         display:block;
                         width:100%;
-                        max-width:624px;
+                        max-width:' .
+                            esc_attr(
+                                (string) $max_width
+                            ) .
+                        'px;
                         height:auto;
                         margin:0 auto;
                         border:0;
@@ -512,19 +542,16 @@ class SOF_NewsletterHtmlRenderer
         ) {
             return '';
         }
-
+        
         return '
             <table
                 role="presentation"
-                cellspacing="0"
                 cellpadding="0"
+                cellspacing="0"
                 border="0"
-                width="auto"
                 style="
-                    width:auto !important;
-                    max-width:none !important;
                     margin-top:22px;
-                    border-collapse:collapse;
+                    border-collapse:separate;
                 "
             >
                 <tr>
@@ -542,14 +569,14 @@ class SOF_NewsletterHtmlRenderer
                             esc_url($section->get_link_url()) .
                             '"
                             style="
-                                display:block;
+                                display:inline-block;
                                 padding:12px 20px;
                                 color:#ffffff;
                                 text-decoration:none;
                                 font-size:15px;
                                 font-weight:bold;
                                 line-height:1.2;
-                                border:0;
+                                border-radius:4px;
                             "
                         >
                             ' .
@@ -559,5 +586,5 @@ class SOF_NewsletterHtmlRenderer
                     </td>
                 </tr>
             </table>';
+        }
     }
-}

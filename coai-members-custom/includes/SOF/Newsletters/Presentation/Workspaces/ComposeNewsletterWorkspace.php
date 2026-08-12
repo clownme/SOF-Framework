@@ -100,6 +100,7 @@ class SOF_ComposeNewsletterWorkspace
                 'heading' => '',
                 'content' => '',
                 'image_attachment_id' => 0,
+                'image_layout' => 'medium',
                 'link_label' => '',
                 'link_url' => '',
             ],
@@ -215,6 +216,20 @@ class SOF_ComposeNewsletterWorkspace
                         'image_attachment_id' =>
                             $existing_section
                                 ->get_image_attachment_id() ?? 0,
+                                
+                        'image_layout' =>
+                            in_array(
+                                $existing_section->get_image_layout(),
+                                [
+                                    'small',
+                                    'medium',
+                                    'large',
+                                    'full',
+                                ],
+                                true
+                            )
+                                ?$existing_section->get_image_layout()
+                                : 'medium',
 
                         'link_label' =>
                             $existing_section
@@ -231,6 +246,7 @@ class SOF_ComposeNewsletterWorkspace
                         'heading' => '',
                         'content' => '',
                         'image_attachment_id' => 0,
+                        'image_layout' => 'medium',
                         'link_label' => '',
                         'link_url' => '',
                     ];
@@ -549,6 +565,29 @@ class SOF_ComposeNewsletterWorkspace
                             $posted_section['image_attachment_id']
                         )
                         : 0;
+                        
+                $image_layout =
+                    isset($posted_section['image_layout'])
+                        ? sanitize_key(
+                            $posted_section['image_layout']
+                        )
+                        : 'medium';
+                        
+                if (
+                    !in_array(
+                        $image_layout,
+                        [
+                            'small',
+                            'medium',
+                            'large',
+                            'full',
+                        ],
+                        true
+                        
+                    )
+                ) {
+                    $image_layout = 'medium';
+                }
 
                 $link_label =
                     isset($posted_section['link_label'])
@@ -569,6 +608,8 @@ class SOF_ComposeNewsletterWorkspace
                     'content' => $content,
                     'image_attachment_id' =>
                         $image_attachment_id,
+                    'image_layout' =>
+                        $image_layout,
                     'link_label' => $link_label,
                     'link_url' => $link_url,
                 ];
@@ -579,6 +620,7 @@ class SOF_ComposeNewsletterWorkspace
                     'heading' => '',
                     'content' => '',
                     'image_attachment_id' => 0,
+                    'image_layout' => 'medium',
                     'link_label' => '',
                     'link_url' => '',
                 ];
@@ -684,7 +726,7 @@ class SOF_ComposeNewsletterWorkspace
                             : null,
                         null,
                         $image_alt,
-                        'above',
+                        $section['image_layout'],
                         $section['link_url'] !== ''
                             ? $section['link_url']
                             : null,
@@ -1402,20 +1444,44 @@ class SOF_ComposeNewsletterWorkspace
                                     </label>
                                 </p>
 
-                                <textarea
-                                    name="sections[<?php
-                                        echo esc_attr(
-                                            (string) $index
-                                        );
-                                    ?>][content]"
-                                    rows="8"
-                                    placeholder="Enter Newsletter content..."
-                                ><?php
-                                    echo esc_textarea(
-                                        $section['content']
-                                    );
-                                    
-                                ?></textarea>
+                                <?php
+
+                                $editor_id =
+                                    'sof_newsletter_section_content_' .
+                                    $index;
+
+                                wp_editor(
+                                    (string) $section['content'],
+                                    $editor_id,
+                                    [
+                                        'textarea_name' =>
+                                            'sections[' .
+                                            $index .
+                                            '][content]',
+
+                                        'textarea_rows' =>
+                                            10,
+
+                                        'media_buttons' =>
+                                            false,
+
+                                        'teeny' =>
+                                            false,
+
+                                        'quicktags' =>
+                                            true,
+
+                                        'tinymce' => [
+                                            'toolbar1' =>
+                                                'formatselect,bold,italic,bullist,numlist,blockquote,alignleft,aligncenter,alignright,link,unlink,undo,redo',
+
+                                            'toolbar2' =>
+                                                'forecolor,removeformat,charmap,outdent,indent',
+                                        ],
+                                    ]
+                                );
+
+                                ?>
 
                                 <?php
                                 $image_id =
@@ -1527,6 +1593,96 @@ class SOF_ComposeNewsletterWorkspace
                                         </button>
 
                                     </div>
+                                    
+                                                                    <div class="sof-newsletter-image-size-field">
+
+                                    <p>
+                                        <label>
+                                            <strong>
+                                                Image Size
+                                            </strong>
+                                        </label>
+                                    </p>
+
+                                    <p>
+                                        Choose how large this image should appear
+                                        in the Newsletter.
+                                    </p>
+
+                                    <?php
+
+                                    $image_layout =
+                                        isset($section['image_layout'])
+                                            ? (string) $section['image_layout']
+                                            : 'medium';
+
+                                    if (
+                                        !in_array(
+                                            $image_layout,
+                                            [
+                                                'small',
+                                                'medium',
+                                                'large',
+                                                'full',
+                                            ],
+                                            true
+                                        )
+                                    ) {
+                                        $image_layout = 'medium';
+                                    }
+
+                                    ?>
+
+                                    <select
+                                        name="sections[<?php
+                                            echo esc_attr(
+                                                (string) $index
+                                            );
+                                        ?>][image_layout]"
+                                        class="sof-newsletter-image-size"
+                                    >
+                                        <option
+                                            value="small"
+                                            <?php selected(
+                                                $image_layout,
+                                                'small'
+                                            ); ?>
+                                        >
+                                            Small — Portrait / Headshot
+                                        </option>
+
+                                        <option
+                                            value="medium"
+                                            <?php selected(
+                                                $image_layout,
+                                                'medium'
+                                            ); ?>
+                                        >
+                                            Medium — Story Photo
+                                        </option>
+
+                                        <option
+                                            value="large"
+                                            <?php selected(
+                                                $image_layout,
+                                                'large'
+                                            ); ?>
+                                        >
+                                            Large — Feature Photo
+                                        </option>
+
+                                        <option
+                                            value="full"
+                                            <?php selected(
+                                                $image_layout,
+                                                'full'
+                                            ); ?>
+                                        >
+                                            Full Width — Banner / Wide Image
+                                        </option>
+                                    </select>
+
+                                </div>
 
                                 </div>
 

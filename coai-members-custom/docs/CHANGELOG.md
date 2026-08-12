@@ -3,6 +3,211 @@ All notable changes to the **COAI Members Custom** plugin will be documented in 
 
 FORMAT FOR ALL CHANGELOG ENTIRES CODE BLOCK FORMAT
 
+# ============================================================
+# SOF CHANGELOG
+# ============================================================
+#
+# Date:
+#     August 11, 2026
+#
+# Area:
+#     Communications / Newsletters
+#
+# Recovery Point:
+#     RP44.x — Newsletter Production Integration
+#
+# ============================================================
+
+
+# ============================================================
+# NEWSLETTER COMPOSITION
+# ============================================================
+
+ADDED:
+
+    Rich-text editing for Newsletter content sections.
+
+ADDED:
+
+    Dynamic rich-text editor initialization for newly created
+    Newsletter sections.
+
+ADDED:
+
+    Configurable section image sizes:
+
+        Small
+        Medium
+        Large
+        Full Width
+
+ADDED:
+
+    Medium as the default image size for newly created
+    Newsletter sections.
+
+UPDATED:
+
+    Newsletter section processing to preserve image-size
+    selections through save and reload.
+
+VALIDATED:
+
+    Newsletter drafts retain rich content, images, image-size
+    selections, and other composition information after being
+    reopened.
+
+
+# ============================================================
+# NEWSLETTER RENDERING
+# ============================================================
+
+UPDATED:
+
+    Newsletter title presentation to prevent long titles from
+    being visually cut off.
+
+UPDATED:
+
+    Newsletter section content presentation to provide natural
+    text wrapping for longer content.
+
+UPDATED:
+
+    Section image rendering to honor the selected image size
+    while remaining responsive.
+
+UPDATED:
+
+    Newsletter action buttons to use email-safe table-based
+    markup.
+
+FIXED:
+
+    Mobile email clients could display an additional unwanted
+    block around or near Newsletter action buttons.
+
+VALIDATED:
+
+    Final action button renders correctly and remains clickable
+    in an actual received mobile email.
+
+
+# ============================================================
+# COMMUNICATION WORKFLOW
+# ============================================================
+
+FIXED:
+
+    SendWorkspace.php was applying wpautop() to already-rendered
+    Newsletter HTML.
+
+    This could alter Newsletter markup between approval and the
+    final Send Communication presentation.
+
+CHANGED:
+
+    Send Workspace now presents the stored Communication body
+    without applying wpautop() again.
+
+ESTABLISHED:
+
+    Rendered Communication HTML should remain stable throughout
+    downstream lifecycle presentation.
+
+
+# ============================================================
+# PRODUCTION VALIDATION
+# ============================================================
+
+DEPLOYED:
+
+    Final Newsletter editor and rendering changes to Production.
+
+VALIDATED:
+
+    Production Newsletter composition and Communication
+    integration.
+
+VALIDATED:
+
+    Production queued Newsletter delivery.
+
+RESULT:
+
+    Attempted: 4
+    Delivered: 4
+    Failed: 0
+    Completion: 100%
+
+VALIDATED:
+
+    Newsletter received by actual email recipient.
+
+VALIDATED:
+
+    Newsletter rendering on mobile email client.
+
+VALIDATED:
+
+    Newsletter action button operates correctly from the
+    received email.
+
+
+# ============================================================
+# FILES CHANGED
+# ============================================================
+
+MODIFIED:
+
+    includes/SOF/Communications/Presentation/Workspaces/
+    SendWorkspace.php
+
+MODIFIED:
+
+    includes/SOF/Newsletters/Presentation/Assets/
+    newsletter-compose-workspace.js
+
+MODIFIED:
+
+    includes/SOF/Newsletters/Presentation/Renderers/
+    NewsletterHtmlRenderer.php
+
+MODIFIED:
+
+    includes/SOF/Newsletters/Presentation/Shortcodes/
+    ComposeNewsletterShortcode.php
+
+MODIFIED:
+
+    includes/SOF/Newsletters/Presentation/Workspaces/
+    ComposeNewsletterWorkspace.php
+
+
+# ============================================================
+# RESULT
+# ============================================================
+
+Newsletter composition and delivery are now integrated with
+the SOF Communications architecture.
+
+The completed implementation has been validated through:
+
+    Composition
+    Persistence
+    Presentation
+    Verification
+    Test Delivery
+    Approval
+    Queued Delivery
+    Delivery Status
+    Actual Recipient Email
+    Mobile Email Rendering
+
+Newsletter Production Integration:
+
+    VALIDATED
+
 =================================================================
 # RP44 — Newsletter Production Deployment & SOF Access Validation
 =================================================================
