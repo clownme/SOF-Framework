@@ -220,6 +220,23 @@ add_shortcode('coai_member_portal', function () {
               (int) $communication_progress['processing'];
       }
   }
+  
+  // -----------------------------
+  // Renewal Management Review
+  // -----------------------------
+
+  $renewal_review = null;
+
+  if (
+      $is_admin_manager
+      && class_exists('SOF_ZeffyRenewalReviewService')
+  ) {
+      $renewal_review_service =
+          new SOF_ZeffyRenewalReviewService();
+
+      $renewal_review =
+          $renewal_review_service->review(500);
+  }
 
   // ✅ Start buffering BEFORE any HTML output
   ob_start();
@@ -458,7 +475,148 @@ add_shortcode('coai_member_portal', function () {
 
         </div>
 
+        <form
+          method="get"
+          action="<?php
+            echo esc_url(
+                home_url('/member-portal/')
+            );
+          ?>"
+          style="display:inline;"
+        >
+
+          <button
+            type="submit"
+            style="
+                display:inline-block;
+                padding:12px 20px;
+                margin:12px 0 0;
+                background:#1f365c;
+                color:#ffffff;
+                border:1px solid #1f365c;
+                border-radius:8px;
+                font-size:16px;
+                font-weight:600;
+                line-height:1.2;
+                text-decoration:none;
+                cursor:pointer;
+                appearance:none;
+                -webkit-appearance:none;
+            "
+          >
+            Refresh Delivery Status
+          </button>
+
+        </form>
+
       <?php endif; ?>
+
+    </div>
+
+  <?php endif; ?>
+  
+  <?php
+  if (
+      $is_admin_manager
+      && is_array($renewal_review)
+      && (int)($renewal_review['attention_total'] ?? 0) > 0
+  ) :
+  ?>
+
+    <?php
+    $renewal_attention =
+        (int)($renewal_review['attention_total'] ?? 0);
+
+    $renewal_possible_applied =
+        (int)(
+            $renewal_review['possible_previously_applied']
+            ?? 0
+        );
+
+    $renewal_management =
+        (int)(
+            $renewal_review['management_review']
+            ?? 0
+        );
+    ?>
+
+    <div
+      class="coai-portal-card coai-renewal-review-card"
+      style="
+        margin:1rem 0;
+        padding:1.25rem;
+        border:1px solid #e5e7eb;
+        border-radius:12px;
+        background:#fff;
+      "
+    >
+
+      <h3 style="margin:0 0 .5rem;">
+        Renewal Management Review
+      </h3>
+
+      <p style="margin:0 0 .75rem;color:#374151;">
+        <?php
+        echo esc_html(
+            number_format_i18n(
+                $renewal_attention
+            )
+        );
+        ?>
+        Renewal transaction(s) require management attention
+        before membership action should occur.
+      </p>
+
+      <div
+        style="
+          display:grid;
+          grid-template-columns:1fr;
+          gap:.35rem;
+          margin-bottom:1rem;
+        "
+      >
+
+        <div>
+          <strong>Possible Previously Applied:</strong>
+          <?php
+          echo esc_html(
+              number_format_i18n(
+                  $renewal_possible_applied
+              )
+          );
+          ?>
+        </div>
+
+        <div>
+          <strong>Management Review:</strong>
+          <?php
+          echo esc_html(
+              number_format_i18n(
+                  $renewal_management
+              )
+          );
+          ?>
+        </div>
+
+      </div>
+
+      <a
+        class="button"
+        href="<?php
+          echo esc_url(
+              home_url('/renewal-management-review/')
+          );
+        ?>"
+        style="
+          display:inline-block;
+          padding:.5rem .75rem;
+          border:1px solid #d1d5db;
+          border-radius:8px;
+          text-decoration:none;
+        "
+      >
+        Review Renewals
+      </a>
 
     </div>
 
