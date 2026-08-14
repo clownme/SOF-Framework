@@ -7,6 +7,12 @@
 
 if (!defined('ABSPATH')) exit;
 
+add_action('wp_footer', function () {
+
+    echo '<!-- COAI PLUGIN: ' . __FILE__ . ' -->';
+
+}, 9999);
+
 // Core helper dependencies (must load before shortcodes/hooks)
 $staff_perm = plugin_dir_path(__FILE__) . 'includes/helpers/staff-permissions.php';
 if (file_exists($staff_perm)) {
@@ -107,6 +113,9 @@ coai_safe_require('includes/SOF/Newsletters/newsletters.php');
 
 // Core Communications
 coai_safe_require('includes/services/communications-service.php');
+
+// Membership Service
+coai_safe_require('includes/services/membership-service.php');
 
 // SOF Distribution
 coai_safe_require('includes/distribution/distribution-service.php');

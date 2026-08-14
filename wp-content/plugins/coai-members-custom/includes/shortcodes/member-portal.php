@@ -56,30 +56,42 @@ add_shortcode('coai_member_portal', function () {
   $map = ['ADMIN'=>'Administrator','MANAGER'=>'Manager','FINANCE'=>'Finance','MEMBER'=>'Member'];
   $group_label = $map[$raw_group] ?? ($raw_group !== '' ? $raw_group : 'Member');
 
-  // ---- Renewal logic ----
-  $coai_renew_url = 'https://www.zeffy.com/en-US/ticketing/clowns-of-america-international-incs-renewal-membership';
+  // -----------------------------
+  // Membership Renewal Situation
+  // -----------------------------
+  $coai_renew_url =
+      'https://www.zeffy.com/en-US/ticketing/' .
+      'clowns-of-america-international-incs-renewal-membership';
 
-  $expires_at = null;
-  if (!empty($row['membership_expiration'])) {
-    $ts = strtotime((string)$row['membership_expiration']);
-    if ($ts && $ts > 0) $expires_at = $ts;
+  $renewal_situation = [
+      'situation' => 'unavailable',
+      'expiration_date' => '',
+      'expiration_timestamp' => null,
+      'days_until_expiration' => null,
+      'may_renew' => false,
+      'message' => '',
+  ];
+
+  if (
+      $row &&
+      function_exists('coai_member_service')
+  ) {
+      $renewal_situation =
+          coai_member_service()
+              ->get_renewal_situation(
+                  $row,
+                  60
+              );
   }
 
-  $expired = false;
-  $expiring_soon = false;
-  if ($expires_at) {
-    $today = strtotime('today');
-    $expired = ($expires_at < $today);
-    $expiring_soon = (!$expired && ($expires_at <= strtotime('+60 days', $today)));
-  }
+  $renewal_state =
+      (string)($renewal_situation['situation'] ?? 'unavailable');
 
-  $status_txt = strtoupper((string)($row['status'] ?? ''));
-  if ($status_txt === 'EXPIRED' || $status_txt === 'DECEASED') {
-    $expired = true;
-    $expiring_soon = false;
-  }
+  $membership_expiration_display =
+      (string)($renewal_situation['expiration_date'] ?? '');
 
-  $show_renew = ($expired || $expiring_soon);
+  $show_renew =
+      !empty($renewal_situation['may_renew']);
 
   // ===== STRICT staff check for the Staff Tools card =====
   $roles = array_map('strtolower', (array) $u->roles);
@@ -220,23 +232,6 @@ add_shortcode('coai_member_portal', function () {
               (int) $communication_progress['processing'];
       }
   }
-  
-  // -----------------------------
-  // Renewal Management Review
-  // -----------------------------
-
-  $renewal_review = null;
-
-  if (
-      $is_admin_manager
-      && class_exists('SOF_ZeffyRenewalReviewService')
-  ) {
-      $renewal_review_service =
-          new SOF_ZeffyRenewalReviewService();
-
-      $renewal_review =
-          $renewal_review_service->review(500);
-  }
 
   // ✅ Start buffering BEFORE any HTML output
   ob_start();
@@ -244,25 +239,152 @@ add_shortcode('coai_member_portal', function () {
   <div class="coai-portal-card" style="margin:0 0 18px;padding:1.25rem;border:1px solid #e5e7eb;border-radius:12px;background:#fff;width:100%;max-width:none;">
     <h2 style="margin:0 0 .75rem;">Member Portal</h2>
 
-    <?php if ($expired): ?>
-      <div style="margin:0 0 1rem;padding:.75rem;border:1px solid #f59e0b;background:#fffbeb;border-radius:10px;">
-        <strong>Your membership has expired.</strong>
-        <a href="<?php echo esc_url($coai_renew_url); ?>" target="_blank" rel="noopener"
-           style="margin-left:.5rem;display:inline-block;padding:.4rem .7rem;border:1px solid #d97706;border-radius:8px;background:#fbbf24;color:#111;text-decoration:none;">
-          Renew membership
-        </a>
-      </div>
-    <?php elseif ($expiring_soon): ?>
-      <div style="margin:0 0 1rem;padding:.75rem;border:1px solid #93c5fd;background:#eff6ff;border-radius:10px;">
-        <strong>Your membership expires soon.</strong>
-        <?php if ($expires_at): ?>
-          <span style="margin-left:.35rem;">Expires on <?php echo esc_html(date_i18n('M j, Y', $expires_at)); ?>.</span>
+    <?php if ($renewal_state === 'current'): ?>
+
+      <div
+        style="
+          margin:0 0 1rem;
+          padding:1rem;
+          border:1px solid #86efac;
+          background:#f0fdf4;
+          border-radius:10px;
+        "
+      >
+        <strong>Your membership is current.</strong>
+
+        <?php if ($membership_expiration_display !== ''): ?>
+          <div style="margin-top:.35rem;">
+            Membership Expiration Date:
+            <strong>
+              <?php
+                echo esc_html(
+                    $membership_expiration_display
+                );
+              ?>
+            </strong>
+          </div>
         <?php endif; ?>
-        <a href="<?php echo esc_url($coai_renew_url); ?>" target="_blank" rel="noopener"
-           style="margin-left:.5rem;display:inline-block;padding:.4rem .7rem;border:1px solid #2563eb;border-radius:8px;background:#dbeafe;color:#111;text-decoration:none;">
-          Renew now
-        </a>
+
+        <div style="margin-top:.35rem;color:#374151;">
+          There is no need to renew at this time.
+        </div>
       </div>
+
+    <?php elseif ($renewal_state === 'renewal_window'): ?>
+
+      <div
+        style="
+          margin:0 0 1rem;
+          padding:1rem;
+          border:1px solid #93c5fd;
+          background:#eff6ff;
+          border-radius:10px;
+        "
+      >
+        <strong>Your membership is approaching expiration.</strong>
+
+        <?php if ($membership_expiration_display !== ''): ?>
+          <div style="margin-top:.35rem;">
+            Membership Expiration Date:
+            <strong>
+              <?php
+                echo esc_html(
+                    $membership_expiration_display
+                );
+              ?>
+            </strong>
+          </div>
+        <?php endif; ?>
+
+        <div style="margin-top:.75rem;">
+          <a
+            href="<?php echo esc_url($coai_renew_url); ?>"
+            target="_blank"
+            rel="noopener"
+            style="
+              display:inline-block;
+              padding:.5rem .8rem;
+              border:1px solid #2563eb;
+              border-radius:8px;
+              background:#dbeafe;
+              color:#111;
+              text-decoration:none;
+              font-weight:600;
+            "
+          >
+            Renew Membership
+          </a>
+        </div>
+      </div>
+
+    <?php elseif ($renewal_state === 'expired'): ?>
+
+      <div
+        style="
+          margin:0 0 1rem;
+          padding:1rem;
+          border:1px solid #f59e0b;
+          background:#fffbeb;
+          border-radius:10px;
+        "
+      >
+        <strong>Your membership has expired.</strong>
+
+        <?php if ($membership_expiration_display !== ''): ?>
+          <div style="margin-top:.35rem;">
+            Membership Expiration Date:
+            <strong>
+              <?php
+                echo esc_html(
+                    $membership_expiration_display
+                );
+              ?>
+            </strong>
+          </div>
+        <?php endif; ?>
+
+        <div style="margin-top:.75rem;">
+          <a
+            href="<?php echo esc_url($coai_renew_url); ?>"
+            target="_blank"
+            rel="noopener"
+            style="
+              display:inline-block;
+              padding:.5rem .8rem;
+              border:1px solid #d97706;
+              border-radius:8px;
+              background:#fbbf24;
+              color:#111;
+              text-decoration:none;
+              font-weight:600;
+            "
+          >
+            Renew Membership
+          </a>
+        </div>
+      </div>
+
+    <?php elseif (
+        $renewal_state === 'unavailable' &&
+        !empty($renewal_situation['message'])
+    ): ?>
+
+      <div
+        style="
+          margin:0 0 1rem;
+          padding:1rem;
+          border:1px solid #d1d5db;
+          background:#f9fafb;
+          border-radius:10px;
+        "
+      >
+        <?php
+          echo esc_html(
+              $renewal_situation['message']
+          );
+        ?>
+      </div>
+
     <?php endif; ?>
 
     <p><strong>Username:</strong> <?php echo esc_html($username_disp); ?></p>
@@ -273,11 +395,6 @@ add_shortcode('coai_member_portal', function () {
       <a class="button" href="<?php echo esc_url(home_url('/profile/')); ?>" style="display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #d1d5db;text-decoration:none;">View Profile</a>
       <a class="button" href="<?php echo esc_url(home_url('/member-reset-password-2/')); ?>" style="display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #d1d5db;text-decoration:none;">Reset Password</a>
       <a class="button" href="<?php echo esc_url(home_url('/change-password/')); ?>" style="display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #d1d5db;text-decoration:none;">Change Password</a>
-
-      <a class="button" href="<?php echo esc_url($coai_renew_url); ?>" target="_blank" rel="noopener"
-         style="display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #d1d5db;text-decoration:none;background:#fbbf24;font-weight:600;">
-        RENEW MEMBERSHIP
-      </a>
 
       <a class="button" href="<?php echo esc_url(wp_logout_url(home_url('/member-login/'))); ?>"
          style="display:inline-block;padding:.5rem .75rem;border-radius:8px;border:1px solid #d1d5db;text-decoration:none;">
@@ -510,113 +627,6 @@ add_shortcode('coai_member_portal', function () {
         </form>
 
       <?php endif; ?>
-
-    </div>
-
-  <?php endif; ?>
-  
-  <?php
-  if (
-      $is_admin_manager
-      && is_array($renewal_review)
-      && (int)($renewal_review['attention_total'] ?? 0) > 0
-  ) :
-  ?>
-
-    <?php
-    $renewal_attention =
-        (int)($renewal_review['attention_total'] ?? 0);
-
-    $renewal_possible_applied =
-        (int)(
-            $renewal_review['possible_previously_applied']
-            ?? 0
-        );
-
-    $renewal_management =
-        (int)(
-            $renewal_review['management_review']
-            ?? 0
-        );
-    ?>
-
-    <div
-      class="coai-portal-card coai-renewal-review-card"
-      style="
-        margin:1rem 0;
-        padding:1.25rem;
-        border:1px solid #e5e7eb;
-        border-radius:12px;
-        background:#fff;
-      "
-    >
-
-      <h3 style="margin:0 0 .5rem;">
-        Renewal Management Review
-      </h3>
-
-      <p style="margin:0 0 .75rem;color:#374151;">
-        <?php
-        echo esc_html(
-            number_format_i18n(
-                $renewal_attention
-            )
-        );
-        ?>
-        Renewal transaction(s) require management attention
-        before membership action should occur.
-      </p>
-
-      <div
-        style="
-          display:grid;
-          grid-template-columns:1fr;
-          gap:.35rem;
-          margin-bottom:1rem;
-        "
-      >
-
-        <div>
-          <strong>Possible Previously Applied:</strong>
-          <?php
-          echo esc_html(
-              number_format_i18n(
-                  $renewal_possible_applied
-              )
-          );
-          ?>
-        </div>
-
-        <div>
-          <strong>Management Review:</strong>
-          <?php
-          echo esc_html(
-              number_format_i18n(
-                  $renewal_management
-              )
-          );
-          ?>
-        </div>
-
-      </div>
-
-      <a
-        class="button"
-        href="<?php
-          echo esc_url(
-              home_url('/renewal-management-review/')
-          );
-        ?>"
-        style="
-          display:inline-block;
-          padding:.5rem .75rem;
-          border:1px solid #d1d5db;
-          border-radius:8px;
-          text-decoration:none;
-        "
-      >
-        Review Renewals
-      </a>
 
     </div>
 

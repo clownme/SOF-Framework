@@ -3,6 +3,591 @@ All notable changes to the **COAI Members Custom** plugin will be documented in 
 
 FORMAT FOR ALL CHANGELOG ENTIRES CODE BLOCK FORMAT
 
+==================================================
+## RP45 — Membership Renewal Protection Experience
+==================================================
+
+**Date:** August 14, 2026
+**Recovery Point:** RP45
+**Version:** v4.3.0-RP45
+**Status:** Production Validated
+
+---
+
+## 1. Purpose
+
+RP45 introduces the **SOF Membership Renewal Protection Experience**.
+
+The purpose of this recovery point is to prevent COAI members from renewing their memberships unnecessarily before their current membership approaches expiration.
+
+Previously, members could access a public **RENEW MEMBERSHIP** action and proceed directly to Zeffy without MyCOAI first determining whether renewal was necessary.
+
+RP45 changes the experience so that MyCOAI first discovers and assesses the member's current membership situation before presenting a renewal action.
+
+---
+
+## 2. Business Problem
+
+Members could previously renew through the public website without first seeing their current membership expiration date.
+
+This created several risks:
+
+* Members renewing significantly earlier than necessary.
+* Members renewing again shortly after a previous renewal.
+* Members responding to general renewal communications without realizing their membership was already current.
+* Renewal actions being presented without considering the member's actual membership situation.
+* MyCOAI acting primarily as a path to payment rather than helping the member make the correct decision.
+
+The desired business outcome is:
+
+**A member should understand their current membership situation before being asked to renew.**
+
+---
+
+## 3. SOF Business Process
+
+RP45 implements the renewal experience using the SOF process:
+
+**Discover Facts**
+
+→ Identify the member.
+→ Retrieve the current membership status.
+→ Retrieve the Membership Expiration Date.
+
+**Assess**
+
+→ Determine the member's current renewal situation.
+
+**Recommend**
+
+→ Determine whether renewal is appropriate.
+
+**Present**
+
+→ Show the expiration date.
+→ Explain the membership situation.
+→ Present only the appropriate action.
+
+**Human Response**
+
+→ Member renews when appropriate.
+→ Member takes no action when membership is already current.
+
+---
+
+## 4. Renewal Situations
+
+The Membership Service now recognizes the following business situations.
+
+### Current
+
+The membership expiration date is more than 60 days in the future.
+
+MyCOAI presents:
+
+**Your membership is current.**
+
+The Membership Expiration Date is displayed.
+
+The member is informed:
+
+**There is no need to renew at this time.**
+
+No Renew Membership action is presented.
+
+---
+
+### Renewal Window
+
+The membership expiration date is within 60 days.
+
+MyCOAI presents:
+
+**Your membership is approaching expiration.**
+
+The Membership Expiration Date is displayed.
+
+The member is presented with:
+
+**Renew Membership**
+
+---
+
+### Expired
+
+The membership has expired based upon the membership status or expiration date.
+
+MyCOAI presents the expired membership situation and provides the:
+
+**Renew Membership**
+
+action.
+
+---
+
+### Unavailable
+
+If MyCOAI cannot safely determine the member's expiration situation, SOF does not guess.
+
+The member is directed toward assistance rather than being presented with an unsupported renewal recommendation.
+
+---
+
+### Deceased
+
+A deceased membership must never produce a renewal action.
+
+---
+
+## 5. Membership Service Architecture
+
+Renewal eligibility is no longer determined independently inside the Member Portal.
+
+The business decision is now owned by:
+
+`includes/services/membership-service.php`
+
+The Membership Service now provides:
+
+`COAI_Member_Service::get_renewal_situation()`
+
+The service returns the member's renewal situation and supporting business facts, including:
+
+* Situation
+* Membership Expiration Date
+* Expiration timestamp
+* Days until expiration
+* Whether renewal may be offered
+* Member-facing situation message
+
+This establishes the architectural responsibility:
+
+**Membership Service decides.**
+
+**Member Portal presents.**
+
+**Zeffy processes the renewal when appropriate.**
+
+---
+
+## 6. Member Portal Changes
+
+The Member Portal now consumes the shared Membership Renewal Situation.
+
+The previous duplicated renewal-date calculations were removed from the presentation layer.
+
+The Member Portal now prominently presents the member's Membership Expiration Date and current renewal situation.
+
+The previous unconditional yellow:
+
+**RENEW MEMBERSHIP**
+
+button was removed.
+
+Renew Membership is now presented only when the Membership Service determines that renewal is appropriate.
+
+---
+
+## 7. Public Renewal Protection
+
+The public Home-page **RENEW MEMBERSHIP** button previously allowed members to proceed directly toward Zeffy.
+
+That path has been removed.
+
+The new renewal path is:
+
+**Home**
+
+→ **RENEW MEMBERSHIP**
+
+→ **Renew Membership Gateway**
+
+→ **MyCOAI Login when required**
+
+→ **Member Portal**
+
+→ **Membership Situation Assessment**
+
+→ **Zeffy only when renewal is appropriate**
+
+A new WordPress page was created:
+
+`/renew-membership/`
+
+This page acts as the public gateway into the protected MyCOAI renewal experience.
+
+---
+
+## 8. Home Page Member Experience
+
+The Home-page membership guidance was redesigned around the visitor's business intention.
+
+### Already a COAI Member?
+
+Existing members are instructed to use:
+
+**LOG IN**
+
+to access the Member Portal.
+
+Members are informed that when already authenticated, their **name replaces LOG IN** in the menu bar and may be clicked to access the Member Portal.
+
+---
+
+### Password or First Access Assistance
+
+Existing members who have never logged into MyCOAI or who do not know or have forgotten their password are directed to:
+
+**FORGOT YOUR PASSWORD**
+
+A temporary password is sent to the member's current membership email address.
+
+Members are informed that their username is normally their email address unless they previously changed it.
+
+Members who still require assistance are directed to the COAI Office.
+
+---
+
+### Not a COAI Member Yet?
+
+Non-members are directed to:
+
+**JOIN COAI TODAY!**
+
+This separates new membership from existing-member renewal.
+
+---
+
+### Need to Renew Your Membership?
+
+Existing members are directed to:
+
+**RENEW MEMBERSHIP**
+
+MyCOAI then displays the member's current Membership Expiration Date and determines whether renewal is appropriate.
+
+---
+
+## 9. Changed Plugin Files
+
+The following PRODUCTION plugin files were changed during RP45:
+
+`coai-members-custom.php`
+
+`includes/services/membership-service.php`
+
+`includes/shortcodes/member-portal.php`
+
+---
+
+## 10. WordPress Content Changes
+
+The following WordPress-managed content was changed:
+
+**Home Page**
+
+* Revised membership access guidance.
+* Separated Login, Join, and Renewal intentions.
+* Explained authenticated member-name navigation.
+* Changed the public Renew Membership destination.
+
+**Renew Membership Page**
+
+* Created `/renew-membership/`.
+* Established MyCOAI as the gateway to membership renewal.
+
+These WordPress content changes are not contained solely within the plugin Git repository and must therefore be protected through the appropriate Production/site backup process.
+
+---
+
+## 11. Validation
+
+RP45 was first implemented and validated in TEST.
+
+Validation included:
+
+* Member within the 60-day renewal window.
+* Member outside the 60-day renewal window.
+* Correct Membership Expiration Date presentation.
+* Correct Renew Membership action presentation.
+* Correct suppression of renewal when renewal is unnecessary.
+* Removal of the duplicate Member Portal renewal button.
+* Public Renew Membership gateway.
+* Home-page member guidance.
+
+Following successful TEST validation, RP45 was deployed to PRODUCTION.
+
+The complete PRODUCTION renewal experience was successfully tested.
+
+**Production Status: VALIDATED**
+
+---
+
+## 12. Technical Finding — Service Loader
+
+During TEST, the main plugin loader was temporarily changed to load:
+
+`includes/services/service-loader.php`
+
+This exposed an existing duplicate function declaration:
+
+`coai_google_export_region()`
+
+The function was already declared through:
+
+`includes/google-drive.php`
+
+and was declared again through:
+
+`includes/services/google-service.php`
+
+This produced a WordPress fatal error.
+
+RP45 intentionally did not expand scope to repair the unrelated service-loader architecture.
+
+Instead, the Membership Service is loaded directly:
+
+`includes/services/membership-service.php`
+
+The service-loader duplication remains a future technical cleanup item.
+
+---
+
+## 13. Architectural Result
+
+RP45 changes renewal from a payment-first experience into a situation-first experience.
+
+Before RP45:
+
+**Member clicks Renew**
+
+→ **Payment path**
+
+After RP45:
+
+**Member requests renewal**
+
+→ **MyCOAI identifies member**
+
+→ **SOF discovers membership facts**
+
+→ **SOF assesses expiration**
+
+→ **SOF recommends the appropriate action**
+
+→ **Member renews only when appropriate**
+
+This establishes an important SOF principle:
+
+> **Discover the facts. Assess the situation. Recommend the appropriate action. Present only what the person needs.**
+
+---
+
+## 14. Recovery Point
+
+**Recovery Point:** RP45
+**Git Tag:** `v4.3.0-RP45`
+
+Recommended commit message:
+
+`RP45: Add Membership Renewal Protection Experience`
+
+RP45 represents the Production-validated baseline for the MyCOAI Membership Renewal Protection Experience.
+
+
+=============================================================
+# SOF CHANGELOG — RP45 Zeffy Renewal Integration & Management
+=============================================================
+
+**Date:** August 13, 2026  
+**Environment:** Production MyCOAI
+
+## Recovery Point Summary
+
+RP45 replaces the normal manual Zeffy Renewal file-import workflow with a direct API-driven SOF process and adds a guarded management workflow for identity, business assessment, application, verification, and audit.
+
+## Added / Changed
+
+### Zeffy API Intake
+
+- Added/validated direct Zeffy API connection.
+- Added Renewal campaign routing.
+- Added verified Zeffy Renewal rate/product mappings.
+- Added Zeffy transaction-ledger synchronization.
+- Preserved established SOF assessment/processing knowledge when refreshing known transactions.
+
+### WP-Admin Zeffy Experience
+
+- Reworked Zeffy Import into a three-step Admin workflow:
+  1. Retrieve Zeffy Transactions
+  2. Assess Renewals
+  3. Manage Renewals in MyCOAI
+- Added one-click Renewal Assessment.
+- Moved engineering controls under Diagnostics & Maintenance.
+- Moved old file workflow under Legacy File Import — Emergency Use Only.
+- Added persistent Renewal Identity Review to the main workflow.
+- Added candidate evidence and human identity confirmation.
+
+### Identity Framework
+
+- Added/preserved automatic matching by established identity evidence.
+- Added durable persistence for:
+  - review_required
+  - ambiguous
+  - unresolved
+- Prevented automatic assessment from overwriting human-reviewed identity decisions.
+- Validated side-by-side Confirm Identity Match experience.
+
+### Renewal Business Assessment
+
+- Standard Renewal expiration calculated as:
+  - payment date + 1 year - 1 day
+- Business outcomes validated:
+  - ready_to_apply
+  - possible_previously_applied
+  - management_review
+  - cannot_assess
+- Added/validated Current Expiration vs Standard Expiration review logic.
+
+### Renewal Management Decisions
+
+- Added management decision model/repository/service.
+- Decision states:
+  - already_applied
+  - needs_processing
+  - further_review
+  - applied
+- Decisions preserve transaction, decision maker, timestamp, and notes.
+- Active Renewal Management queues now exclude completed/decided historical work appropriately.
+
+### Renewal Application
+
+- Added guarded application service.
+- Application re-assesses immediately before update.
+- Ready-to-Apply assessment can authorize standard Renewal execution.
+- `needs_processing` management decision can authorize managed execution.
+- Member is read back after update.
+- Date/datetime verification normalized to `Y-m-d`.
+- Successful verified applications record decision `applied`.
+
+### Member Portal
+
+- Added Renewal Management Review awareness for Admin/Manager users when current Renewal situations require attention.
+
+## Production Defects Found and Resolved
+
+### Non-Matched Identity Results Were Not Persistent
+
+Symptom:
+A new Renewal could be counted as unable to assess but remain `identity_status = unassessed` after the request.
+
+Resolution:
+Added `record_identity_assessment()` to persist review_required, ambiguous, and unresolved states.
+
+### One-Click Assessment Did Not Persist Stage 2 Identity Results
+
+Symptom:
+The new combined Assess Renewals handler counted identity outcomes but did not write them back to the SOF ledger.
+
+Resolution:
+Wired the one-click Stage 2 assessment to persist matched and non-matched identity outcomes.
+
+### Identity Review Was Buried in Diagnostic Output
+
+Symptom:
+Admin clicked identity assessment but useful review evidence appeared far below the normal workflow.
+
+Resolution:
+Added persistent Renewal Identity Review directly between workflow Steps 2 and 3.
+
+### Application Verification Failed on Equivalent Date/Datetime Values
+
+Symptom:
+Member was correctly updated but SOF reported that verification values did not match.
+
+Cause:
+MyCOAI `membership_expiration` may be stored as DATETIME (`YYYY-MM-DD 00:00:00`) while SOF proposed a date (`YYYY-MM-DD`).
+
+Resolution:
+Normalize stored and proposed Renewal/Expiration values to calendar dates before verification.
+
+### Completed Application Audit Rows Missing During Early Validation
+
+Validated affected records were repaired only after member values and transaction identity were proven.
+
+The corrected Application Service now records the `applied` decision after successful read-back verification.
+
+## Production Validation
+
+Validated:
+- successful API intake
+- identity auto-match
+- identity exception and human review
+- previously-applied detection
+- management decision
+- Ready-to-Apply application
+- read-back verification
+- audit decision
+- zero remaining active Renewal queues
+
+Final Current Renewal Situation:
+- Requires Management Attention: 0
+- Possible Previously Applied: 0
+- Management Review: 0
+- Needs Processing: 0
+- Further Review: 0
+- Ready to Apply: 0
+
+## Changed-File Inventory for RP45
+
+### Confirmed/Strongly Indicated Modified August 13
+
+- `coai-zeffy-importer.php`
+- `member-portal.php`
+- `repositories/member-repository.php`
+- `includes/SOF/Zeffy/Models/ZeffyRenewalManagementDecision.php`
+- `includes/SOF/Zeffy/Repositories/ZeffyRenewalManagementDecisionRepository.php`
+- `includes/SOF/Zeffy/Repositories/ZeffyTransactionRepository.php`
+- `includes/SOF/Zeffy/zeffy.php`
+- `includes/SOF/Zeffy/Presentation/Shortcodes/RenewalManagementReviewShortcode.php`
+- `includes/SOF/Zeffy/Presentation/Workspaces/RenewalManagementReviewWorkspace.php`
+- `includes/SOF/Zeffy/Services/ZeffyRenewalApplicationService.php`
+- `includes/SOF/Zeffy/Services/ZeffyRenewalReviewService.php`
+- `includes/SOF/Zeffy/Services/ZeffyRenewalBusinessAssessmentService.php`
+- `includes/SOF/Zeffy/Services/ZeffyRenewalManagementDecisionService.php`
+
+### Included in Zeffy Folder but File Timestamp Indicates August 12 Foundation
+
+These are dependencies of RP45 and should be included in the repository baseline if not already present, but their supplied timestamps do not prove an August 13 modification:
+
+- `includes/SOF/Zeffy/Models/ZeffyTransaction.php`
+- `includes/SOF/Zeffy/Services/ZeffyRenewalIdentityService.php`
+- `includes/SOF/Zeffy/Services/ZeffyIdentityResolutionService.php`
+- `includes/SOF/Zeffy/Services/ZeffyRenewalAssessmentService.php`
+
+### Repository ZIP Items Not Indicated as August 13 RP45 Changes
+
+The supplied repository ZIP also contained:
+- `region-officer-repository.php`
+- `region-officer-repository.phpbeforeupdate`
+
+Their supplied timestamps are from June/July 2026. Do not include them in the RP45 change set solely because they were in the ZIP.
+
+## Git Recovery Point Recommendation
+
+Recovery point:
+
+**RP45 — Zeffy Renewal Integration & Management**
+
+Suggested tag:
+
+`v4.3.0-RP45`
+
+Suggested commit message:
+
+`RP45: Complete Zeffy Renewal API integration and management workflow`
+
+
 # ============================================================
 # SOF CHANGELOG
 # ============================================================
