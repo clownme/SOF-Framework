@@ -1,0 +1,86 @@
+/* ============================================================
+ * SOF Membership Renewal Experience
+ * ============================================================
+ */
+
+.sof-membership-renewal {
+    width: 100%;
+}
+
+.sof-membership-renewal-workspace {
+    width: calc(100% - 48px);
+    max-width: 900px;
+    margin: 48px auto;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+.sof-membership-renewal-card {
+    width: 100%;
+    max-width: 760px;
+    margin: 0 auto;
+    padding: 48px;
+    background: #ffffff !important;
+    border: 1px solid #d1d5db !important;
+    border-radius: 12px !important;
+    box-sizing: border-box;
+    box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10) !important;
+}
+
+/* ------------------------------------------------------------
+ * Renewal Card Typography
+ * ------------------------------------------------------------
+ */
+
+.sof-membership-renewal-card h2,
+.sof-membership-renewal-card h3 {
+    margin-top: 0;
+    margin-bottom: 32px;
+    color: #334155 !important;
+    font-size: 32px !important;
+    line-height: 1.2;
+}
+
+.sof-membership-renewal-card p {
+    color: #334155 !important;
+    font-size: 18px !important;
+    line-height: 1.6;
+}
+
+.sof-membership-renewal-card .sof-membership-expiration-label {
+    margin-bottom: 4px;
+    color: #475569 !important;
+    font-size: 17px !important;
+    font-weight: 600;
+}
+
+.sof-membership-renewal-card .sof-membership-expiration-date {
+    margin-top: 0;
+    margin-bottom: 24px;
+    color: #1f2937 !important;
+    font-size: 20px !important;
+    font-weight: 400;
+}
+
+.sof-membership-renewal-card .sof-card-action {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 12px;
+    margin-top: 32px !important;
+}
+
+.sof-membership-renewal-card
+.sof-card-action
+.wp-block-button__link {
+    display: inline-block !important;
+    width: auto !important;
+    max-width: 100%;
+}
+
+.sof-membership-renewal-card
+.sof-card-action
+.sof-membership-secondary-action {
+    background: #ffffff !important;
+    color: #475569 !important;
+    border: 1px solid #cbd5e1 !important;
+}

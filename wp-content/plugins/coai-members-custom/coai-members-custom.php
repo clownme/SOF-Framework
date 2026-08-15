@@ -105,6 +105,9 @@ coai_safe_require('includes/SOF/Audience/audience.php');
 // SOF Organizational Memory
 coai_safe_require('includes/SOF/Memory/memory.php');
 
+// SOF Shared Presentation
+coai_safe_require('includes/SOF/Presentation/presentation.php');
+
 // SOF Communications
 coai_safe_require('includes/SOF/Communications/communications.php');
 

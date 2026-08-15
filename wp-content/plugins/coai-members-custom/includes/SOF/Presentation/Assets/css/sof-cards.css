@@ -1,0 +1,69 @@
+/* ============================================================
+ * SOF Card Presentation
+ * ============================================================
+ *
+ * Purpose:
+ *     Provide reusable presentation behavior for SOF cards.
+ *
+ * Principle:
+ *     One Business Thought = One Card
+ *
+ * ============================================================
+ */
+
+
+/* ------------------------------------------------------------
+ * Card Row
+ * ------------------------------------------------------------ */
+
+.sof-card-row.wp-block-columns {
+    align-items: stretch !important;
+}
+
+
+/* ------------------------------------------------------------
+ * Card
+ * ------------------------------------------------------------ */
+
+.sof-card-row > .wp-block-column.sof-card {
+    display: flex;
+    flex-direction: column;
+    min-height: 400px;
+}
+
+
+/* ------------------------------------------------------------
+ * Card Content Group
+ * ------------------------------------------------------------ */
+
+.sof-card-row > .wp-block-column.sof-card > .wp-block-group {
+    display: flex !important;
+    flex-direction: column !important;
+    flex: 1 1 auto !important;
+    width: 100%;
+}
+
+
+/* ------------------------------------------------------------
+ * Card Action
+ * ------------------------------------------------------------ */
+
+.sof-card-row
+> .wp-block-column.sof-card
+> .wp-block-group
+> .wp-block-buttons.sof-card-action {
+    margin-top: auto !important;
+}
+
+
+/* ------------------------------------------------------------
+ * Responsive
+ * ------------------------------------------------------------ */
+
+@media screen and (max-width: 781px) {
+
+    .sof-card-row > .wp-block-column.sof-card {
+        min-height: 0;
+    }
+
+}

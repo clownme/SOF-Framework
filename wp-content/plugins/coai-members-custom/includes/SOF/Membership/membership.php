@@ -55,6 +55,26 @@ require_once SOF_MEMBERSHIP_PATH .
 
 require_once SOF_MEMBERSHIP_PATH .
     '/Services/MemberSearchService.php';
+    
+require_once SOF_MEMBERSHIP_PATH .
+    '/Services/MemberLookupService.php';
 
 require_once SOF_MEMBERSHIP_PATH .
     '/Services/MembershipAudienceService.php';
+    
+require_once SOF_MEMBERSHIP_PATH .
+    '/Services/MembershipRenewalService.php';
+
+// -------------------------------------------------
+// Integration
+// -------------------------------------------------
+
+require_once SOF_MEMBERSHIP_PATH .
+    '/Integration/WordPressMemberResolver.php';
+
+// -------------------------------------------------
+// Presentation
+// -------------------------------------------------
+
+require_once SOF_MEMBERSHIP_PATH .
+    '/Presentation/presentation.php';    
