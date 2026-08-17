@@ -3,6 +3,166 @@ All notable changes to the **COAI Members Custom** plugin will be documented in 
 
 FORMAT FOR ALL CHANGELOG ENTIRES CODE BLOCK FORMAT
 
+# ============================================================
+#
+# Date:
+#     August 17, 2026
+#
+# Recovery Point:
+#     RP46
+# ============================================================
+# Area:
+#     Member Portal Presentation Refinement
+#
+# Environment:
+#     TEST → PRODUCTION
+#
+# ============================================================
+
+## Summary
+
+Completed the SOF Member Portal presentation refinement and
+successfully migrated the validated experience from TEST to
+PRODUCTION.
+
+The Member Portal now clearly separates a member's personal
+relationship with the organization from the organizational
+capabilities available through assigned responsibilities.
+
+## Presentation Refinements
+
+- Established a consistent SOF card presentation throughout
+  the Member Portal.
+
+- Refined the Membership card to visually communicate the
+  member's current renewal situation.
+
+- Membership state presentation now supports:
+
+  - Current
+  - Renewal Window
+  - Expired
+  - Unavailable
+
+- Added state-specific left-border indicators for membership
+  situations.
+
+- Organized My Account and Insurance into a responsive
+  personal-information grid.
+
+- My Account automatically expands when Insurance information
+  is not available.
+
+- Added the Organization Capabilities presentation section.
+
+- Organization Capabilities now uses the SOF responsibility
+  model to present only tools available to the logged-in
+  person.
+
+- Capability cards use a consistent two-column presentation
+  on larger displays and collapse to one column on smaller
+  displays.
+
+## Organization Capability Presentation
+
+Validated capability presentation for multiple organizational
+responsibilities.
+
+Administrator / Manager:
+
+- Membership Management
+- Communications
+- Newsletters
+- Access Management
+
+Regional Vice President:
+
+- Communications
+- Regional Leadership
+
+Baseline Member:
+
+- No Organization Capabilities section is displayed when the
+  member has no organizational responsibilities.
+
+## Membership Renewal Protection
+
+Confirmed continued integration of the Membership Renewal
+Protection experience within the Member Portal.
+
+The portal displays:
+
+- Membership Expiration Date
+- Current membership status
+- Renewal availability when within the renewal window
+- Renew Membership action when renewal is appropriate
+
+This preserves the RP45 protection against unnecessary or
+early membership renewals.
+
+## Production Validation
+
+PRODUCTION validation completed successfully.
+
+Validated:
+
+- Baseline Member
+- Regional Vice President
+- Administrator / Manager
+- Desktop presentation
+- Mobile presentation
+
+Each tested account displayed the appropriate Member Portal
+experience and organizational capabilities.
+
+Responsive presentation was confirmed operational on mobile.
+
+## Architecture
+
+The Member Portal now reinforces the SOF distinction between:
+
+    My relationship with the organization
+
+and:
+
+    What I am authorized to do for the organization
+
+Organizational capabilities are presented according to
+business responsibility rather than exposing administrative
+technology or WordPress implementation details.
+
+## Files Changed
+
+PRODUCTION:
+
+    includes/shortcodes/member-portal.php
+
+## Result
+
+Member Portal Presentation Refinement:
+
+    COMPLETE
+
+TEST Validation:
+
+    PASSED
+
+PRODUCTION Migration:
+
+    COMPLETE
+
+PRODUCTION Role Validation:
+
+    PASSED
+
+Mobile Validation:
+
+    PASSED
+
+Production Status:
+
+    STABLE
+
 ============================================================
 Recovery Point:
     RP46 — Membership Transaction Management &
