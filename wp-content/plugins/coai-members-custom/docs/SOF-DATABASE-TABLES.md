@@ -1,0 +1,19 @@
+wp_sof_zeffy_transactions
+wp_sof_membership_management_decisions
+wp_sof_membership_renewal_applications
+15-field structure fo wp_sof_membership_renewal_applications
+id
+source_provider
+source_transaction_id
+member_id
+approval_decision_id
+payment_date
+payment_amount
+previous_renewal_date
+applied_renewal_date
+previous_expiration
+applied_expiration
+application_status
+applied_by
+applied_at
+notes

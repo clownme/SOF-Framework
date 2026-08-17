@@ -3,6 +3,240 @@ All notable changes to the **COAI Members Custom** plugin will be documented in 
 
 FORMAT FOR ALL CHANGELOG ENTIRES CODE BLOCK FORMAT
 
+============================================================
+Recovery Point:
+    RP46 — Membership Transaction Management &
+    Controlled Renewal Application
+============================================================
+Date:
+    August 17, 2026
+
+============================================================
+MEMBERSHIP TRANSACTION MANAGEMENT
+============================================================
+
+Added controlled handling for situations where an existing COAI
+member uses the New Membership registration/payment process.
+
+SOF can now distinguish:
+
+    - Payment may already be reflected
+    - Possible Membership Renewal
+    - Membership review required
+    - Renewal approved for application
+    - Application prepared
+    - Application pending execution
+    - Application requires re-review
+    - Application requires verification
+    - Application applied
+
+============================================================
+MEMBERSHIP RENEWAL CANDIDATE
+============================================================
+
+Added provider-independent Membership Renewal Candidate model.
+
+The candidate preserves:
+
+    - Source provider
+    - Source transaction identifier
+    - Original source business process
+    - Member identity
+    - Payment evidence
+    - Membership intent
+    - Intent source
+
+Provider evidence remains unchanged.
+
+============================================================
+MANAGEMENT DECISIONS
+============================================================
+
+Expanded Membership Management decisions to support a
+second-stage Renewal review.
+
+New Membership determination:
+
+    process_as_renewal
+
+remains preserved independently from the later Renewal decision.
+
+Renewal decisions support:
+
+    approve_renewal
+
+    already_reflected
+
+    further_review
+
+============================================================
+MEMBERSHIP RENEWAL APPLICATION LEDGER
+============================================================
+
+Added persistent Membership Renewal Application ledger:
+
+    wp_sof_membership_renewal_applications
+
+The ledger records both the Membership values before application
+and the approved values intended to be applied.
+
+The ledger prevents duplicate Application creation for the same
+source payment.
+
+Application states now support controlled progression including:
+
+    pending
+    applied
+    requires_review
+    verification_required
+    failed
+
+============================================================
+CONTROLLED APPLICATION PREPARATION
+============================================================
+
+Added Prepare Application business step.
+
+Preparation:
+
+    - Requires Management approval
+    - Reconstructs authoritative source evidence
+    - Re-assesses current Membership information
+    - Records the pending Application ledger
+    - Does NOT modify Membership
+    - Does NOT modify Zeffy payment evidence
+
+============================================================
+CONTROLLED RENEWAL EXECUTION
+============================================================
+
+Added Membership Renewal Application Execution Service.
+
+Execution now:
+
+    - Requires pending Application status
+    - Refuses already-applied Applications
+    - Requires matching Management approval
+    - Performs fresh Membership assessment
+    - Verifies calculated values still match prepared values
+    - Verifies current Membership values still match the
+      Application's recorded BEFORE values
+    - Prevents duplicate application
+    - Calls Membership-owned write capability
+    - Re-reads the Membership record
+    - Verifies stored values
+    - Marks Application Applied only after successful verification
+
+============================================================
+MEMBERSHIP PERSISTENCE
+============================================================
+
+Confirmed PRODUCTION already provides:
+
+    coai_update_member_renewal_fields()
+
+through:
+
+    includes/repositories/member-repository.php
+
+PRODUCTION implementation:
+
+    - Updates renewal_date
+    - Updates membership_expiration
+    - Updates updated_at
+    - Reactivates an EXPIRED member when the resulting
+      Membership expiration is current/future
+    - Uses the established Membership table resolution
+
+A temporary duplicate implementation added to the PRODUCTION
+MU plugin was removed after PHP correctly reported a duplicate
+function declaration.
+
+PRODUCTION returned to stable operation immediately afterward.
+
+============================================================
+ACTIVE WORKSPACE CLEANUP
+============================================================
+
+Completed Application records with:
+
+    application_status = applied
+
+are excluded from:
+
+    - Approved Renewals — Ready for Application
+    - Active New Membership exception counts
+
+Historical source transactions and Application records remain
+preserved.
+
+Principle established:
+
+    Completion does not erase history.
+    Completion removes work from the person's desk.
+
+============================================================
+PRESENTATION
+============================================================
+
+Updated Current New Membership Situation wording to describe
+the responsibility of the workspace rather than claiming that
+SOF never changes Membership records.
+
+Updated Membership Renewal Management Review wording so an
+empty review queue accurately states that no Renewals currently
+require Management review.
+
+============================================================
+CONTROLLED TEST
+============================================================
+
+Completed first end-to-end controlled Membership Renewal in TEST.
+
+Member:
+
+    member_id 126
+
+Before:
+
+    renewal_date = 2025-08-21
+    expiration   = 2026-08-20
+
+Applied:
+
+    renewal_date = 2026-08-17
+    expiration   = 2027-08-16
+
+Application ledger completed:
+
+    application_status = applied
+    applied_by         = 128
+    applied_at         = 2026-08-17 14:33:57
+
+Post-write Membership verification succeeded.
+
+============================================================
+PRODUCTION
+============================================================
+
+RP46 workflow promoted to PRODUCTION.
+
+Temporary New Membership Review page loads successfully.
+
+Current active PRODUCTION Renewal situation:
+
+    Requires Management Attention: 0
+    Possible Membership Renewal: 0
+    Membership Review Required: 0
+    Renewals Ready for Application: 0
+
+No live Membership Renewal execution was performed during
+PRODUCTION deployment validation.
+
+============================================================
+END CHANGELOG
+============================================================
+
 ==================================================
 ## RP45 — Membership Renewal Protection Experience
 ==================================================

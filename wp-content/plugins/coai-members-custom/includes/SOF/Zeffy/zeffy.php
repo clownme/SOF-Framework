@@ -68,6 +68,15 @@ require_once SOF_ZEFFY_PATH .
     '/Services/ZeffyRenewalBusinessAssessmentService.php';
     
 require_once SOF_ZEFFY_PATH .
+    '/Services/ZeffyNewMembershipReviewService.php';
+    
+require_once SOF_ZEFFY_PATH .
+    '/Services/ZeffyMembershipRenewalCandidateAdapter.php';
+    
+require_once SOF_ZEFFY_PATH .
+    '/Services/ZeffyNewMembershipBusinessAssessmentService.php';
+    
+require_once SOF_ZEFFY_PATH .
     '/Services/ZeffyRenewalManagementDecisionService.php';
     
 require_once SOF_ZEFFY_PATH .
@@ -89,9 +98,15 @@ require_once SOF_ZEFFY_PATH .
 require_once SOF_ZEFFY_PATH .
     '/Presentation/Workspaces/RenewalManagementReviewWorkspace.php';
     
+require_once SOF_ZEFFY_PATH .
+    '/Presentation/Workspaces/NewMembershipManagementReviewWorkspace.php';
+    
 // -------------------------------------------------
 // Shortcodes
 // -------------------------------------------------
 
 require_once SOF_ZEFFY_PATH .
     '/Presentation/Shortcodes/RenewalManagementReviewShortcode.php';
+    
+require_once SOF_ZEFFY_PATH .
+    '/Presentation/Shortcodes/NewMembershipManagementReviewShortcode.php';

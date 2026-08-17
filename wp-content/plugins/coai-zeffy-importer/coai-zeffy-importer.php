@@ -195,6 +195,238 @@ function coaii_zeffy_campaigns(): array {
 
 /**
  * ------------------------------------------------------------
+ * Retrieve recent COAI New Membership payments.
+ *
+ * Diagnostic only — does NOT modify MyCOAI data.
+ * ------------------------------------------------------------
+ */
+function coaii_zeffy_new_membership_payments(
+    int $limit = 100
+): array {
+
+    $limit = max(
+        1,
+        min(
+            100,
+            $limit
+        )
+    );
+
+    $query = http_build_query([
+        'campaign_id' =>
+            COAI_ZEFFY_CAMPAIGN_NEW_MEMBERSHIP,
+
+        'limit' =>
+            $limit,
+    ]);
+
+    $result =
+        coaii_zeffy_api_request(
+            'payments?' . $query
+        );
+
+    if (!$result['success']) {
+        return $result;
+    }
+
+    $data =
+        (
+            isset($result['data'])
+            && is_array($result['data'])
+        )
+            ? $result['data']
+            : [];
+
+    $payments =
+        (
+            isset($data['data'])
+            && is_array($data['data'])
+        )
+            ? $data['data']
+            : [];
+            
+/**
+ * ------------------------------------------------------------
+ * Retrieve recent Zeffy Membership transactions for the SOF
+ * transaction ledger.
+ *
+ * Membership currently includes:
+ *
+ *     Renewal Membership
+ *     New Membership Registration
+ *
+ * Each campaign is retrieved independently so unrelated Zeffy
+ * activity cannot prevent Membership transactions from reaching
+ * the SOF ledger.
+ *
+ * Does NOT:
+ *     - Assess member identity
+ *     - Decide whether a transaction is really a Renewal
+ *     - Update Membership records
+ * ------------------------------------------------------------
+ */
+function coaii_zeffy_membership_transactions(
+    int $limit_per_campaign = 100
+): array {
+
+    $limit_per_campaign =
+        max(
+            1,
+            min(
+                100,
+                $limit_per_campaign
+            )
+        );
+
+    $campaign_ids = [
+        COAI_ZEFFY_CAMPAIGN_RENEWAL,
+        COAI_ZEFFY_CAMPAIGN_NEW_MEMBERSHIP,
+    ];
+
+    $payments_by_id = [];
+
+    foreach ($campaign_ids as $campaign_id) {
+
+        $query =
+            http_build_query([
+                'campaign_id' =>
+                    $campaign_id,
+
+                'limit' =>
+                    $limit_per_campaign,
+            ]);
+
+        $result =
+            coaii_zeffy_api_request(
+                'payments?' . $query
+            );
+
+        if (!$result['success']) {
+            return [
+                'success' =>
+                    false,
+
+                'message' =>
+                    'Unable to retrieve one of the Zeffy Membership campaigns: '
+                    . $result['message'],
+
+                'data' =>
+                    null,
+            ];
+        }
+
+        $data =
+            (
+                isset($result['data'])
+                && is_array($result['data'])
+            )
+                ? $result['data']
+                : [];
+
+        $payments =
+            (
+                isset($data['data'])
+                && is_array($data['data'])
+            )
+                ? $data['data']
+                : [];
+
+        foreach ($payments as $payment) {
+
+            if (!is_array($payment)) {
+                continue;
+            }
+
+            $returned_campaign_id =
+                trim(
+                    (string)(
+                        $payment['campaign_id']
+                        ?? ''
+                    )
+                );
+
+            if (
+                $returned_campaign_id !==
+                $campaign_id
+            ) {
+                continue;
+            }
+
+            $payment_id =
+                trim(
+                    (string)(
+                        $payment['id']
+                        ?? ''
+                    )
+                );
+
+            if ($payment_id === '') {
+                continue;
+            }
+
+            $payments_by_id[$payment_id] =
+                $payment;
+        }
+    }
+
+    return [
+        'success' =>
+            true,
+
+        'message' =>
+            'Zeffy Membership transactions retrieved successfully.',
+
+        'data' => [
+            'data' =>
+                array_values(
+                    $payments_by_id
+                ),
+        ],
+    ];
+}
+
+    /*
+     * Do not trust the API campaign filter by itself.
+     * Independently verify every returned transaction.
+     */
+    $new_membership_payments = [];
+
+    foreach ($payments as $payment) {
+
+        if (!is_array($payment)) {
+            continue;
+        }
+
+        $campaign_id =
+            trim(
+                (string)(
+                    $payment['campaign_id']
+                    ?? ''
+                )
+            );
+
+        if (
+            $campaign_id !==
+            COAI_ZEFFY_CAMPAIGN_NEW_MEMBERSHIP
+        ) {
+            continue;
+        }
+
+        $new_membership_payments[] =
+            $payment;
+    }
+
+    $data['data'] =
+        $new_membership_payments;
+
+    $result['data'] =
+        $data;
+
+    return $result;
+}
+
+/**
+ * ------------------------------------------------------------
  * Retrieve recent COAI Membership Renewal payments
  * Diagnostic only — does NOT modify MyCOAI data.
  * ------------------------------------------------------------
@@ -272,6 +504,138 @@ function coaii_zeffy_renewal_payments(int $limit = 10): array {
     $result['data'] = $data;
 
     return $result;
+}
+
+/**
+ * ------------------------------------------------------------
+ * Retrieve recent Zeffy Membership transactions for the SOF
+ * transaction ledger.
+ *
+ * Membership includes:
+ *     - Renewal Membership
+ *     - New Membership Registration
+ *
+ * Each campaign is retrieved independently so unrelated Zeffy
+ * activity cannot crowd Membership transactions out of the
+ * SOF discovery window.
+ *
+ * Does NOT:
+ *     - Assess member identity
+ *     - Decide business meaning
+ *     - Update member records
+ * ------------------------------------------------------------
+ */
+function coaii_zeffy_membership_transactions(
+    int $limit_per_campaign = 100
+): array {
+
+    $limit_per_campaign =
+        max(
+            1,
+            min(
+                100,
+                $limit_per_campaign
+            )
+        );
+
+    $campaign_ids = [
+        COAI_ZEFFY_CAMPAIGN_RENEWAL,
+        COAI_ZEFFY_CAMPAIGN_NEW_MEMBERSHIP,
+    ];
+
+    $payments_by_id = [];
+
+    foreach ($campaign_ids as $campaign_id) {
+
+        $query =
+            http_build_query([
+                'campaign_id' =>
+                    $campaign_id,
+
+                'limit' =>
+                    $limit_per_campaign,
+            ]);
+
+        $result =
+            coaii_zeffy_api_request(
+                'payments?' . $query
+            );
+
+        if (!$result['success']) {
+            return [
+                'success' => false,
+                'message' =>
+                    'Unable to retrieve one of the Zeffy Membership campaigns: '
+                    . $result['message'],
+                'data' => null,
+            ];
+        }
+
+        $data =
+            (
+                isset($result['data'])
+                && is_array($result['data'])
+            )
+                ? $result['data']
+                : [];
+
+        $payments =
+            (
+                isset($data['data'])
+                && is_array($data['data'])
+            )
+                ? $data['data']
+                : [];
+
+        foreach ($payments as $payment) {
+
+            if (!is_array($payment)) {
+                continue;
+            }
+
+            $returned_campaign_id =
+                trim(
+                    (string)(
+                        $payment['campaign_id']
+                        ?? ''
+                    )
+                );
+
+            if (
+                $returned_campaign_id !==
+                $campaign_id
+            ) {
+                continue;
+            }
+
+            $payment_id =
+                trim(
+                    (string)(
+                        $payment['id']
+                        ?? ''
+                    )
+                );
+
+            if ($payment_id === '') {
+                continue;
+            }
+
+            $payments_by_id[$payment_id] =
+                $payment;
+        }
+    }
+
+    return [
+        'success' => true,
+        'message' =>
+            'Zeffy Membership transactions retrieved successfully.',
+        'data' => [
+            'data' =>
+                array_values(
+                    $payments_by_id
+                ),
+        ],
+    ];
 }
 
 /**
@@ -1139,10 +1503,12 @@ function coaii_render_page(){
   $dupe_det = null;
   $zeffy_campaigns = [];
   $zeffy_renewal_payments = [];
+  $zeffy_new_membership_payments = [];
   $zeffy_api_dry_run = false;
   $zeffy_unknown_renewals = [];
   $zeffy_identity_results = [];
   $zeffy_business_results = [];
+
 
   $zeffy_member_search = '';
   $zeffy_member_search_transaction_id = 0;
@@ -1192,6 +1558,64 @@ function coaii_render_page(){
       ];
     }
   }
+  
+if (
+    $_SERVER['REQUEST_METHOD'] === 'POST'
+    && isset(
+        $_POST[
+            'coaii_retrieve_zeffy_new_memberships'
+        ]
+    )
+) {
+
+    check_admin_referer(
+        'coaii_retrieve_zeffy_new_memberships'
+    );
+
+    $ran = true;
+
+    $result =
+        coaii_zeffy_new_membership_payments(
+            100
+        );
+
+    if (!$result['success']) {
+
+        $msgs[] = [
+            'error',
+            'Unable to retrieve Zeffy New Membership payments: '
+                . $result['message']
+        ];
+
+    } else {
+
+        $data =
+            (
+                isset($result['data'])
+                && is_array($result['data'])
+            )
+                ? $result['data']
+                : [];
+
+        $zeffy_new_membership_payments =
+            (
+                isset($data['data'])
+                && is_array($data['data'])
+            )
+                ? $data['data']
+                : [];
+
+        $msgs[] = [
+            'success',
+            sprintf(
+                'Retrieved %d New Membership payment(s) directly from Zeffy.',
+                count(
+                    $zeffy_new_membership_payments
+                )
+            )
+        ];
+    }
+}
   
     if (
     $_SERVER['REQUEST_METHOD'] === 'POST'
@@ -1924,7 +2348,8 @@ function coaii_render_page(){
         new SOF_ZeffyRenewalIdentityService();
 
       $transactions =
-        $repository->find_identity_ready_renewals(500);
+        $repository
+          ->find_unassessed_membership_transactions(500);
 
       $counts = [
         'matched'         => 0,
@@ -2108,14 +2533,25 @@ function coaii_render_page(){
     $ran = true;
 
     /*
-     * First ledger checkpoint:
-     * retrieve the most recent 100 Zeffy payments.
+     * ------------------------------------------------------
+     * Membership Transaction Discovery
+     * ------------------------------------------------------
      *
-     * Pagination will be added after this behavior is validated.
+     * Retrieve Membership transactions by their known Zeffy
+     * campaigns rather than relying on the latest 100 payments
+     * across the entire Zeffy organization.
+     *
+     * This prevents unrelated Convention, Shop, Auction, or
+     * other Zeffy activity from crowding Membership payments
+     * out of the SOF discovery window.
+     *
+     * Zeffy campaign identity remains a fact only.
+     * SOF will determine the business meaning later.
+     * ------------------------------------------------------
      */
     $result = coaii_zeffy_api_request(
         'payments?limit=100'
-    );
+    ); 
 
     if (!$result['success']) {
 
@@ -3112,6 +3548,49 @@ if (
                             Discover Zeffy Campaigns
                         </button>
                     </form>
+                    
+                    <form method="post">
+                        <?php
+                        wp_nonce_field(
+                            'coaii_retrieve_zeffy_campaigns'
+                        );
+                        ?>
+
+                        <button
+                            type="submit"
+                            class="button"
+                            name="coaii_retrieve_zeffy_campaigns"
+                            value="1"
+                        >
+                            Discover Zeffy Campaigns
+                        </button>
+                    </form>
+
+
+                    <form method="post">
+                        <?php
+                        wp_nonce_field(
+                            'coaii_retrieve_zeffy_new_memberships'
+                        );
+                        ?>
+
+                        <button
+                            type="submit"
+                            class="button"
+                            name="coaii_retrieve_zeffy_new_memberships"
+                            value="1"
+                        >
+                            Retrieve New Membership Payments
+                        </button>
+                    </form>
+
+
+                    <form method="post">
+                        <?php
+                        wp_nonce_field(
+                            'coaii_assess_zeffy_identities'
+                        );
+                        ?>
 
                     <form method="post">
                         <?php
@@ -3201,6 +3680,156 @@ if (
                 </div>
 
             </details>
+            
+<?php if (!empty($zeffy_new_membership_payments)) : ?>
+
+    <div style="margin-top:20px;">
+
+        <h3>
+            Recent New Membership Payments
+        </h3>
+
+        <p>
+            Diagnostic view only. No MyCOAI records
+            have been changed.
+        </p>
+
+        <table
+            class="widefat fixed striped"
+            style="margin-top:12px;"
+        >
+            <thead>
+                <tr>
+                    <th>Payment ID</th>
+                    <th>Date</th>
+                    <th>Name</th>
+                    <th>Email</th>
+                    <th>Status</th>
+                    <th>Amount</th>
+                </tr>
+            </thead>
+
+            <tbody>
+
+            <?php
+            foreach (
+                $zeffy_new_membership_payments
+                as $payment
+            ) :
+
+                $buyer =
+                    (
+                        isset($payment['buyer'])
+                        && is_array(
+                            $payment['buyer']
+                        )
+                    )
+                        ? $payment['buyer']
+                        : [];
+
+                $created =
+                    isset($payment['created'])
+                        ? (int)$payment['created']
+                        : 0;
+
+                $date =
+                    $created > 0
+                        ? wp_date(
+                            'm/d/Y g:i A',
+                            $created
+                        )
+                        : '';
+
+                $amount =
+                    isset($payment['amount'])
+                        ? (
+                            (int)$payment['amount']
+                            / 100
+                        )
+                        : 0;
+            ?>
+
+                <tr>
+
+                    <td>
+                        <?php
+                        echo esc_html(
+                            (string)(
+                                $payment['id']
+                                ?? ''
+                            )
+                        );
+                        ?>
+                    </td>
+
+                    <td>
+                        <?php
+                        echo esc_html($date);
+                        ?>
+                    </td>
+
+                    <td>
+                        <?php
+                        echo esc_html(
+                            trim(
+                                (string)(
+                                    $buyer['first_name']
+                                    ?? ''
+                                )
+                                . ' '
+                                . (string)(
+                                    $buyer['last_name']
+                                    ?? ''
+                                )
+                            )
+                        );
+                        ?>
+                    </td>
+
+                    <td>
+                        <?php
+                        echo esc_html(
+                            (string)(
+                                $buyer['email']
+                                ?? ''
+                            )
+                        );
+                        ?>
+                    </td>
+
+                    <td>
+                        <?php
+                        echo esc_html(
+                            (string)(
+                                $payment['status']
+                                ?? ''
+                            )
+                        );
+                        ?>
+                    </td>
+
+                    <td>
+                        <?php
+                        echo esc_html(
+                            '$'
+                            . number_format(
+                                $amount,
+                                2
+                            )
+                        );
+                        ?>
+                    </td>
+
+                </tr>
+
+            <?php endforeach; ?>
+
+            </tbody>
+        </table>
+
+    </div>
+
+<?php endif; ?>
 
         </div>
 
